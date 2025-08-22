@@ -1,0 +1,27 @@
+# Signalworks Part: Inspectorate Bench
+
+id: inspectorate_bench
+name: "Inspectorate Bench"
+category: gan
+description: |
+  An examination bench that judges authenticity. Serves as a
+  discriminator in adversarial training.
+
+visual:
+  scene: "res://art/parts/inspectorate_bench.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: discriminator
+  inputs: 1
+  outputs: 1
+  parameters:
+    objective: bce
+  learnable: true
+
+ports:
+  north: input
+  south: decision
+

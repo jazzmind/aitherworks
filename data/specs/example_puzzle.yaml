@@ -1,0 +1,50 @@
+# Example puzzle specification for Signalworks
+#
+# This file illustrates the structure expected by the Steamfitter
+# plugin when importing a puzzle.  You can duplicate this file and
+# adjust the fields to define new levels.  Comments (lines starting
+# with '#') are ignored by the importer.
+
+id: example_puzzle
+name: "Vector Addition"
+description: |
+  Your first assignment as a Mechanist apprentice!  Build a simple
+  machine that takes two three‑lane signals and produces their sum.
+  Use Weight Wheels and an Adder Manifold to match the target pattern.
+
+# Narrative metadata to display between puzzles.  This can be shown
+# as a comic panel or teleprinter message.
+story:
+  title: "A Humble Beginning"
+  text: |
+    Fresh from the Dock‑Ward, you have one day to prove yourself.
+    The Guild will repossess your foundry if you cannot add two
+    numbers.  A small challenge, but with steam everything hums.
+
+# Budget constraints for the level.  These correspond to internal
+# measures such as parameter count (mass), energy consumption
+# (pressure) and cost (brass).  Values are arbitrary units.
+budget:
+  mass: 1000
+  pressure: 10
+  brass: 50
+
+# A list of part IDs allowed in this puzzle.  These IDs should
+# correspond to part definitions under data/parts/.
+allowed_parts:
+  - weight_wheel
+  - adder_manifold
+  - activation_gate
+
+# Win conditions define the criteria for success.  The simplest
+# condition is achieving a target accuracy on a hidden validation set.
+win_conditions:
+  accuracy: 0.95
+
+# Training parameters for the level.  This section can be used to
+# configure optimizers and learning rates if you wish to override
+# defaults.  Optional.
+training:
+  optimizer: sgd
+  learning_rate: 0.1
+  epochs: 10

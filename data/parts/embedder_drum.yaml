@@ -1,0 +1,26 @@
+# Signalworks Part: Embedder Drum
+
+id: embedder_drum
+name: "Embedder Drum"
+category: retrieval
+description: |
+  A drum that encodes text into embeddings for retrieval and attention.
+
+visual:
+  scene: "res://art/parts/embedder_drum.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: embedder
+  inputs: 1
+  outputs: 1
+  parameters:
+    dim: 256
+  learnable: true
+
+ports:
+  north: text
+  south: embedding
+

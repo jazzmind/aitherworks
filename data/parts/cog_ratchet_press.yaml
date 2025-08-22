@@ -1,0 +1,29 @@
+# Signalworks Part: Cog-Ratchet Press
+
+id: cog_ratchet_press
+name: "Cog-Ratchet Press"
+category: compression
+description: |
+  An arbor press with detents for 8-bit and 4-bit operation.
+  Applies post-training quantization; requires calibration to keep
+  the Manometer needle in the green.
+
+visual:
+  scene: "res://art/parts/cog_ratchet_press.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: quantizer
+  inputs: 1
+  outputs: 1
+  parameters:
+    precision: 4
+    per_channel: true
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

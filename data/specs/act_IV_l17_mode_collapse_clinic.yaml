@@ -1,0 +1,39 @@
+# Act IV — L17: Mode Collapse Clinic
+
+id: act_IV_l17_mode_collapse_clinic
+name: "Mode Collapse Clinic"
+description: |
+  Remedy collapse with mini-batch discrimination and noise. Stabilize
+  training so the Examiner stops being gullible.
+
+story:
+  title: "The Tell"
+  text: |
+    Fakes that all look alike fool no one for long. Teach your press to
+    vary its strokes.
+
+budget:
+  mass: 13000
+  pressure: 16
+  brass: 220
+
+allowed_parts:
+  - convolution_drum
+  - activation_gate
+  - layer_tonic
+  - drop_valves
+  - entropy_manometer
+
+win_conditions:
+  generator_diversity_index: 0.7
+  discriminator_accuracy: 0.5
+
+training:
+  optimizer_g: sgd
+  optimizer_d: sgd
+  learning_rate_g: 0.02
+  learning_rate_d: 0.02
+  epochs: 40
+  minibatch_discrimination: true
+  input_noise: 0.1
+

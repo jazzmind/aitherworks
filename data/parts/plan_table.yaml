@@ -1,0 +1,27 @@
+# Signalworks Part: Plan Table
+
+id: plan_table
+name: "Plan Table"
+category: reasoning
+description: |
+  Three linked drafting boards that structure multi-step reasoning:
+  Parse → Retrieve → Answer. Each board caches outputs for the next stage.
+
+visual:
+  scene: "res://art/parts/plan_table.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: plan_stage
+  inputs: 1
+  outputs: 1
+  parameters:
+    stages: 3
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

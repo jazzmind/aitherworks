@@ -1,0 +1,38 @@
+# Act V — L22: The Ethical Governor
+
+id: act_V_l22_the_ethical_governor
+name: "The Ethical Governor"
+description: |
+  Missions fail if Harm Limiters exceed thresholds on hidden edge cases.
+  Install Ledger Filters and an Ethical Governor.
+
+story:
+  title: "Due Care"
+  text: |
+    The Charter demands engines that do no harm. Prove yours keeps its
+    hands out of the press.
+
+budget:
+  mass: 8500
+  pressure: 12
+  brass: 160
+
+allowed_parts:
+  - ethical_governor
+  - entropy_manometer
+  - activation_gate
+  - layer_tonic
+
+win_conditions:
+  accuracy: 0.92
+  harm_limiters_max: 0.03
+  fairness_index_min: 0.9
+
+training:
+  optimizer: sgd
+  learning_rate: 0.02
+  epochs: 20
+  fairness:
+    ledger_filters: true
+    reweighting: true
+

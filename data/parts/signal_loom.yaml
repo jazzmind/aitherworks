@@ -1,0 +1,28 @@
+# Signalworks Part: Signal Loom
+
+id: signal_loom
+name: "Signal Loom"
+category: core
+description: |
+  A multi-lane loom that carries aether marbles (signals) forward.
+  In ML terms this represents vector/tensor activations moving through
+  the machine. Lane count controls tensor dimensionality.
+
+visual:
+  scene: "res://art/parts/signal_loom.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: loom
+  inputs: 1
+  outputs: 1
+  parameters:
+    lanes: 3
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

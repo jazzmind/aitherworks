@@ -1,0 +1,44 @@
+# Example part definition for Signalworks
+#
+# This file illustrates how to define a component that can be
+# referenced by puzzles.  Each part definition specifies the visual
+# appearance, simulation behaviour, and port configuration for the
+# part.  The Steamfitter plugin will read these definitions and
+# generate corresponding scenes in Godot.
+
+id: weight_wheel
+name: "Weight Wheel"
+category: basic
+description: |
+  A brass dial that scales the magnitude of an input signal.  Turn
+  the wheel clockwise to increase the weight and anticlockwise to
+  decrease it.  In machine learning terms this performs a scalar
+  multiplication on a vector lane.
+
+# Visual properties.  The path points at a mesh or scene under
+# `art/` that will be instanced.  Adjust the transform or
+# animation settings as needed.
+visual:
+  scene: "res://art/parts/weight_wheel.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+# Simulation properties.  This part multiplies an input by a
+# weight and produces one output.  Additional fields can
+# describe how it interfaces with the gradient system.
+simulation:
+  type: multiplier
+  inputs: 1
+  outputs: 1
+  parameters:
+    weight: 1.0
+  learnable: true
+
+# Ports define how this part connects to other parts in the
+# spatial grid.  The coordinate system and port orientation will be
+# interpreted by the plugin when placing scenes.  Use cardinal
+# directions (north/east/south/west) to specify where signals flow.
+ports:
+  north: input
+  south: output

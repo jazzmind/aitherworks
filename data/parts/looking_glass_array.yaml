@@ -1,0 +1,31 @@
+# Signalworks Part: Looking-Glass Array
+
+id: looking_glass_array
+name: "Looking-Glass Array"
+category: attention
+description: |
+  A crystal prism with Q, K, and V ports. Computes scaled dot-product
+  attention and emits attended values. Heat Lens overlay reveals focus weights.
+
+visual:
+  scene: "res://art/parts/looking_glass_array.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: attention
+  inputs: 3
+  outputs: 1
+  parameters:
+    heads: 1
+    dim: 64
+    temperature: 1.0
+  learnable: true
+
+ports:
+  west: input_q
+  north: input_k
+  east: input_v
+  south: output
+

@@ -1,0 +1,40 @@
+# Act III — L11: Keys in the Looking-Glass
+
+id: act_III_l11_keys_in_the_looking_glass
+name: "Keys in the Looking-Glass"
+description: |
+  From 6-token inputs, output token #3 using attention. Learn projections,
+  dot-product attention, and softmax.
+
+story:
+  title: "Focus"
+  text: |
+    The Heat Lens reveals what the machine attends to. Align queries and
+    keys; let values pass unchanged.
+
+budget:
+  mass: 6000
+  pressure: 10
+  brass: 120
+
+allowed_parts:
+  - looking_glass_array
+  - layer_tonic
+  - residual_rail
+  - activation_gate
+  - adder_manifold
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.99
+
+training:
+  optimizer: sgd
+  learning_rate: 0.05
+  epochs: 25
+
+dataset:
+  type: token_copy
+  seq_len: 6
+  target_index: 3
+

@@ -1,0 +1,40 @@
+# Act III — L14: Mini-Transformer
+
+id: act_III_l14_mini_transformer
+name: "Mini-Transformer"
+description: |
+  Build a small transformer block with residual rails, Layer Tonic, and an
+  MLP head. Beat a baseline on sequence copying with fewer cogs.
+
+story:
+  title: "Economies"
+  text: |
+    House Voltaic buys speed with coal. You will buy it with elegance.
+
+budget:
+  mass: 9000
+  pressure: 12
+  brass: 150
+
+allowed_parts:
+  - looking_glass_array
+  - layer_tonic
+  - residual_rail
+  - activation_gate
+  - adder_manifold
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.98
+  mass_reduction_vs_baseline: 0.2
+
+training:
+  optimizer: sgd
+  learning_rate: 0.03
+  epochs: 30
+
+dataset:
+  type: token_copy
+  seq_len: 12
+  target_index: 6
+

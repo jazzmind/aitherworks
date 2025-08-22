@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqk8vr5x2napj"]
+
+[ext_resource type="Script" path="res://game/parts/adder_manifold.gd" id="1"]
+
+[node name="AdderManifold" type="Node"]
+script = ExtResource("1")
+input_ports = 2
+bias = 0.0
+scaling_factor = 1.0

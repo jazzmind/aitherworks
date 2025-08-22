@@ -1,0 +1,39 @@
+# Act V — L20: Teacher's Whisper
+
+id: act_V_l20_teachers_whisper
+name: "Teacher's Whisper"
+description: |
+  Distill a larger press into a nimble apprentice using the Athanor Still.
+  Tune temperature and match softened targets.
+
+story:
+  title: "The Still"
+  text: |
+    A great engine can teach a small one to sing. Set the spigot and
+    listen for harmony.
+
+budget:
+  mass: 9000
+  pressure: 12
+  brass: 160
+
+allowed_parts:
+  - athanor_still
+  - entropy_manometer
+  - layer_tonic
+  - activation_gate
+  - residual_rail
+
+win_conditions:
+  student_accuracy: 0.95
+  student_vs_teacher_params_ratio: 0.5
+
+training:
+  optimizer: sgd
+  learning_rate: 0.03
+  epochs: 30
+  distillation:
+    temperature: 2.0
+    alpha_soft: 0.7
+    alpha_hard: 0.3
+

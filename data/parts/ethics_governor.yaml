@@ -1,0 +1,28 @@
+# Signalworks Part: Ethical Governor
+
+id: ethical_governor
+name: "Ethical Governor"
+category: alignment
+description: |
+  A flyball governor with Harm Limiters. Adds an auxiliary loss and
+  enforces thresholds on safety metrics. Required by the Charter.
+
+visual:
+  scene: "res://art/parts/ethical_governor.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: ethics_head
+  inputs: 1
+  outputs: 1
+  parameters:
+    penalty_weight: 0.2
+    harm_threshold: 0.05
+  learnable: true
+
+ports:
+  north: input
+  south: output
+

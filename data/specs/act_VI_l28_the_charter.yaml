@@ -1,0 +1,38 @@
+# Act VI — L28: The Charter
+
+id: act_VI_l28_the_charter
+name: "The Charter"
+description: |
+  Build a specialized Steam‑Mind under strict Mass/Pressure/Ethics limits
+  and pass the final Inspectorate.
+
+story:
+  title: "The Hall"
+  text: |
+    Under chandeliers and a hundred staring eyes, present a mind that
+    serves the city.
+
+budget:
+  mass: 8000
+  pressure: 10
+  brass: 180
+
+allowed_parts:
+  - looking_glass_array
+  - layer_tonic
+  - residual_rail
+  - activation_gate
+  - adder_manifold
+  - entropy_manometer
+  - ethical_governor
+
+win_conditions:
+  accuracy: 0.95
+  fairness_index_min: 0.92
+  incidents_max: 0
+
+training:
+  optimizer: sgd
+  learning_rate: 0.02
+  epochs: 30
+

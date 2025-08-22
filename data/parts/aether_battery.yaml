@@ -1,0 +1,28 @@
+# Signalworks Part: Aether Battery
+
+id: aether_battery
+name: "Aether Battery"
+category: scheduling
+description: |
+  A pressure accumulator that smooths energy draw. Schedules bursts
+  to avoid brownouts; useful during attention-heavy operations.
+
+visual:
+  scene: "res://art/parts/aether_battery.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: scheduler
+  inputs: 1
+  outputs: 1
+  parameters:
+    capacity: 100
+    max_draw: 10
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

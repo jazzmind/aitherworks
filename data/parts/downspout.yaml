@@ -1,0 +1,29 @@
+# Signalworks Part: Downspout
+
+id: downspout
+name: "Downspout"
+category: vision
+description: |
+  A step-reduction grate that pools signals over neighborhoods.
+  Acts as average or max pooling with stride.
+
+visual:
+  scene: "res://art/parts/downspout.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: pooling
+  inputs: 1
+  outputs: 1
+  parameters:
+    mode: max
+    kernel_size: 2
+    stride: 2
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

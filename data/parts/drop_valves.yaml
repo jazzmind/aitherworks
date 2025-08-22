@@ -1,0 +1,27 @@
+# Signalworks Part: Drop Valves
+
+id: drop_valves
+name: "Drop Valves"
+category: regularization
+description: |
+  Randomly chattering valves that drop a fraction of lanes during
+  training. Implements dropout; disabled during validation.
+
+visual:
+  scene: "res://art/parts/drop_valves.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: dropout
+  inputs: 1
+  outputs: 1
+  parameters:
+    probability: 0.2
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

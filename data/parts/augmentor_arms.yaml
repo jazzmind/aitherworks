@@ -1,0 +1,29 @@
+# Signalworks Part: Augmentor Arms
+
+id: augmentor_arms
+name: "Augmentor Arms"
+category: regularization
+description: |
+  Articulated arms that crop, tilt, and add noise to inputs during
+  training to improve generalization. Disabled during validation.
+
+visual:
+  scene: "res://art/parts/augmentor_arms.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: augmentation
+  inputs: 1
+  outputs: 1
+  parameters:
+    rotation: 10
+    crop: 0.1
+    noise: 0.05
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

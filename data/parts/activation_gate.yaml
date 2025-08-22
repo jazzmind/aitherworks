@@ -1,0 +1,28 @@
+# Signalworks Part: Activation Gate
+
+id: activation_gate
+name: "Activation Gate"
+category: basic
+description: |
+  A labeled mechanical valve (ReLU, Sigmoid, Softmax) that introduces
+  nonlinearity. In ML terms this applies an activation function
+  element-wise.
+
+visual:
+  scene: "res://art/parts/activation_gate.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: activation
+  inputs: 1
+  outputs: 1
+  parameters:
+    function: relu
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

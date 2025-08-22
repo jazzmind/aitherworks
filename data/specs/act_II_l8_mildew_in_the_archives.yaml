@@ -1,0 +1,45 @@
+# Act II — L8: Mildew in the Archives
+
+id: act_II_l8_mildew_in_the_archives
+name: "Mildew in the Archives"
+description: |
+  Confront overfitting. Add Drop Valves and Augmentor Arms to generalize.
+
+story:
+  title: "Stains and Smears"
+  text: |
+    Rubbings copied too cleanly fool the Examiner. Introduce noise,
+    tilt, and crop to learn the idea, not the parchment.
+
+budget:
+  mass: 2400
+  pressure: 12
+  brass: 90
+
+allowed_parts:
+  - convolution_drum
+  - downspout
+  - activation_gate
+  - drop_valves
+  - augmentor_arms
+  - layer_tonic
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.92
+
+training:
+  optimizer: sgd
+  learning_rate: 0.03
+  epochs: 20
+  augmentation:
+    rotation: 10
+    crop: 0.1
+    noise: 0.05
+
+dataset:
+  type: synthetic_cogs
+  image_size: [28, 28]
+  train_examples: 800
+  val_examples: 400
+

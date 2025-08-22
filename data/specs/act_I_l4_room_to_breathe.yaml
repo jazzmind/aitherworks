@@ -1,0 +1,39 @@
+# Act I — L4: Room to Breathe
+
+id: act_I_l4_room_to_breathe
+name: "Room to Breathe"
+description: |
+  Tune learning rate and stabilize training using a ReLU gate.
+
+story:
+  title: "A Gentle Ramp"
+  text: |
+    The needle rattles when you push too hard. Add a gate and ease the climb.
+
+budget:
+  mass: 900
+  pressure: 8
+  brass: 50
+
+allowed_parts:
+  - signal_loom
+  - weight_wheel
+  - adder_manifold
+  - activation_gate
+  - apprentice_sgd
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.96
+  overshoot_events_max: 0
+
+training:
+  optimizer: sgd
+  learning_rate: 0.03
+  epochs: 12
+
+targets:
+  type: regression
+  lanes: 3
+  function: linear
+

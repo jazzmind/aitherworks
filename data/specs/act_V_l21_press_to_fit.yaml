@@ -1,0 +1,42 @@
+# Act V — L21: Press to Fit
+
+id: act_V_l21_press_to_fit
+name: "Press to Fit"
+description: |
+  Maintain ≥95% Inspectorate score after compressing to 4‑bit using the
+  Cog‑Ratchet Press. Run a calibration batch.
+
+story:
+  title: "Detents"
+  text: |
+    Brass saves brass. But press too hard and the needle screams.
+
+budget:
+  mass: 7000
+  pressure: 10
+  brass: 120
+
+allowed_parts:
+  - cog_ratchet_press
+  - entropy_manometer
+  - layer_tonic
+  - calibration_feeder
+
+win_conditions:
+  accuracy: 0.95
+  mass_reduction: 0.6
+  pressure_spikes_max: 1
+
+training:
+  optimizer: sgd
+  learning_rate: 0.02
+  epochs: 10
+  calibration_batch: 256
+
+quantization:
+  precision: 4
+  mixed_precision_layers:
+    - attention_output
+    - first_layer
+    - last_layer
+

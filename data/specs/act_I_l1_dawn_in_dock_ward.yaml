@@ -1,0 +1,41 @@
+# Act I — L1: Dawn in Dock‑Ward
+
+id: act_I_l1_dawn_in_dock_ward
+name: "Dawn in Dock‑Ward"
+description: |
+  Build a Signal Loom and use Weight Wheels to match a target 3‑lane
+  pattern. Learn vectors and scaling.
+
+story:
+  title: "A Humble Beginning"
+  text: |
+    The Foundry‑Barge wakes with the canal. Apprentices await orders.
+    Prove your worth by matching a simple pattern before the creditor’s
+    man returns at dusk.
+
+budget:
+  mass: 500
+  pressure: 6
+  brass: 30
+
+allowed_parts:
+  - signal_loom
+  - weight_wheel
+  - adder_manifold
+  - activation_gate
+  - apprentice_sgd
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.95
+
+training:
+  optimizer: sgd
+  learning_rate: 0.1
+  epochs: 5
+
+targets:
+  type: vector_scaling
+  lanes: 3
+  pattern: [0.5, 1.0, -0.5]
+

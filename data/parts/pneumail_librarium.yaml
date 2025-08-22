@@ -1,0 +1,29 @@
+# Signalworks Part: Pneumail Librarium
+
+id: pneumail_librarium
+name: "Pneumail Librarium"
+category: retrieval
+description: |
+  A network of tubes to the Archive. Retrieves and caches text pages
+  based on embeddings for grounding (RAG).
+
+visual:
+  scene: "res://art/parts/pneumail_librarium.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: retriever
+  inputs: 1
+  outputs: 2
+  parameters:
+    top_k: 3
+    cache: true
+  learnable: false
+
+ports:
+  north: query
+  south: retrieved_text
+  east: retrieved_embeddings
+

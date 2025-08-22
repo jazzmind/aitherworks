@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dq8m4xr5s7n2v"]
+
+[ext_resource type="Script" path="res://game/parts/convolution_drum.gd" id="1"]
+
+[node name="ConvolutionDrum" type="Node"]
+script = ExtResource("1")
+kernel_size = 3
+stride = 1
+padding = 0
+rotation_speed = 1.0

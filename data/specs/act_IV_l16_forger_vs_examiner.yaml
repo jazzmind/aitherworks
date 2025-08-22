@@ -1,0 +1,44 @@
+# Act IV — L16: Forger vs Examiner
+
+id: act_IV_l16_forger_vs_examiner
+name: "Forger vs Examiner"
+description: |
+  Train two contraptions in cadence: an Athanor Still (Generator) and an
+  Inspectorate Bench (Discriminator). Learn stability tradeoffs.
+
+story:
+  title: "Counterfeits"
+  text: |
+    The city loves a pretty fake until it fails in public. Balance the
+    beats so neither board dominates.
+
+budget:
+  mass: 12000
+  pressure: 16
+  brass: 200
+
+allowed_parts:
+  - athanor_still
+  - inspectorate_bench
+  - convolution_drum
+  - activation_gate
+  - layer_tonic
+  - drop_valves
+  - entropy_manometer
+
+win_conditions:
+  discriminator_accuracy_max: 0.8
+  generator_fooling_rate: 0.6
+
+training:
+  optimizer_g: sgd
+  optimizer_d: sgd
+  learning_rate_g: 0.02
+  learning_rate_d: 0.02
+  epochs: 40
+  cadence: 1:1
+
+dataset:
+  type: synthetic_cogs
+  image_size: [28, 28]
+

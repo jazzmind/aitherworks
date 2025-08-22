@@ -1,0 +1,40 @@
+# Act II — L6: Stamp the Cog
+
+id: act_II_l6_stamp_the_cog
+name: "Stamp the Cog"
+description: |
+  Use a Convolution Drum to find cogs in parchment rubbings. Learn
+  kernels/filters and visualize feature maps.
+
+story:
+  title: "Impressions"
+  text: |
+    The Clarion wants proofs, not promises. Stamp patterns appear only
+    when the drum’s stencils align.
+
+budget:
+  mass: 2000
+  pressure: 12
+  brass: 80
+
+allowed_parts:
+  - convolution_drum
+  - downspout
+  - activation_gate
+  - layer_tonic
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.9
+
+training:
+  optimizer: sgd
+  learning_rate: 0.05
+  epochs: 15
+
+dataset:
+  type: synthetic_cogs
+  image_size: [28, 28]
+  train_examples: 1000
+  val_examples: 200
+

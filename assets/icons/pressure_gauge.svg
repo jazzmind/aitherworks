@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="16" cy="18" r="12" fill="#8d6e42" stroke="#654a2f" stroke-width="2"/>
+  <circle cx="16" cy="18" r="8" fill="#b8956a" stroke="#8d6e42" stroke-width="1"/>
+  <path d="M 8 18 A 8 8 0 0 1 24 18" fill="none" stroke="#654a2f" stroke-width="1"/>
+  <path d="M 10 14 A 6 6 0 0 1 22 14" fill="none" stroke="#654a2f" stroke-width="1"/>
+  <line x1="16" y1="10" x2="16" y2="12" stroke="#654a2f" stroke-width="1"/>
+  <line x1="22" y1="13" x2="21" y2="14" stroke="#654a2f" stroke-width="1"/>
+  <line x1="26" y1="18" x2="24" y2="18" stroke="#654a2f" stroke-width="1"/>
+  <line x1="22" y1="23" x2="21" y2="22" stroke="#654a2f" stroke-width="1"/>
+  <line x1="16" y1="26" x2="16" y2="24" stroke="#654a2f" stroke-width="1"/>
+  <line x1="10" y1="23" x2="11" y2="22" stroke="#654a2f" stroke-width="1"/>
+  <line x1="6" y1="18" x2="8" y2="18" stroke="#654a2f" stroke-width="1"/>
+  <line x1="10" y1="13" x2="11" y2="14" stroke="#654a2f" stroke-width="1"/>
+  <circle cx="16" cy="18" r="1" fill="#654a2f"/>
+  <line x1="16" y1="18" x2="20" y2="14" stroke="#2a1f14" stroke-width="2" stroke-linecap="round"/>
+  <rect x="12" y="28" width="8" height="4" rx="1" fill="#7a6441" stroke="#5a472f" stroke-width="1"/>
+</svg>

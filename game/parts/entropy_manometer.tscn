@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwm7n5xquak4p"]
+
+[ext_resource type="Script" path="res://game/parts/entropy_manometer.gd" id="1"]
+
+[node name="EntropyManometer" type="Node"]
+script = ExtResource("1")
+measurement_type = 0
+target_values = Array[float]([0.0, 1.0])
+smoothing_factor = 0.1

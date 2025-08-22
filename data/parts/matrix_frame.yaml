@@ -1,0 +1,29 @@
+# Signalworks Part: Matrix Frame
+
+id: matrix_frame
+name: "Matrix Frame"
+category: core
+description: |
+  A gear lattice where input rods drive output rods. Implements a
+  learnable linear layer (matrix multiply) with optional bias.
+
+visual:
+  scene: "res://art/parts/matrix_frame.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: linear
+  inputs: 1
+  outputs: 1
+  parameters:
+    in_features: 64
+    out_features: 64
+    bias: true
+  learnable: true
+
+ports:
+  north: input
+  south: output
+

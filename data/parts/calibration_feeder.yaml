@@ -1,0 +1,27 @@
+# Signalworks Part: Calibration Feeder
+
+id: calibration_feeder
+name: "Calibration Feeder"
+category: instrumentation
+description: |
+  Feeds a calibration batch through the press to calibrate quantization
+  scales for the Cog‑Ratchet Press.
+
+visual:
+  scene: "res://art/parts/calibration_feeder.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: calibration
+  inputs: 1
+  outputs: 1
+  parameters:
+    batch_size: 256
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

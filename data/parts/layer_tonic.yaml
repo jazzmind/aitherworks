@@ -1,0 +1,27 @@
+# Signalworks Part: Layer Tonic
+
+id: layer_tonic
+name: "Layer Tonic"
+category: normalization
+description: |
+  Self-leveling vials that normalize per-feature statistics. Implements
+  LayerNorm with learnable gain and bias vials.
+
+visual:
+  scene: "res://art/parts/layer_tonic.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: layernorm
+  inputs: 1
+  outputs: 1
+  parameters:
+    epsilon: 1e-5
+  learnable: true
+
+ports:
+  north: input
+  south: output
+

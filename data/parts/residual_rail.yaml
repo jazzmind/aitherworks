@@ -1,0 +1,26 @@
+# Signalworks Part: Residual Rail
+
+id: residual_rail
+name: "Residual Rail"
+category: basic
+description: |
+  A bypass rail that lets signals skip forward and be added back later.
+  This is a structural helper enabling residual connections between parts.
+
+visual:
+  scene: "res://art/parts/residual_rail.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: passthrough
+  inputs: 1
+  outputs: 1
+  parameters: {}
+  learnable: false
+
+ports:
+  north: input
+  south: output
+

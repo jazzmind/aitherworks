@@ -1,0 +1,40 @@
+# Act VI — L26: Citywide Dispatch
+
+id: act_VI_l26_citywide_dispatch
+name: "Citywide Dispatch"
+description: |
+  Rolling brownouts, poisoned ledgers, and safety audits—all at once.
+  Keep the machine stable under pressure while maintaining scorecard KPIs.
+
+story:
+  title: "Thin Steam"
+  text: |
+    Every third batch the lamps dim. Filters clog with mildew. Prove you
+    can keep service with prudence.
+
+budget:
+  mass: 12000
+  pressure: 14
+  brass: 220
+
+allowed_parts:
+  - aether_battery
+  - ethical_governor
+  - entropy_manometer
+  - drop_valves
+  - layer_tonic
+
+win_conditions:
+  accuracy: 0.9
+  incidents_max: 0
+  fairness_index_min: 0.9
+  brownout_recoveries_min: 3
+
+training:
+  optimizer: sgd
+  learning_rate: 0.02
+  epochs: 25
+  events:
+    brownout_every_n_batches: 3
+    data_poisoning_rate: 0.05
+

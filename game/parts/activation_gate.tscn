@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7qam2wqt8x1v"]
+
+[ext_resource type="Script" path="res://game/parts/activation_gate.gd" id="1"]
+
+[node name="ActivationGate" type="Node"]
+script = ExtResource("1")
+activation_type = 0
+threshold = 0.0
+gain = 1.0

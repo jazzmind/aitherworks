@@ -1,0 +1,44 @@
+---
+alwaysApply: true
+---
+
+# Cursor AI Coding Guidelines for Signalworks
+
+This document defines a set of rules and conventions for using **Cursor**, the AI‑assisted IDE, to work on the Signalworks project.  Following these guidelines will ensure that automated code contributions integrate cleanly with the existing repository, maintain quality, and remain safe to use.
+
+## ✨ High‑Level Principles
+
+1. **Data‑driven design** – as far as possible, levels and parts should be specified in YAML/JSON under `data/specs/` and `data/parts/`.  The editor plugin will generate scenes from these specs.  Avoid hard‑coding design values inside scripts when they can be captured in data.
+2. **Keep runtime logic in GDScript** – core gameplay behaviours belong in GDScript files under `game/sim/` or `game/parts/`.  Each part should be a reusable scene with a script controlling its visual and logical behaviour.  GDScript is the recommended language, as it is dynamically typed, easy to author, and fits Godot’s architecture well.
+3. **Don’t break the plugin** – the `addons/steamfitter/` plugin is responsible for ingesting YAML specs and generating scenes.  When adding features, respect its public API and file structure.  New commands or behaviours should be exposed via clearly named functions.
+4. **Keep schema compatibility** – when editing or adding YAML schemas, update associated documentation and examples (`example_puzzle.yaml`, `example_part.yaml`) so that they remain valid.  Use descriptive keys; avoid abbreviations or ambiguous names.
+5. **Use descriptive commit messages** – when Cursor applies code changes, summarise them concisely (e.g., “Add convolution drum part and corresponding spec fields”).  This helps maintain a clean history and facilitates code review.
+
+## 🛠️ File and Directory Conventions
+
+- All scene files should end with the `.tscn` extension and reside in the appropriate subfolder under `game/` (e.g., `game/parts/weight_wheel.tscn`).
+- Scripts should use the `.gd` extension.  Each reusable part scene may have an accompanying script with the same base name (e.g., `weight_wheel.gd`).
+- Plugin scripts live under `addons/steamfitter/` and are organised into modules if necessary.  The main plugin entry point is `plugin.gd`.
+- YAML specification files should use lowercase names with underscores and end in `.yaml` (e.g., `vector_addition_puzzle.yaml`).  The same applies to part definitions.
+- Do not store generated scenes or temporary files in the repository; they should be created in a separate build folder or in the Godot cache.  Generated files checked into version control should be deliberately curated.
+
+## 📚 Examples and Schemas
+
+When adding new parts or puzzles, start by duplicating the provided examples:
+
+* `data/specs/example_puzzle.yaml` – demonstrates how to define budgets, allowed parts, win conditions and narrative metadata.
+* `data/parts/example_part.yaml` – outlines the structure of a part definition including visual representation, simulation behaviour, and port configuration.
+
+Refer to these examples when designing new specs.  Always validate new YAML files with an appropriate schema checker, if available.
+
+## 🤖 LLM Safety and Best Practices
+
+Cursor leverages large language models to assist with code generation.  When using these tools, please observe the following:
+
+1. **Review generated code** – always read through code created by the LLM before committing it.  Ensure it adheres to project standards and does not introduce security or performance issues.
+2. **Stay within scope** – AI code should not modify unrelated files or global configurations.  Focus changes on the intended component or feature.  If a larger refactor is required, plan it explicitly instead of letting the LLM decide.
+3. **Respect licensing** – only include third‑party content (e.g. code snippets, assets) if it is compatible with MIT licensing.  Attribute sources in comments where appropriate.
+4. **Avoid brittle paths** – do not hard‑code absolute file paths.  Use relative paths within the project to load resources (e.g., `res://data/specs/...`).
+5. **Version control is your friend** – commit small, self‑contained changes rather than huge batches.  This makes it easier to revert or adjust AI‑generated code later.
+
+By following these rules, you and Cursor can collaborate smoothly on Signalworks development.  Questions or ambiguities should be raised in code reviews or discussions rather than resolved silently by the AI.

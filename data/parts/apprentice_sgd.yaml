@@ -1,0 +1,28 @@
+# Signalworks Part: Clockwork Apprentice — Stochastic Sal (SGD)
+
+id: apprentice_sgd
+name: "Stochastic Sal"
+category: optimizer
+description: |
+  A tireless apprentice who applies gradient updates using SGD.
+  Chain tension sets the learning rate.
+
+visual:
+  scene: "res://art/parts/apprentice_sgd.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: optimizer_sgd
+  inputs: 1
+  outputs: 1
+  parameters:
+    learning_rate: 0.1
+    weight_decay: 0.0
+  learnable: false
+
+ports:
+  north: gradients
+  south: parameter_updates
+

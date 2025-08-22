@@ -1,0 +1,40 @@
+# Act I — L3: The Manometer Hisses
+
+id: act_I_l3_the_manometer_hisses
+name: "The Manometer Hisses"
+description: |
+  Install an Entropy Manometer and attach Stochastic Sal (SGD). Watch
+  phlogiston backflow and tune the learning rate.
+
+story:
+  title: "Needle & Dye"
+  text: |
+    A violet notice threatens seizure. The Manometer wakes over a kettle
+    of steam; the dye runs backward. Learn to make error your ally.
+
+budget:
+  mass: 800
+  pressure: 8
+  brass: 40
+
+allowed_parts:
+  - signal_loom
+  - weight_wheel
+  - adder_manifold
+  - activation_gate
+  - apprentice_sgd
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.97
+
+training:
+  optimizer: sgd
+  learning_rate: 0.05
+  epochs: 10
+
+targets:
+  type: regression
+  lanes: 3
+  function: linear
+

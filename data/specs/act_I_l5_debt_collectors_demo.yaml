@@ -1,0 +1,35 @@
+# Act I — L5: The Debt Collector’s Demo
+
+id: act_I_l5_debt_collectors_demo
+name: "The Debt Collector’s Demo"
+description: |
+  Combine wheels and adders; train live to spec in front of the Inspectorate.
+
+story:
+  title: "Reprieve"
+  text: |
+    The ledger man waits. Make the needle sing.
+
+budget:
+  mass: 1200
+  pressure: 10
+  brass: 60
+
+allowed_parts:
+  - signal_loom
+  - weight_wheel
+  - adder_manifold
+  - activation_gate
+  - apprentice_sgd
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.95
+  pressure_spikes_max: 1
+
+training:
+  optimizer: sgd
+  learning_rate: 0.04
+  epochs: 15
+  seed: 1337
+

@@ -1,0 +1,31 @@
+# Signalworks Part: Convolution Drum
+
+id: convolution_drum
+name: "Convolution Drum"
+category: vision
+description: |
+  A rolling stencil drum that applies kernels as it turns. In ML terms
+  this is a convolution layer with configurable kernel size, stride, and padding.
+
+visual:
+  scene: "res://art/parts/convolution_drum.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: conv2d
+  inputs: 1
+  outputs: 1
+  parameters:
+    in_channels: 1
+    out_channels: 8
+    kernel_size: 3
+    stride: 1
+    padding: 1
+  learnable: true
+
+ports:
+  north: input
+  south: output
+

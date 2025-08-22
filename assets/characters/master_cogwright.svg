@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Master Cogwright - The wise guild master -->
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#2a1f14" stroke="#8d6e42" stroke-width="4"/>
+  
+  <!-- Face -->
+  <circle cx="64" cy="55" r="35" fill="#d4a574"/>
+  
+  <!-- Beard -->
+  <ellipse cx="64" cy="75" rx="28" ry="20" fill="#8a7460"/>
+  <ellipse cx="64" cy="73" rx="25" ry="18" fill="#b09580"/>
+  
+  <!-- Eyes -->
+  <circle cx="56" cy="48" r="3" fill="#2a1f14"/>
+  <circle cx="72" cy="48" r="3" fill="#2a1f14"/>
+  <circle cx="57" cy="47" r="1" fill="#ffffff"/>
+  <circle cx="73" cy="47" r="1" fill="#ffffff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="64" cy="55" rx="2" ry="3" fill="#c49464"/>
+  
+  <!-- Mouth -->
+  <path d="M 58 60 Q 64 65 70 60" stroke="#8a7460" stroke-width="2" fill="none"/>
+  
+  <!-- Goggles on forehead -->
+  <circle cx="54" cy="35" r="8" fill="none" stroke="#8d6e42" stroke-width="3"/>
+  <circle cx="74" cy="35" r="8" fill="none" stroke="#8d6e42" stroke-width="3"/>
+  <line x1="62" y1="35" x2="66" y2="35" stroke="#8d6e42" stroke-width="3"/>
+  <circle cx="54" cy="35" r="6" fill="#4a6b8a" opacity="0.3"/>
+  <circle cx="74" cy="35" r="6" fill="#4a6b8a" opacity="0.3"/>
+  
+  <!-- Hat -->
+  <ellipse cx="64" cy="25" rx="30" ry="8" fill="#654a2f"/>
+  <rect x="44" y="15" width="40" height="15" rx="5" fill="#8d6e42"/>
+  <circle cx="64" cy="20" r="3" fill="#b8956a"/>
+  
+  <!-- Guild badge -->
+  <circle cx="64" cy="95" r="8" fill="#8d6e42"/>
+  <path d="M 60 91 L 64 95 L 68 91 L 68 99 L 60 99 Z" fill="#b8956a"/>
+</svg>

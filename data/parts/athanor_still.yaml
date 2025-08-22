@@ -1,0 +1,30 @@
+# Signalworks Part: Athanor Still
+
+id: athanor_still
+name: "Athanor Still"
+category: distillation
+description: |
+  A copper still fed by a Teacher pipe. Produces softened targets for a
+  Student to imitate. Controls include temperature and blend weights.
+
+visual:
+  scene: "res://art/parts/athanor_still.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: distiller
+  inputs: 2
+  outputs: 1
+  parameters:
+    temperature: 2.0
+    alpha_soft: 0.7
+    alpha_hard: 0.3
+  learnable: false
+
+ports:
+  north: teacher_logits
+  west: student_logits
+  south: distilled_loss
+

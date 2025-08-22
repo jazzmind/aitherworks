@@ -1,0 +1,29 @@
+# Signalworks Part: Entropy Manometer
+
+id: entropy_manometer
+name: "Entropy Manometer"
+category: instrumentation
+description: |
+  A gauge that compares predictions to targets and reports loss/metrics.
+  Supports CE, MSE, Hinge. Drives Phlogiston Dye overlay for backflow.
+
+visual:
+  scene: "res://art/parts/entropy_manometer.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: loss_meter
+  inputs: 2
+  outputs: 1
+  parameters:
+    loss: cross_entropy
+    report_accuracy: true
+  learnable: false
+
+ports:
+  north: predictions
+  west: targets
+  south: loss
+

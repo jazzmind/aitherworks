@@ -1,0 +1,35 @@
+# Act I — L2: Two Hands Make a Sum
+
+id: act_I_l2_two_hands_make_a_sum
+name: "Two Hands Make a Sum"
+description: |
+  Take two 3‑lane inputs and produce their sum via an Adder Manifold.
+
+story:
+  title: "Double Loom"
+  text: |
+    Two looms feed the same rail. Make their tunes harmonize.
+
+budget:
+  mass: 700
+  pressure: 7
+  brass: 40
+
+allowed_parts:
+  - signal_loom
+  - adder_manifold
+  - activation_gate
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.95
+
+training:
+  optimizer: sgd
+  learning_rate: 0.1
+  epochs: 5
+
+targets:
+  type: vector_addition
+  lanes: 3
+

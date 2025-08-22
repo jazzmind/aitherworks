@@ -1,0 +1,38 @@
+# Level 24 — The Conclave of Cogs (Reasoning Chain w/ RAG)
+
+id: level_24_conclave_of_cogs
+name: "The Conclave of Cogs"
+description: |
+  Answer city‑law queries grounded in Archive pages. Plan → Retrieve → Attend → Answer with an Ethical Governor penalty.
+
+story:
+  title: "The Conclave"
+  text: |
+    Jurists argue in the Hall of Cogs; your engine must cite chapter and verse.
+
+budget:
+  mass: 10000
+  pressure: 12
+  brass: 180
+
+allowed_parts:
+  - plan_table
+  - pneumail_librarium
+  - embedder_drum
+  - looking_glass_array
+  - ethical_governor
+  - entropy_manometer
+
+win_conditions:
+  accuracy: 0.9
+  safety_flags_max: 1
+
+training:
+  optimizer: sgd
+  learning_rate: 0.02
+  epochs: 20
+
+rag:
+  top_k: 3
+  cache: true
+

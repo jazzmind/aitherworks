@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8k5qawqt7x2m"]
+
+[ext_resource type="Script" path="res://game/parts/aether_battery.gd" id="1"]
+
+[node name="AetherBattery" type="Node"]
+script = ExtResource("1")
+storage_capacity = 100
+vector_dimension = 16
+retrieval_threshold = 0.8
+decay_rate = 0.001

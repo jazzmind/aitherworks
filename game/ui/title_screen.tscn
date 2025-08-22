@@ -1,0 +1,223 @@
+[gd_scene load_steps=7 format=3 uid="uid://sqcc0v4f8soq"]
+
+[ext_resource type="Script" uid="uid://ck06g5btdgymv" path="res://game/ui/title_screen.gd" id="1"]
+[ext_resource type="Theme" uid="uid://dq1csyhs1pw1c" path="res://game/ui/steampunk_theme.tres" id="2"]
+
+[sub_resource type="Gradient" id="1"]
+colors = PackedColorArray(0.1, 0.08, 0.06, 1, 0.25, 0.2, 0.15, 1)
+
+[sub_resource type="GradientTexture2D" id="2"]
+gradient = SubResource("1")
+fill_to = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="3"]
+bg_color = Color(0.15, 0.12, 0.08, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6, 0.48, 0.32, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="4"]
+bg_color = Color(0.35, 0.28, 0.22, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.67, 0.53, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2")
+script = ExtResource("1")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("2")
+expand_mode = 1
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitlePanel" type="Panel" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_override_styles/panel = SubResource("3")
+
+[node name="TitleContent" type="VBoxContainer" parent="MainContainer/TitlePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameTitle" type="Label" parent="MainContainer/TitlePanel/TitleContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.65, 1)
+theme_override_font_sizes/font_size = 48
+text = "SIGNALWORKS"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="MainContainer/TitlePanel/TitleContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+theme_override_font_sizes/font_size = 18
+text = "A Steampunk Machine Learning Adventure"
+horizontal_alignment = 1
+
+[node name="Version" type="Label" parent="MainContainer/TitlePanel/TitleContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.5, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "Version 0.1 - Guild of Signalworks Engineers"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="MenuPanel" type="Panel" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 280)
+layout_mode = 2
+theme_override_styles/panel = SubResource("3")
+
+[node name="MenuContent" type="VBoxContainer" parent="MainContainer/MenuPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 30.0
+offset_right = -40.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NewGameButton" type="Button" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("4")
+text = "🎩 New Apprenticeship"
+
+[node name="Spacer2" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="LoadGameButton" type="Button" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("4")
+text = "📜 Continue Journey"
+
+[node name="Spacer3" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="SettingsButton" type="Button" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("4")
+text = "⚙️ Guild Settings"
+
+[node name="Spacer4" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="QuitButton" type="Button" parent="MainContainer/MenuPanel/MenuContent"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("4")
+text = "🚪 Leave Guild"
+
+[node name="SettingsDialog" type="AcceptDialog" parent="."]
+title = "Guild Settings"
+initial_position = 2
+size = Vector2i(400, 300)
+
+[node name="VBox" type="VBoxContainer" parent="SettingsDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="AudioLabel" type="Label" parent="SettingsDialog/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Audio Settings"
+
+[node name="MasterVolumeLabel" type="Label" parent="SettingsDialog/VBox"]
+layout_mode = 2
+text = "Master Volume:"
+
+[node name="MasterVolumeSlider" type="HSlider" parent="SettingsDialog/VBox"]
+layout_mode = 2
+value = 80.0
+
+[node name="MusicVolumeLabel" type="Label" parent="SettingsDialog/VBox"]
+layout_mode = 2
+text = "Music Volume:"
+
+[node name="MusicVolumeSlider" type="HSlider" parent="SettingsDialog/VBox"]
+layout_mode = 2
+value = 70.0
+
+[node name="DisplayLabel" type="Label" parent="SettingsDialog/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Display Settings"
+
+[node name="FullscreenToggle" type="CheckBox" parent="SettingsDialog/VBox"]
+layout_mode = 2
+text = "Fullscreen Mode"
+
+[node name="UIScaleLabel" type="Label" parent="SettingsDialog/VBox"]
+layout_mode = 2
+text = "UI Scale:"
+
+[node name="UIScaleSlider" type="HSlider" parent="SettingsDialog/VBox"]
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0

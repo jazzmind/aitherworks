@@ -1,0 +1,28 @@
+# Signalworks Part: Adder Manifold
+
+id: adder_manifold
+name: "Adder Manifold"
+category: basic
+description: |
+  A copper manifold that merges two flows into one by summing per lane.
+  In ML terms this performs element-wise addition and enables residual
+  connections.
+
+visual:
+  scene: "res://art/parts/adder_manifold.glb"
+  scale: [1.0, 1.0, 1.0]
+  rotation: [0.0, 0.0, 0.0]
+  translation: [0.0, 0.0, 0.0]
+
+simulation:
+  type: add
+  inputs: 2
+  outputs: 1
+  parameters: {}
+  learnable: false
+
+ports:
+  north: input
+  west: input
+  south: output
+
