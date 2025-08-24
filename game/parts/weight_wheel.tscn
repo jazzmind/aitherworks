@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://cinlqe6p887a7"]
 
-[ext_resource type="Script" path="res://game/parts/weight_wheel.gd" id=1]
+[ext_resource type="Script" uid="uid://ugryyqrmuhbo" path="res://game/parts/weight_wheel.gd" id="1"]
 
 [node name="WeightWheel" type="Node"]
-script = ExtResource( 1 )
+script = ExtResource("1")

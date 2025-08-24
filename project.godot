@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Signalworks"
+config/name="AItherworks"
 config/description="A steampunk puzzle‑sim where you build and train minds of gears and aether."
 config/version="0.1"
 run/main_scene="res://game/ui/title_screen.tscn"

@@ -2,9 +2,9 @@
 alwaysApply: true
 ---
 
-# Cursor AI Coding Guidelines for Signalworks
+# Cursor AI Coding Guidelines for AItherworks
 
-This document defines a set of rules and conventions for using **Cursor**, the AI‑assisted IDE, to work on the Signalworks project.  Following these guidelines will ensure that automated code contributions integrate cleanly with the existing repository, maintain quality, and remain safe to use.
+This document defines a set of rules and conventions for using **Cursor**, the AI‑assisted IDE, to work on the AItherworks project.  Following these guidelines will ensure that automated code contributions integrate cleanly with the existing repository, maintain quality, and remain safe to use.
 
 ## ✨ High‑Level Principles
 
@@ -41,4 +41,4 @@ Cursor leverages large language models to assist with code generation.  When usi
 4. **Avoid brittle paths** – do not hard‑code absolute file paths.  Use relative paths within the project to load resources (e.g., `res://data/specs/...`).
 5. **Version control is your friend** – commit small, self‑contained changes rather than huge batches.  This makes it easier to revert or adjust AI‑generated code later.
 
-By following these rules, you and Cursor can collaborate smoothly on Signalworks development.  Questions or ambiguities should be raised in code reviews or discussions rather than resolved silently by the AI.
+By following these rules, you and Cursor can collaborate smoothly on AItherworks development.  Questions or ambiguities should be raised in code reviews or discussions rather than resolved silently by the AI.

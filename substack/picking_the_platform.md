@@ -1,6 +1,6 @@
-# Picking the Platform: Why Godot for Signalworks?
+# Picking the Platform: Why Godot for AItherworks?
 
-Hello again, Signalworks followers! After refining the concept, it was time to choose the tech stack. I wanted something multiplatform, LLM-friendly, high-quality, and open-source.
+Hello again, AItherworks followers! After refining the concept, it was time to choose the tech stack. I wanted something multiplatform, LLM-friendly, high-quality, and open-source.
 
 ## The Criteria
 

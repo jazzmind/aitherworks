@@ -19,12 +19,14 @@ budget:
   brass: 30
 
 allowed_parts:
+  - steam_source
   - signal_loom
   - weight_wheel
   - adder_manifold
   - activation_gate
   - apprentice_sgd
   - entropy_manometer
+  - spyglass
 
 win_conditions:
   accuracy: 0.95

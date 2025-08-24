@@ -14,7 +14,7 @@ extends Control
 @onready var fullscreen_toggle := $SettingsDialog/VBox/FullscreenToggle
 @onready var ui_scale_slider := $SettingsDialog/VBox/UIScaleSlider
 
-var save_file_path := "user://signalworks_save.dat"
+var save_file_path := "user://aitherworks_save.dat"
 
 func _ready() -> void:
 	# Connect menu buttons

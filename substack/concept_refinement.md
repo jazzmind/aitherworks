@@ -1,6 +1,6 @@
-# Refining Signalworks: How AI Helped Shape a Steampunk AI Teacher
+# Refining AItherworks: How AI Helped Shape a Steampunk AI Teacher
 
-Welcome back to the Signalworks journey! In my last post, I introduced the idea. Today, let's dive into how I refined the concept using ChatGPT – turning a vague idea into a detailed game design.
+Welcome back to the AItherworks journey! In my last post, I introduced the idea. Today, let's dive into how I refined the concept using ChatGPT – turning a vague idea into a detailed game design.
 
 ## The Initial Prompt
 
@@ -30,7 +30,7 @@ The response was gold: A full steampunk lexicon (e.g., Signal Loom for vectors, 
 
 From there, I switched to Cursor and fleshed out docs like about.md, lexicon.md, and act breakdowns, generating YAML specs for parts and levels.
 
-This process showed me how AI can accelerate creative work – and it's exactly the kind of hands-on learning *Signalworks* aims to provide.
+This process showed me how AI can accelerate creative work – and it's exactly the kind of hands-on learning *AItherworks* aims to provide.
 
 What do you think of the steampunk theme? Would you play this? Let me know in the comments!
 

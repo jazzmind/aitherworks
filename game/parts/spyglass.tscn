@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5kh0h4wxm3yp"]
+
+[ext_resource type="Script" path="res://game/parts/spyglass.gd" id="1_1w3xz"]
+
+[node name="Spyglass" type="Node"]
+script = ExtResource("1_1w3xz")

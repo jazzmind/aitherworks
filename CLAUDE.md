@@ -1,6 +1,6 @@
-# CLAUDE AI Guidelines for Signalworks
+# CLAUDE AI Guidelines for AItherworks
 
-This document provides a set of instructions for engineers and writers using **Claude** (Anthropic’s large language model) to contribute to the Signalworks project.  Please adhere to these guidelines when asking Claude to generate code, documentation or content so that the output integrates smoothly and respects our design principles.
+This document provides a set of instructions for engineers and writers using **Claude** (Anthropic’s large language model) to contribute to the AItherworks project.  Please adhere to these guidelines when asking Claude to generate code, documentation or content so that the output integrates smoothly and respects our design principles.
 
 ## 📐 Architectural Constraints
 
@@ -18,16 +18,16 @@ This document provides a set of instructions for engineers and writers using **C
 
 ## ⚠️ Safety and Ethical Considerations
 
-Claude should **never** write or alter files outside of the `signalworks/` directory, nor should it make network requests or include unvetted external content.  If asked to add assets or third‑party code, ensure that the license is compatible with MIT and avoid including copyrighted material without permission.
+Claude should **never** write or alter files outside of the `aitherworks/` directory, nor should it make network requests or include unvetted external content.  If asked to add assets or third‑party code, ensure that the license is compatible with MIT and avoid including copyrighted material without permission.
 
 When generating tutorials or explanatory content, avoid hallucinating facts about the Godot engine or machine learning.  Where necessary, cite sources or suggest further reading.
 
 ## ✅ Example Prompt to Claude
 
 ```
-You are working on the Signalworks project, a steampunk puzzle game built with Godot 4.  Using GDScript, please implement a new part called "GearSwitch".  It should have two states (on/off), emit a custom signal when toggled, and visually change its sprite frame accordingly.  Follow the repository naming conventions and file structure.  Place the scene and script into `game/parts/gear_switch.tscn` and `game/parts/gear_switch.gd` respectively.  Leave a TODO comment for integration into the simulation layer.
+You are working on the AItherworks project, a steampunk puzzle game built with Godot 4.  Using GDScript, please implement a new part called "GearSwitch".  It should have two states (on/off), emit a custom signal when toggled, and visually change its sprite frame accordingly.  Follow the repository naming conventions and file structure.  Place the scene and script into `game/parts/gear_switch.tscn` and `game/parts/gear_switch.gd` respectively.  Leave a TODO comment for integration into the simulation layer.
 ```
 
 This kind of clear, concise prompt gives Claude all the information it needs to generate meaningful output without overstepping project boundaries.
 
-By following these guidelines, contributions via Claude will align with the Signalworks design and maintain code quality across the project.
+By following these guidelines, contributions via Claude will align with the AItherworks design and maintain code quality across the project.

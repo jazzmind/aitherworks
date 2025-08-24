@@ -28,7 +28,7 @@ func _build_steps() -> void:
 	steps = [
 		{
 			"id": "welcome",
-			"text": "🎩 Welcome to the Signalworks Workbench!\n\nYou're about to learn how to build steam-powered learning machines! We'll guide you step-by-step through creating your first contraption.\n\nClick Next when you're ready to begin.",
+			"text": "🎩 Welcome to the AItherworks Workbench!\n\nYou're about to learn how to build steam-powered learning machines! We'll guide you step-by-step through creating your first contraption.\n\nClick Next when you're ready to begin.",
 			"target": "",
 			"wait_for": "next"
 		},

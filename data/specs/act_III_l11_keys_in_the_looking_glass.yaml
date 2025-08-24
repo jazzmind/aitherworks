@@ -9,8 +9,8 @@ description: |
 story:
   title: "Focus"
   text: |
-    The Heat Lens reveals what the machine attends to. Align queries and
-    keys; let values pass unchanged.
+	The Heat Lens reveals what the machine attends to. Align queries and
+	keys; let values pass unchanged.
 
 budget:
   mass: 6000
@@ -37,4 +37,3 @@ dataset:
   type: token_copy
   seq_len: 6
   target_index: 3
-

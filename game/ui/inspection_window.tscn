@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf2kpbqkmhcn6"]
+
+[ext_resource type="Script" path="res://game/ui/inspection_window.gd" id="1_4n8kx"]
+
+[node name="InspectionWindow" type="Window"]
+title = "Component Inspector"
+size = Vector2i(400, 500)
+script = ExtResource("1_4n8kx")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+
+[node name="TitleBar" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 32)
+
+[node name="TitleLabel" type="Label" parent="VBox/TitleBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "🔍 Awaiting Inspection..."
+
+[node name="CloseButton" type="Button" parent="VBox/TitleBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+theme_override_colors/font_color = Color(1, 0.8, 0.8, 1)
+text = "✕"
+
+[node name="Separator" type="HSeparator" parent="VBox"]
+layout_mode = 2
+theme_override_colors/separator = Color(0.7, 0.6, 0.5, 1)
+
+[node name="ContentArea" type="ScrollContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DataDisplay" type="VBoxContainer" parent="VBox/ContentArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

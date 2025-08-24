@@ -20,4 +20,4 @@ When the Guild announced the Charter, they added a line the Houses called insult
 
 On the morning of the first trial, you rolled the Foundry‑Barge into the sunlight. Apprentices at stations. Pressure in the green. The Signal Loom flickered to life, marbles ticking in their lanes like the city remembering a tune. Across the canal, Lady Kessington shaded her eyes; somewhere unseen, the Voltaic chimneys drew a breath. You pressed the lever.
 
-Whatever else Aetherford is—a bazaar of brass, a marketplace of favors—it is a city that listens when you give it a reason. Signalworks would give it one.
+Whatever else Aetherford is—a bazaar of brass, a marketplace of favors—it is a city that listens when you give it a reason. AItherworks would give it one.

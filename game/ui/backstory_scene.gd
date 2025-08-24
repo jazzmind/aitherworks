@@ -16,6 +16,8 @@ func _ready() -> void:
 	continue_btn.pressed.connect(_on_continue_pressed)
 	skip_btn.pressed.connect(_on_skip_pressed)
 	typewriter_timer.timeout.connect(_on_typewriter_tick)
+	# Ensure RichTextLabel parses BBCode
+	story_text.bbcode_enabled = true
 	
 	# Load the backstory
 	_load_backstory()
@@ -34,80 +36,80 @@ func _load_backstory() -> void:
 		full_story_text = _convert_markdown_to_bbcode(raw_text)
 	else:
 		# Fallback story if file doesn't exist
-		full_story_text = """[center][color=goldenrod][size=28]⚙️ The Chronicle of Signalworks ⚙️[/size][/color][/center]
+		full_story_text = """[center][color=goldenrod][font_size=38]⚙️ The Chronicle of AItherworks ⚙️[/font_size][/color][/center]
 
-[center][color=peru][size=16][i]Being a True Account of the City That Learned to Listen[/i][/size][/color][/center]
+[center][color=peru][font_size=26][i]Being a True Account of the City That Learned to Listen[/i][/font_size][/color][/center]
 
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
-
-In the brass-bound metropolis of [color=orange][b]New Babbage[/b][/color], where steam rises from a thousand copper chimneys and brass gears turn in endless harmony, there existed a peculiar guild unlike any other. The [color=gold][b]Guild of Signalworks Engineers[/b][/color] had discovered something extraordinary: machines that could [color=lightgreen][i][b]learn[/b][/i][/color].
-
+[font_size=20]
+In the brass-bound metropolis of [color=orange][b]New Babbage[/b][/color], where steam rises from a thousand copper chimneys and brass gears turn in endless harmony, there existed a peculiar guild unlike any other. The [color=gold][b]Guild of AItherworks Engineers[/b][/color] had discovered something extraordinary: machines that could [color=lightgreen][i][b]learn[/b][/i][/color].
+[/font_size]
 [center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
 
-[color=lightblue][size=22][b]🔍 The Great Discovery[/b][/size][/color]
-
+[color=lightblue][font_size=22][b]🔍 The Great Discovery[/b][/font_size][/color]
+[font_size=20]
 It began with [color=orange][b]Master Cogwright's[/b][/color] great revelation. While studying the ancient texts of the Analytical Engine builders by candlelight, he found that by connecting brass wheels, steam pipes, and crystallized aether in specific patterns, machines could adapt their behavior based on experience—much like how a craftsman's hands grow more skilled with practice.
-
+[/font_size]
 [center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩 ⚙️ 🔧[/center]
 
-[color=lightblue][size=22][b]🏭 The Learning Machines[/b][/size][/color]
-
+[color=lightblue][font_size=22][b]🏭 The Learning Machines[/b][/font_size][/color]
+[font_size=20]
 These wondrous contraptions, known as [color=gold][b]Learning Engines[/b][/color], possessed an almost mystical ability:
 
 • [color=lightgreen][b]🧵 Signal Looms[/b][/color] could weave complex patterns from raw data streams
 • [color=lightgreen][b]⚖️ Weight Wheels[/b][/color] adjusted themselves automatically to improve performance  
 • [color=lightgreen][b]🕸️ Neural Networks[/b][/color] of brass and steam could recognize faces and forms
 • [color=lightgreen][b]💎 Memory Banks[/b][/color] of crystallized aether stored learned knowledge eternally
-
+[/font_size]
 [center]🎯 ⚙️ 🎯 ⚙️ 🎯 ⚙️ 🎯 ⚙️ 🎯[/center]
 
-[color=lightblue][size=22][b]🌟 The Great Work[/b][/size][/color]
-
+[color=lightblue][font_size=22][b]🌟 The Great Work[/b][/font_size][/color]
+[font_size=20]
 But the guild's greatest achievement was yet to come. They discovered that by teaching these machines the patterns of human language, thought, and creativity, they could build [color=cyan][b]thinking assistants[/b][/color] that understood context, nuance, and meaning—true companions of brass and steam.
-
+[/font_size]
 [center]⭐ ⚙️ ⭐ ⚙️ ⭐ ⚙️ ⭐ ⚙️ ⭐[/center]
 
-[color=orange][size=22][b]🎓 Your Apprenticeship[/b][/size][/color]
-
+[color=orange][font_size=22][b]🎓 Your Apprenticeship[/b][/font_size][/color]
+[font_size=20]
 Now, young apprentice, you stand at the threshold of this extraordinary art. You will learn to build [color=yellow][b]machines that think[/b][/color], [color=yellow][b]contraptions that create[/b][/color], and [color=yellow][b]engines that understand[/b][/color]. The steam-powered future of artificial intelligence awaits your skilled hands.
-
+[/font_size]
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
 
-[center][color=goldenrod][i][size=20]Welcome to the Guild of Signalworks Engineers[/size][/i][/color][/center]
-[center][color=peru][i][size=16]May your gears turn true and your steam pressure hold steady[/size][/i][/color][/center]
+[center][color=goldenrod][i][font_size=20]Welcome to the Guild of AItherworks Engineers[/font_size][/i][/color][/center]
+[center][color=peru][i][font_size=20]May your gears turn true and your steam pressure hold steady[/font_size][/i][/color][/center]
 
-[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]
+"""
 
 func _convert_markdown_to_bbcode(markdown: String) -> String:
 	var bbcode := markdown
 	
 	# Add steampunk styling header
-	bbcode = """[center][color=goldenrod][size=28]⚙️ The Chronicle of Signalworks ⚙️[/size][/color][/center]
+	bbcode = """[center][color=goldenrod][font_size=38]⚙️ The Chronicle of AItherworks ⚙️[/font_size][/color][/center]
 
-[center][color=peru][size=16][i]Being a True Account of the City That Learned to Listen[/i][/size][/color][/center]
+[center][color=peru][font_size=26][i]Being a True Account of the City That Learned to Listen[/i][/font_size][/color][/center]
 
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
 
 """ + bbcode
 	
 	# Convert markdown headers to BBCode with steampunk styling
-	bbcode = bbcode.replace("## ", "[color=lightblue][size=20][b]🏭 ")
-	bbcode = bbcode.replace("# ", "[color=orange][size=24][b]📜 ")
-	bbcode = bbcode.replace("### ", "[color=lightgreen][size=18][b]⚙️ ")
+	bbcode = bbcode.replace("## ", "[color=lightblue][font_size=20][b]🏭 ")
+	bbcode = bbcode.replace("# ", "[color=orange][font_size=24][b]📜 ")
+	bbcode = bbcode.replace("### ", "[color=lightgreen][font_size=18][b]⚙️ ")
 	
 	# Add closing tags for headers and improve formatting
 	var lines := bbcode.split("\n")
 	for i in range(lines.size()):
-		if lines[i].begins_with("[color=orange][size=24][b]📜"):
-			lines[i] += "[/b][/size][/color]"
-		elif lines[i].begins_with("[color=lightblue][size=20][b]🏭"):
-			lines[i] += "[/b][/size][/color]"
-		elif lines[i].begins_with("[color=lightgreen][size=18][b]⚙️"):
-			lines[i] += "[/b][/size][/color]"
+		if lines[i].begins_with("[color=orange][font_size=24][b]📜"):
+			lines[i] += "[/b][/font_size][/color]"
+		elif lines[i].begins_with("[color=lightblue][font_size=20][b]🏭"):
+			lines[i] += "[/b][/font_size][/color]"
+		elif lines[i].begins_with("[color=lightgreen][font_size=18][b]⚙️"):
+			lines[i] += "[/b][/font_size][/color]"
 		# Add steampunk flavor to regular paragraphs
 		elif lines[i].strip_edges() != "" and not lines[i].begins_with("["):
 			lines[i] = "[color=burlywood]" + lines[i] + "[/color]"
-	
 	bbcode = "\n".join(lines)
 	
 	# Convert markdown emphasis with colors
@@ -125,15 +127,19 @@ func _convert_markdown_to_bbcode(markdown: String) -> String:
 func _start_typewriter_effect() -> void:
 	current_char_index = 0
 	is_typing = true
-	story_text.text = ""
+	# Pre-render full BBCode and reveal characters gradually
+	story_text.bbcode_text = full_story_text
+	story_text.visible_characters = 0
 	continue_btn.disabled = true
 	continue_btn.text = "⏳ Reading..."
 	typewriter_timer.start()
 
 func _on_typewriter_tick() -> void:
-	if current_char_index < full_story_text.length():
+	# Use the RichTextLabel's visible characters to gradually reveal pre-rendered BBCode
+	var total_chars: int = story_text.get_total_character_count()
+	if current_char_index < total_chars:
 		current_char_index += 1
-		story_text.text = full_story_text.substr(0, current_char_index)
+		story_text.visible_characters = current_char_index
 		
 		# Auto-scroll to bottom
 		var scroll_container := $VBoxContainer/StoryPanel/ScrollContainer
@@ -145,7 +151,8 @@ func _on_typewriter_tick() -> void:
 func _finish_typewriter() -> void:
 	is_typing = false
 	typewriter_timer.stop()
-	story_text.text = full_story_text
+	# Show all characters of the pre-rendered BBCode
+	story_text.visible_characters = -1
 	continue_btn.disabled = false
 	continue_btn.text = "⚙️ Begin Apprenticeship"
 

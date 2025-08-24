@@ -1,12 +1,12 @@
-# Signalworks: Building a Steampunk Game to Teach AI
+# AItherworks: Building a Steampunk Game to Teach AI
 
-Hey everyone! I'm Wes Sonnenreich, and I'm excited to launch this Substack chronicling my journey building *Signalworks* – a steampunk puzzle game that teaches AI concepts through clever mechanical metaphors.
+Hey everyone! I'm Wes Sonnenreich, and I'm excited to launch this Substack chronicling my journey building *AItherworks* – a steampunk puzzle game that teaches AI concepts through clever mechanical metaphors.
 
 ## Why This Game? Why Now?
 
 I've been in the AI world for years, but the rapid advancements lately have left me wanting to dive deeper. I'm a hands-on, visual learner, so I thought: why not create a game that teaches *me* (and hopefully you) about AI in a fun, interactive way?
 
-Inspired by games like Zachtronics' puzzle sims, *Signalworks* maps AI ideas – vectors, backpropagation, attention mechanisms – to tactile steampunk contraptions. No coding required, but the learning is real. By the end, you'll be able to design and train your own models.
+Inspired by games like Zachtronics' puzzle sims, *AItherworks* maps AI ideas – vectors, backpropagation, attention mechanisms – to tactile steampunk contraptions. No coding required, but the learning is real. By the end, you'll be able to design and train your own models.
 
 This Substack will share the full process: from concept refinement using AI tools like ChatGPT, to tech choices, development updates, and the narrative unfolding in a world racing to build the ultimate "Steam-Mind."
 

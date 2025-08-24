@@ -1,0 +1,39 @@
+id: steam_source
+name: "Steam Source"
+category: input
+description: |
+  The heart of your contraption - a brass boiler that generates steam pressure
+  readings. This is where your machine gets its input data, like a steam 
+  engine's firebox providing power to the entire system.
+
+# Visual representation
+visual:
+  scene: "res://assets/icons/steam_pipe.svg"
+  scale: [1.2, 1.2, 1.2]
+
+# Simulation behavior
+simulation:
+  type: data_generator
+  inputs: 0
+  outputs: 3
+  parameters:
+    pattern: "sine_wave"
+    amplitude: 1.0
+    frequency: 1.0
+    noise_level: 0.1
+
+# Port configuration
+ports:
+  steam_out: "output"  # Generated steam pressure
+
+# Steampunk flavor
+materials: ["brass", "iron", "coal"]
+steam_pressure: "high"
+complexity: "simple"
+
+# Teaching points
+concepts:
+  - "data sources"
+  - "input generation"
+  - "signal patterns"
+  - "sensor readings"

@@ -4,7 +4,7 @@ extends Node
 # Simulator
 #
 # This script will host the deterministic simulation core for
-# Signalworks.  During runtime it manages the propagation of signals,
+# AItherworks.  During runtime it manages the propagation of signals,
 # the accumulation of gradients and the application of optimizers.
 #
 # For now the simulator does nothing; it exists to provide a stable

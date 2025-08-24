@@ -1,6 +1,6 @@
-# Signalworks — Brass & Steam Edition
+# AItherworks — Brass & Steam Edition
 
-Welcome to **Signalworks**, a steampunk puzzle‑sim in which you build and train artificial minds using gears, valves and aether.  The goal of this repository is to provide a clean foundation for developing the game in [Godot 4](https://godotengine.org/) with a data‑driven workflow.  A small set of scenes and scripts are provided to get you started; the rest of the content can be generated automatically by a custom editor plugin and large language models (LLMs).
+Welcome to **AItherworks**, a steampunk puzzle‑sim in which you build and train artificial minds using gears, valves and aether.  The goal of this repository is to provide a clean foundation for developing the game in [Godot 4](https://godotengine.org/) with a data‑driven workflow.  A small set of scenes and scripts are provided to get you started; the rest of the content can be generated automatically by a custom editor plugin and large language models (LLMs).
 
 ## Project Overview
 
@@ -19,7 +19,7 @@ For a more in‑depth design, refer to the design documents provided earlier in 
 ## Getting Started
 
 1. Install [Godot 4.x](https://godotengine.org/download).  Clone this repository into a working directory.
-2. Open Godot and import the project by selecting the `signalworks` folder.  You should see a nearly empty project with the folder structure described above.
+2. Open Godot and import the project by selecting the `aitherworks` folder.  You should see a nearly empty project with the folder structure described above.
 3. Explore the `addons/steamfitter` plugin.  The plugin is disabled by default; enable it in the **Project → Project Settings → Plugins** tab and experiment with extending it to parse YAML specs and generate scenes.
 4. Review the sample YAML specification in `data/specs/example_puzzle.yaml` and the sample part definition in `data/parts/example_part.yaml`.  These illustrate the data format expected by the plugin.
 5. Use the `cursor_rules.md` and `CLAUDE.md` documents to guide your use of AI in this project.  They define conventions and constraints for AI‑driven editing with the Cursor IDE and Claude models respectively.

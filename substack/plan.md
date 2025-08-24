@@ -18,7 +18,7 @@ Building to 20k subscribers on Substack is ambitious but achievable over 6-12 mo
 - **Paid Growth Tactics**: Introduce paid content (e.g., $5/month for exclusive prototypes or Q&A sessions). Run limited-time promotions like "Subscribe paid for early access to the game's alpha."
 - **Ads and Partnerships**: Invest $100-500/month in targeted LinkedIn/Twitter ads aimed at AI professionals and gamers (e.g., keywords: "AI education," "indie games"). Partner with influencers in AI (e.g., YouTubers like 3Blue1Brown) for shoutouts or co-posts.
 - **Viral Loops**: Encourage shares with incentives (e.g., "Share this post for a chance to name a game character"). Release free game demos tied to Substack (e.g., "Subscribers get the first level early").
-- **Events and Webinars**: Host free webinars on Zoom (e.g., "Live demo of Signalworks' attention mechanics") promoted via Substack and LinkedIn. Convert attendees to subs.
+- **Events and Webinars**: Host free webinars on Zoom (e.g., "Live demo of AItherworks' attention mechanics") promoted via Substack and LinkedIn. Convert attendees to subs.
 - **Risks and Adjustments**: If growth stalls, analyze drop-offs (e.g., if opens are low, shorten posts). Aim for 20-30% month-over-month growth; if below, double down on high-engagement channels like LinkedIn.
 
 Overall, focus on value: 70% educational (AI/game insights), 20% personal journey, 10% calls to action. Consistency is key—don't miss posts. Track progress weekly and pivot (e.g., more video embeds if they boost engagement).
@@ -33,7 +33,7 @@ Publish **weekly** (e.g., every Tuesday) to build habit and SEO. Alternate betwe
 - **Call to Action**: "Try the code on GitHub [link]. What feature next?"
 - **Idea for Use**: Post after milestones, like implementing a new part from your `data/parts/` YAMLs.
 
-#### Template 2: AI Concept Explainer (e.g., "How Signalworks Teaches Attention with Looking-Glass Arrays")
+#### Template 2: AI Concept Explainer (e.g., "How AItherworks Teaches Attention with Looking-Glass Arrays")
 - **Hook**: Relate to real-world AI (e.g., "Attention is why ChatGPT works—here's how the game makes it tactile.").
 - **Body**: Explain the concept simply, map to game mechanics (e.g., from your lexicon.md), include a mini-tutorial.
 - **Visuals**: Diagrams or animated GIFs.

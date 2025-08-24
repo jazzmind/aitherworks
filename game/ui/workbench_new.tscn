@@ -50,7 +50,7 @@ layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 scroll_active = false
-text = "Welcome to the Guild of Signalworks Engineers! Follow the tutorial to learn the art of mechanical machine learning."
+text = "Welcome to the Guild of AItherworks Engineers! Follow the tutorial to learn the art of mechanical machine learning."
 
 [node name="Console" type="RichTextLabel" parent="MainLayout/LeftPanel"]
 layout_mode = 2

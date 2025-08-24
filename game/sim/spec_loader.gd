@@ -1,7 +1,7 @@
 extends Node
 
 ## SpecLoader
-# Minimal YAML loader for Signalworks specs/parts.
+# Minimal YAML loader for AItherworks specs/parts.
 # Supports maps, sequences, inline arrays, numbers/bools, and block scalars (|).
 # This is intentionally small and tailored to our data files.
 
@@ -13,12 +13,13 @@ static func load_yaml(path: String) -> Dictionary:
 		push_error("SpecLoader: cannot open %s" % path)
 		return {}
 	var text := file.get_as_text()
+	print("DEBUG: Loaded file: ", file.get_as_text().substr(0, 100))
 	return _parse_yaml(text)
 
 static func _parse_yaml(text: String) -> Dictionary:
 	var root: Dictionary = {}
 	var stack: Array = [{"indent": -1, "container": root, "key": null, "type": "map"}]
-	var i := 0
+	var _i := 0
 	var lines := text.split("\n")
 	var in_block := false
 	var block_key := ""
@@ -31,12 +32,12 @@ static func _parse_yaml(text: String) -> Dictionary:
 		if line.ends_with("\r"):
 			line = line.substr(0, line.length() - 1)
 		# ignore full-line comments
-		var hash := line.find("#")
-		if hash == 0:
+		var hash_pos := line.find("#")
+		if hash_pos == 0:
 			continue
-		if hash > 0:
+		if hash_pos > 0:
 			# allow inline comments by trimming after hash when preceded by space
-			var before := line.substr(0, hash)
+			var before := line.substr(0, hash_pos)
 			if before.ends_with(" "):
 				line = before.strip_edges()
 		if line.strip_edges() == "":
@@ -76,7 +77,12 @@ static func _parse_yaml(text: String) -> Dictionary:
 				var arr: Array = []
 				# attach arr to parent under last key if parent is a map and the last pushed was with a key
 				if current["type"] == "map" and current["key"] != null:
+					# attach to this map at the stored key
 					current["container"][current["key"]] = arr
+				elif current["type"] == "map" and current["key"] == null and stack.size() >= 2 and stack[-2].has("key") and stack[-2]["key"] != null:
+					# special case: we previously opened a key with unknown type (map or seq)
+					# the parent frame (stack[-2]) stores the parent container and the pending key
+					stack[-2]["container"][stack[-2]["key"]] = arr
 				else:
 					# Root-level sequence (rare in our files)
 					root = {"_": arr}
@@ -112,9 +118,16 @@ static func _parse_yaml(text: String) -> Dictionary:
 				stack.append({"indent": indent, "container": current["container"], "key": key, "type": "map"})
 				continue
 			elif rest == "":
-				# start new map/sequence under key
+				# start new container under key; its true type (map or seq) will be
+				# determined by the following lines. We keep two frames:
+				# 1) a reference to the parent and the pending key so a subsequent
+				#    sequence ('- ') can replace the value with an array
+				# 2) a child map context so nested "key: value" pairs work
 				var child := {}
 				current["container"][key] = child
+				# frame pointing to parent with the pending key
+				stack.append({"indent": indent, "container": current["container"], "key": key, "type": "map"})
+				# frame for the child map context
 				stack.append({"indent": indent, "container": child, "key": null, "type": "map"})
 			else:
 				current["container"][key] = _parse_scalar(rest)

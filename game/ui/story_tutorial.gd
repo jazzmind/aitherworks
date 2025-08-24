@@ -44,7 +44,7 @@ func _build_story() -> void:
 				{
 					"character": "master_cogwright",
 					"name": "Master Cogwright",
-					"text": "Ah, young apprentice! Welcome to the Guild of Signalworks Engineers. I am Master Cogwright, and today you begin your journey into the arcane art of [color=yellow]Machine Learning[/color]."
+					"text": "Ah, young apprentice! Welcome to the Guild of AItherworks Engineers. I am Master Cogwright, and today you begin your journey into the arcane art of [color=yellow]Machine Learning[/color]."
 				},
 				{
 					"character": "apprentice",
@@ -59,7 +59,19 @@ func _build_story() -> void:
 				{
 					"character": "master_cogwright",
 					"name": "Master Cogwright",
-					"text": "Your workbench awaits! First, we must load a simple challenge. Every apprentice begins with the same test: teaching a machine to process basic signals. [color=yellow]Click the LOAD button[/color] to begin!",
+					"text": "Your workbench awaits! First, we must select a challenge. See that dropdown above? Click it and choose [b]act_I_l1_dawn_in_dock_ward.yaml[/b] - your first lesson from the Dawn Ward.",
+					"action": "select_level",
+					"target": "MarginContainer/MainLayout/CenterPanel/TopBar/LevelSelect"
+				}
+			]
+		},
+		{
+			"title": "Loading the Challenge",
+			"dialogues": [
+				{
+					"character": "master_cogwright",
+					"name": "Master Cogwright",
+					"text": "Perfect choice! Now press the [b]Load[/b] button to load this challenge into your workbench. This will prepare the training data and show you what your machine needs to learn.",
 					"action": "load_level",
 					"target": "MarginContainer/MainLayout/CenterPanel/TopBar/LoadButton"
 				}
@@ -103,7 +115,7 @@ func _build_story() -> void:
 				{
 					"character": "aether_sage", 
 					"name": "Aether Sage",
-					"text": "The brain of any learning machine is the [color=yellow]Weight Wheel[/color]. It contains adjustable parameters that determine how much each input matters. This is where the actual [i]learning[/i] happens. Add one now.",
+					"text": "The brain of any learning machine is the [color=yellow]Weight Wheel[/color] - a brass wheel with adjustable counterweights on its spokes. Each spoke controls how much one input signal affects the output. Heavy weights amplify signals, light weights dampen them. During training, the wheel automatically adjusts these weights to learn patterns!",
 					"action": "place_weight_wheel",
 					"target": "MarginContainer/MainLayout/RightPanel/ComponentDrawers"
 				}
@@ -297,18 +309,32 @@ func set_workbench(workbench: Control) -> void:
 	# Get reference to the story panel in the workbench
 	story_panel = workbench.get_node("MarginContainer/MainLayout/LeftPanel/StoryArea/StoryContent/StoryScroll/StoryText")
 	if story_panel:
+		print("DEBUG: Found story_panel, configuring BBCode...")
+		# Configure BBCode first, before any other settings
 		story_panel.bbcode_enabled = true
-		# Ensure no theme overrides that block BBCode sizing
-		story_panel.remove_theme_font_size_override("normal_font_size")
 		story_panel.fit_content = true
+		
+		# Clear all theme overrides first
+		for size_name in ["normal_font_size", "bold_font_size", "italics_font_size"]:
+			if story_panel.has_theme_font_size_override(size_name):
+				story_panel.remove_theme_font_size_override(size_name)
+		
+		# Set base font size without theme override initially
+		# Let BBCode handle sizing relative to default font
+		
+		print("DEBUG: BBCode enabled: ", story_panel.bbcode_enabled)
+		print("DEBUG: Font size override: ", story_panel.get_theme_font_size("normal_font_size"))
 		_initialize_chat_panel()
+	else:
+		print("ERROR: Could not find story_panel at path: MarginContainer/MainLayout/LeftPanel/StoryArea/StoryContent/StoryScroll/StoryText")
 
 func _initialize_chat_panel() -> void:
-	chat_history = """[center][color=goldenrod][size=20]📜 Chronicle & Instructions[/size][/color][/center]
+	chat_history = """[center][color=goldenrod]📜 Chronicle & Instructions[/color][/center]
 
-[color=orange][i]The Guild of Signalworks Engineers has assigned you a mentor...[/i][/color]
+[color=orange][i]The Guild of AItherworks Engineers has assigned you a mentor...[/i][/color]
 
 """
+	print("DEBUG: Setting chat_history with clean BBCode...")
 	_update_chat_display()
 
 func _add_chat_message(character: String, speaker_name: String, text: String) -> void:
@@ -339,12 +365,25 @@ func _add_chat_message(character: String, speaker_name: String, text: String) ->
 
 func _update_chat_display() -> void:
 	if story_panel:
+		print("DEBUG: Updating chat display, BBCode enabled: ", story_panel.bbcode_enabled)
+		print("DEBUG: Font size: ", story_panel.get_theme_font_size("normal_font_size"))
+		print("DEBUG: Has theme font: ", story_panel.has_theme_font_size_override("normal_font_size"))
+		print("DEBUG: Setting text: ", chat_history.substr(0, 100) + "...")
+		
+		# Try forcing BBCode configuration again
+		story_panel.bbcode_enabled = true
+		
 		story_panel.text = chat_history
+		
+		print("DEBUG: Text after setting: ", story_panel.text.substr(0, 100) + "...")
+		
 		# Auto-scroll to bottom
 		await get_tree().process_frame
 		var scroll_container = story_panel.get_parent()
 		if scroll_container is ScrollContainer:
 			scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
+	else:
+		print("ERROR: story_panel is null in _update_chat_display")
 
 func start_story_tutorial() -> void:
 	_start_tutorial()

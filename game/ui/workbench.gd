@@ -24,17 +24,14 @@ extends Control
 @onready var fullscreen_toggle := $SettingsDialog/VBox/Fullscreen
 @onready var run_fwd_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunFwd
 @onready var run_back_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunBack
-@onready var weight_slider := $MarginContainer/MainLayout/RightPanel/Inspector/WeightSlider
-@onready var weight_label := $MarginContainer/MainLayout/RightPanel/Inspector/WeightLabel
 @onready var story_dialog := $StoryDialog
 @onready var story_label := $StoryDialog/StoryLabel
 # @onready var tutorial := $TutorialLayer
 @onready var story_tutorial := $StoryTutorial
-
-# New drawer header references
 @onready var input_header := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/InputDrawer/InputHeader
 @onready var processing_header := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/ProcessingDrawer/ProcessingHeader
 @onready var output_header := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/OutputDrawer/OutputHeader
+@onready var inspector_content := $MarginContainer/MainLayout/RightPanel/Inspector/InspectorContent
 
 var engine: Act1Engine
 var spec_paths: Array[String] = [
@@ -46,19 +43,21 @@ var spec_paths: Array[String] = [
 ]
 var current_spec: Dictionary = {}
 var lane_sliders: Array = []
+var weight_slider: HSlider
+var weight_label: Label
 
 func _ready() -> void:
 	engine = Act1Engine.new()
 	add_child(engine)
 	_populate_palette()
 	# wire controls
+	level_select.item_selected.connect(_on_level_selected)
 	load_btn.pressed.connect(_on_load_pressed)
 	train_btn.pressed.connect(on_train_pressed)
 	step_btn.pressed.connect(_on_step_pressed)
 	reset_btn.pressed.connect(on_reset_pressed)
 	lr_slider.value_changed.connect(on_lr_changed)
 	relu_toggle.toggled.connect(on_relu_toggled)
-	weight_slider.value_changed.connect(_on_weight_changed)
 	zoom_slider.value_changed.connect(_on_zoom_changed)
 	replay_btn.pressed.connect(_on_replay_tutorial)
 	settings_btn.pressed.connect(_on_open_settings)
@@ -71,9 +70,10 @@ func _ready() -> void:
 	processing_header.pressed.connect(_on_drawer_toggled.bind(processing_palette))
 	output_header.pressed.connect(_on_drawer_toggled.bind(output_palette))
 	# levels
+	level_select.add_item("Select level...")  # Placeholder
 	for p in spec_paths:
 		level_select.add_item(p.get_file())
-	level_select.select(0)
+	level_select.select(0)  # Select placeholder initially
 	_log("Workbench ready")
 	# Apply default UI scale
 	get_window().content_scale_factor = 1.4
@@ -88,6 +88,13 @@ func _ready() -> void:
 	# enable connection requests
 	graph.connection_request.connect(_on_graph_connect)
 	graph.disconnection_request.connect(_on_graph_disconnect)
+	if graph.has_signal("node_selected"):
+		graph.node_selected.connect(_on_graph_node_selected)
+	# Lazy bind inspector legacy controls if still present
+	weight_slider = get_node_or_null("MarginContainer/MainLayout/RightPanel/Inspector/WeightSlider")
+	weight_label = get_node_or_null("MarginContainer/MainLayout/RightPanel/Inspector/WeightLabel")
+	if is_instance_valid(weight_slider):
+		weight_slider.value_changed.connect(_on_weight_changed)
 
 func _populate_palette() -> void:
 	var input_parts = [
@@ -157,11 +164,13 @@ func _on_drawer_toggled(drawer: Container) -> void:
 func _populate_allowed_parts(allowed_ids: Array) -> void:
 	# Define all parts with their categories
 	var all_parts = {
+		"steam_source": {"category": "input", "icon": "res://assets/icons/steam_pipe.svg", "tooltip": "Steam Source\n\nThe heart of your contraption - generates steam pressure.\nProvides the input data your machine needs to process."},
 		"signal_loom": {"category": "input", "icon": "res://assets/icons/steam_pipe.svg", "tooltip": "Signal Loom\n\nProcesses input data - the 'eyes' of your machine.\nConverts raw information into usable steam pressure."},
 		"weight_wheel": {"category": "processing", "icon": "res://assets/icons/weight_dial.svg", "tooltip": "Weight Wheel\n\nThe 'brain' that learns! Adjusts how much each input matters.\nThis is where the actual learning happens."},
 		"adder_manifold": {"category": "processing", "icon": "res://assets/icons/manifold.svg", "tooltip": "Adder Manifold\n\nCombines multiple steam pressures into one.\nUseful for merging signals from different sources."},
 		"activation_gate": {"category": "processing", "icon": "res://assets/icons/gear.svg", "tooltip": "Activation Gate\n\nTransforms steam pressure using mathematical functions.\nCan apply ReLU, sigmoid, or other transformations."},
-		"entropy_manometer": {"category": "output", "icon": "res://assets/icons/pressure_gauge.svg", "tooltip": "Entropy Manometer\n\nMeasures uncertainty and information content.\nHelps optimize learning efficiency."}
+		"entropy_manometer": {"category": "output", "icon": "res://assets/icons/pressure_gauge.svg", "tooltip": "Entropy Manometer\n\nMeasures uncertainty and information content.\nHelps optimize learning efficiency."},
+		"spyglass": {"category": "output", "icon": "res://assets/icons/gear.svg", "tooltip": "Spyglass\n\nPeer into components to see what's happening inside.\nShows real-time data flow and component states."}
 	}
 	
 	# Organize allowed parts by category
@@ -250,20 +259,77 @@ func _on_weight_changed(value: float) -> void:
 func _on_load_pressed() -> void:
 	print("Load button pressed!")
 	var idx: int = level_select.get_selected()
-	var path: String = spec_paths[idx]
+	
+	# Check if placeholder is selected
+	if idx == 0:
+		_log("⚠️ Please select a level first!")
+		print("Placeholder selected, nothing to load")
+		return
+	
+	# Adjust index for placeholder offset
+	var spec_idx: int = idx - 1
+	if spec_idx < 0 or spec_idx >= spec_paths.size():
+		_log("⚠️ Invalid level selection!")
+		return
+		
+	var path: String = spec_paths[spec_idx]
 	print("Loading spec from: ", path)
 	current_spec = SpecLoader.load_spec(path)
 	if current_spec.is_empty():
 		_log("failed to load: %s" % path)
 		print("Failed to load spec!")
 		return
+	
+	# Debug: print what we actually loaded
+	print("DEBUG: Loaded spec keys: ", current_spec.keys())
+	print("DEBUG: Spec name field: ", current_spec.get("name", "NOT_FOUND"))
+	
 	_apply_spec_to_ui(current_spec)
-	_log("🎯 LEVEL LOADED: " + current_spec.get("name", "Unknown Level"))
+	_log("🎯 LEVEL LOADED: " + str(current_spec.get("name", "Unknown Level")))
 	_log("📋 GOAL: " + current_spec.get("description", "No description"))
+	
+	# Show what parts are available
+	var allowed: Array = []
+	if current_spec.has("allowed_parts"):
+		allowed = current_spec["allowed_parts"]
+	else:
+		allowed = ["steam_source", "signal_loom", "weight_wheel", "adder_manifold", "activation_gate", "entropy_manometer", "spyglass"]
+	_log("🔧 Available parts: " + str(allowed))
+	
+	# Show training data info if available
+	if current_spec.has("data"):
+		_log("📊 Training data loaded - ready to learn!")
+	
+	# Show level requirements
+	if current_spec.has("win_conditions"):
+		var win_cond = current_spec["win_conditions"]
+		_log("🎯 WIN CONDITION: Achieve " + str(win_cond.get("accuracy", "unknown")) + " accuracy")
+	
+	# Show budget constraints
+	if current_spec.has("budget"):
+		var budget = current_spec["budget"]
+		_log("💰 BUDGET: Mass=" + str(budget.get("mass", "∞")) + ", Pressure=" + str(budget.get("pressure", "∞")) + ", Brass=" + str(budget.get("brass", "∞")))
+	
 	_log("💡 Ready to build your contraption!")
 	# tutorial.notify("loaded")  # Disabled
 	print("Notifying story tutorial of load_level action")
 	story_tutorial.notify_action("load_level")
+
+func _on_level_selected(index: int) -> void:
+	print("Level selected: ", index)
+	if index == 0:
+		print("Placeholder selected")
+		return
+	
+	var level_name = level_select.get_item_text(index)
+	print("Selected level: ", level_name)
+	
+	# Check if it's the Dawn Ward level for tutorial
+	if level_name == "act_I_l1_dawn_in_dock_ward.yaml":
+		print("Dawn Ward level selected - notifying tutorial")
+		story_tutorial.notify_action("select_level")
+	else:
+		print("Different level selected: ", level_name)
 
 func _apply_spec_to_ui(spec: Dictionary) -> void:
 	# Clear existing palette items
@@ -378,13 +444,131 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 	DisplayServer.window_set_mode(mode)
 
 func _on_run_forward() -> void:
-	# Demo: iterate connections and log flow; future: animate wire colors
+	_log("🚀 Running forward pass through your contraption...")
+	
+	# Get all connections
 	var conns: Array = graph.get_connection_list()
-	for c in conns:
-		_log("flow: %s[%d] -> %s[%d]" % [str(c["from"]), int(c["from_port"]), str(c["to"]), int(c["to_port"])])
+	if conns.is_empty():
+		_log("⚠️ No connections found! Connect your components first.")
+		return
+	
+	# Find all PartNodes in the graph
+	var part_nodes: Array[PartNode] = []
+	for child in graph.get_children():
+		if child is PartNode:
+			part_nodes.append(child)
+	
+	if part_nodes.is_empty():
+		_log("⚠️ No parts found! Add some components first.")
+		return
+	
+	# Process signal flow through connected components
+	_log("💨 Processing steam pressure through %d components..." % part_nodes.size())
+	
+	# Process signal flow starting from steam sources
+	var steam_sources: Array = []
+	var processed_nodes: Array = []
+	
+	# Find all steam sources
+	for part_node in part_nodes:
+		if part_node.part_id == "steam_source":
+			steam_sources.append(part_node)
+	
+	# If no steam sources, look for signal looms as backup
+	if steam_sources.is_empty():
+		for part_node in part_nodes:
+			if part_node.part_id == "signal_loom":
+				steam_sources.append(part_node)
+	
+	# Process each steam source and follow the signal flow
+	for source_node in steam_sources:
+		var current_output: float = 0.0
+		
+		if source_node.part_id == "steam_source":
+			# Steam source generates data
+			current_output = source_node.process_inputs([])
+			_log("🔥 %s generated steam → %.3f PSI" % [source_node.title, current_output])
+		else:
+			# Signal loom needs input data
+			var test_inputs = [1.0, 0.5, -0.3]
+			current_output = source_node.process_inputs(test_inputs)
+			_log("📡 %s processed [%s] → %.3f" % [source_node.title, str(test_inputs), current_output])
+		
+		processed_nodes.append(source_node)
+		
+		# Follow connections from this source
+		_process_connected_components(source_node, current_output, conns, part_nodes, processed_nodes)
+	
+	# Handle any spyglasses for inspection
+	for part_node in part_nodes:
+		if part_node.part_id == "spyglass":
+			_log("🔍 %s status: %s" % [part_node.title, part_node.get_part_status()])
+	
+	_log("✅ Forward pass complete!")
+
+func _process_connected_components(source_node: PartNode, signal_value: float, conns: Array, all_nodes: Array, processed: Array) -> void:
+	"""Recursively process components connected to the source"""
+	for conn in conns:
+		if conn["from"] == source_node.name:
+			var target_node = graph.get_node(conn["to"])
+			if target_node is PartNode and target_node not in processed:
+				var output = target_node.process_inputs([signal_value])
+				_log("⚙️ %s processed [%.3f] → %.3f" % [target_node.title, signal_value, output])
+				_log("   Status: %s" % target_node.get_part_status())
+				
+				processed.append(target_node)
+				
+				# Continue processing down the chain
+				_process_connected_components(target_node, output, conns, all_nodes, processed)
 
 func _on_run_backprop() -> void:
 	var conns: Array = graph.get_connection_list()
 	for i in range(conns.size()-1, -1, -1):
 		var c = conns[i]
 		_log("grad: %s[%d] <- %s[%d]" % [str(c["from"]), int(c["from_port"]), str(c["to"]), int(c["to_port"])])
+
+func _on_graph_node_selected(node_name: StringName) -> void:
+	var node := graph.get_node_or_null(String(node_name))
+	if node == null:
+		return
+	if node is PartNode:
+		_populate_inspector_for_part(node)
+
+func _clear_inspector() -> void:
+	if is_instance_valid(inspector_content):
+		for c in inspector_content.get_children():
+			(c as Node).queue_free()
+
+func _populate_inspector_for_part(p: PartNode) -> void:
+	_clear_inspector()
+	var title := Label.new()
+	title.text = "Inspecting: %s" % p.title
+	inspector_content.add_child(title)
+	match p.part_id:
+		"weight_wheel":
+			if p.part_instance and p.part_instance is WeightWheel:
+				var wheel := p.part_instance as WeightWheel
+				var weights: Array[float] = wheel.weights
+				for i in range(weights.size()):
+					var row := HBoxContainer.new()
+					var lbl := Label.new()
+					lbl.text = "Spoke %d" % (i + 1)
+					row.add_child(lbl)
+					var knob_script := load("res://game/ui/controls/knob.gd")
+					var knob: Control = knob_script.new()
+					knob.min_value = -2.0
+					knob.max_value = 2.0
+					knob.step = 0.01
+					knob.value = weights[i]
+					knob.custom_minimum_size = Vector2(44, 44)
+					knob.value_changed.connect(func(v: float): wheel.set_weight(i, v))
+					row.add_child(knob)
+					inspector_content.add_child(row)
+			else:
+				var info := Label.new()
+				info.text = "Wheel instance not ready"
+				inspector_content.add_child(info)
+		_:
+			var info2 := Label.new()
+			info2.text = p.get_part_status()
+			inspector_content.add_child(info2)

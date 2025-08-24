@@ -67,7 +67,7 @@ size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.9, 0.8, 0.7, 1)
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
-text = "Welcome to the Guild of Signalworks Engineers, young apprentice!"
+text = "Welcome to the Guild of AItherworks Engineers, young apprentice!"
 scroll_active = false
 
 [node name="ContinueButton" type="Button" parent="DialogueBox/HBox/VBox"]

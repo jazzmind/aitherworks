@@ -1,4 +1,4 @@
-## Signalworks: Brass & Steam Edition
+## AItherworks: Brass & Steam Edition
 
 A steampunk puzzle-sim where rivalling Guilds race to forge the first true “Steam-Mind.” You build it—gears, glass, and aether—learning real ML along the way.
 

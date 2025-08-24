@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxn8wbjk8v7nq"]
+
+[ext_resource type="Script" path="res://game/parts/steam_source.gd" id="1_0j2kx"]
+
+[node name="SteamSource" type="Node"]
+script = ExtResource("1_0j2kx")

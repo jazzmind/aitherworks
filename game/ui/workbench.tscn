@@ -6,9 +6,13 @@
 
 [node name="Workbench" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
+anchor_left = 0.11
+anchor_right = 1.147
 anchor_bottom = 1.0
+offset_left = 313.6
+offset_top = -315.0
+offset_right = -361.68
+offset_bottom = -335.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("3")
@@ -16,9 +20,14 @@ script = ExtResource("1")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = -1
+anchor_left = -0.095
+anchor_right = 1.095
 anchor_bottom = 1.0
+offset_left = -401.29
+offset_top = 302.0
+offset_right = -109.29
+offset_bottom = 302.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 20
@@ -31,7 +40,7 @@ layout_mode = 2
 theme_override_constants/separation = 15
 
 [node name="LeftPanel" type="VBoxContainer" parent="MarginContainer/MainLayout"]
-custom_minimum_size = Vector2(350, 0)
+custom_minimum_size = Vector2(450, 0)
 layout_mode = 2
 
 [node name="StoryArea" type="Panel" parent="MarginContainer/MainLayout/LeftPanel"]
@@ -78,8 +87,10 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "[color=green]Welcome to the Steamfitter's Workbench![/color]
+[b]Bold test[/b], [i]Italic test[/i], [color=yellow]Yellow test[/color]
 Ready to load your first challenge..."
 fit_content = true
 scroll_active = false
@@ -123,8 +134,9 @@ max_value = 1.0
 step = 0.01
 value = 0.1
 
-[node name="ReLUToggle" type="CheckBox" parent="MarginContainer/MainLayout/CenterPanel/TopBar"]
+[node name="ReLUToggle" type="Button" parent="MarginContainer/MainLayout/CenterPanel/TopBar"]
 layout_mode = 2
+toggle_mode = true
 text = "ReLU"
 
 [node name="RunFwd" type="Button" parent="MarginContainer/MainLayout/CenterPanel/TopBar"]
@@ -163,12 +175,16 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 1.00003
+offset_top = -4.0
+offset_right = 1.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 right_disconnects = true
 
 [node name="RightPanel" type="VBoxContainer" parent="MarginContainer/MainLayout"]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
 [node name="ComponentDrawers" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel"]
@@ -223,14 +239,8 @@ layout_mode = 2
 layout_mode = 2
 text = "🔍 Inspector"
 
-[node name="WeightLabel" type="Label" parent="MarginContainer/MainLayout/RightPanel/Inspector"]
+[node name="InspectorContent" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/Inspector"]
 layout_mode = 2
-text = "Weight: 1.00"
-
-[node name="WeightSlider" type="HSlider" parent="MarginContainer/MainLayout/RightPanel/Inspector"]
-layout_mode = 2
-max_value = 2.0
-value = 1.0
 
 [node name="SettingsDialog" type="AcceptDialog" parent="."]
 title = "Settings"
@@ -283,3 +293,11 @@ fit_content = true
 
 [node name="StoryTutorial" parent="." instance=ExtResource("5")]
 layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.0122249
+anchor_top = 0.306818
+anchor_right = 1.39009
+anchor_bottom = 1.30682
+offset_right = -618.058
+scale = Vector2(1.56, 1)
+metadata/_edit_use_anchors_ = true

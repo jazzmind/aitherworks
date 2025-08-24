@@ -1,0 +1,37 @@
+id: spyglass
+name: "Spyglass"
+category: output
+description: |
+  A brass telescope that lets you peer into any component to see what's 
+  happening inside. Point it at a Weight Wheel to see the weights adjusting,
+  or at a Signal Loom to watch data flowing through.
+
+# Visual representation
+visual:
+  scene: "res://assets/icons/gear.svg"  # TODO: Create spyglass icon
+  scale: [1.0, 1.0, 1.0]
+
+# Simulation behavior
+simulation:
+  type: inspector
+  inputs: 1
+  outputs: 0
+  parameters:
+    target: ""
+    update_frequency: 0.5
+
+# Port configuration
+ports:
+  data_in: "input"  # Data to inspect (optional)
+
+# Steampunk flavor
+materials: ["brass", "glass", "copper"]
+steam_pressure: "none"
+complexity: "advanced"
+
+# Teaching points
+concepts:
+  - "debugging"
+  - "data visualization" 
+  - "component inspection"
+  - "real-time monitoring"

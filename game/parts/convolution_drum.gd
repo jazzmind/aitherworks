@@ -60,7 +60,7 @@ func apply_convolution(input_matrix: Array) -> Array:
 	var padded_input: Array = _apply_padding(input_data)
 	
 	# Slide the convolution drum across the input
-	var output_size: int = int((input_size + 2 * padding - kernel_size) / stride) + 1
+	var output_size: int = int((input_size + 2 * padding - kernel_size) / float(stride)) + 1
 	
 	for i in range(output_size):
 		var pos: int = i * stride

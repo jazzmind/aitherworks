@@ -1,33 +1,34 @@
+id: weight_wheel
 name: "Weight Wheel"
-description: "A brass wheel that learns by adjusting its weight. The 'brain' of your machine that scales incoming signals and adapts through training."
+category: processing
+description: |
+  A brass wheel that learns by adjusting its weight. The 'brain' of your machine 
+  that scales incoming signals and adapts through training. Turn the wheel to 
+  adjust how much each input signal matters to the final output.
 
 # Visual representation
-icon: "res://assets/icons/weight_dial.svg"
-color: [0.8, 0.6, 0.3]  # Bronze/brass color
+visual:
+  scene: "res://assets/icons/weight_dial.svg"
+  scale: [1.0, 1.0, 1.0]
+
+# Simulation behavior
+simulation:
+  type: multiplier
+  inputs: 1
+  outputs: 1
+  parameters:
+    weight: 1.0
+  learnable: true
 
 # Port configuration
 ports:
-  signal_in: "input"     # Input signal to be weighted
-  signal_out: "output"   # Weighted output signal
-
-# Simulation behavior
-category: "processing"
-learning: true
-adjustable_weight: true
+  north: "input"     # Input signal to be weighted
+  south: "output"    # Weighted output signal
 
 # Steampunk flavor
 materials: ["brass", "iron", "copper"]
 steam_pressure: "medium"
 complexity: "simple"
-
-# Technical details for UI
-parameters:
-  - name: "weight"
-    type: "float"
-    default: 1.0
-    min: -2.0
-    max: 2.0
-    description: "The scaling factor applied to input signals"
 
 # Teaching points
 concepts:

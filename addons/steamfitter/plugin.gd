@@ -7,7 +7,7 @@ extends EditorPlugin
 # This plugin is responsible for importing puzzle and part specifications
 # written in YAML and generating corresponding Godot scenes and scripts.
 # At the moment it provides only placeholder behaviour.  As you develop
-# Signalworks further you should extend this plugin to parse YAML files
+# AItherworks further you should extend this plugin to parse YAML files
 # under `res://data/specs/` and `res://data/parts/` and construct
 # reusable scene hierarchies.
 
