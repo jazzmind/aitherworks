@@ -21,6 +21,6 @@ simulation:
   learnable: true
 
 ports:
-  north: text
-  south: embedding
+  in-1: text
+  out-1: embedding
 

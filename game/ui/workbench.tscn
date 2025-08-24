@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cdulcwjhsktck"]
 
 [ext_resource type="Script" uid="uid://cuilwsjcdwnm" path="res://game/ui/workbench.gd" id="1"]
-[ext_resource type="Theme" uid="uid://dq1csyhs1pw1c" path="res://game/ui/steampunk_theme.tres" id="3"]
+[ext_resource type="Theme" uid="uid://dvclbg3abieie" path="res://game/ui/steampunk_theme.tres" id="3"]
 [ext_resource type="PackedScene" uid="uid://cyxjkid1roh05" path="res://game/ui/story_tutorial.tscn" id="5"]
 
 [node name="Workbench" type="Control"]
@@ -90,7 +90,6 @@ size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "[color=green]Welcome to the Steamfitter's Workbench![/color]
-[b]Bold test[/b], [i]Italic test[/i], [color=yellow]Yellow test[/color]
 Ready to load your first challenge..."
 fit_content = true
 scroll_active = false
@@ -179,10 +178,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 right_disconnects = true
@@ -298,10 +293,10 @@ fit_content = true
 [node name="StoryTutorial" parent="." instance=ExtResource("5")]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = -0.0122249
-anchor_top = 0.306818
-anchor_right = 1.39009
-anchor_bottom = 1.30682
+anchor_left = -0.209046
+anchor_top = 0.55
+anchor_right = 1.19322
+anchor_bottom = 1.21477
 offset_right = -618.058
 scale = Vector2(1.56, 1)
 metadata/_edit_use_anchors_ = true

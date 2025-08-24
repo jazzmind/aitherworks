@@ -6,7 +6,7 @@ class_name Evaluator
 
 static func evaluate_graph(graph: GraphEdit, spec: Dictionary) -> Dictionary:
 	var start_time := Time.get_ticks_usec()
-	var metrics := {
+	var metrics: Dictionary = {
 		"samples": 0,
 		"correct": 0,
 		"mse": 0.0,
@@ -23,7 +23,7 @@ static func evaluate_graph(graph: GraphEdit, spec: Dictionary) -> Dictionary:
 	var name_to_node: Dictionary = {}
 	for pn in part_nodes:
 		name_to_node[pn.name] = pn
-	var conns := graph.get_connection_list()
+	var conns: Array = graph.get_connection_list()
 	if conns.is_empty():
 		return {"ok": false, "reason": "no_connections", "metrics": metrics}
 	# Build dataset from spec or synthetic
@@ -33,7 +33,7 @@ static func evaluate_graph(graph: GraphEdit, spec: Dictionary) -> Dictionary:
 	# Evaluate
 	var inf_start := Time.get_ticks_usec()
 	for sample in dataset:
-		var outputs := _forward_dataset_sample(sample, conns, name_to_node)
+		var outputs: Dictionary = _forward_dataset_sample(sample, conns, name_to_node)
 		var y_hat: Array = outputs.get("terminal_values", [])
 		var y_true: Array = sample.get("y", [])
 		metrics["mse"] += _mse(y_hat, y_true)
@@ -48,8 +48,8 @@ static func evaluate_graph(graph: GraphEdit, spec: Dictionary) -> Dictionary:
 	# Aggregate
 	if metrics["samples"] > 0:
 		metrics["mse"] /= float(metrics["samples"])
-	var total_time := Time.get_ticks_usec() - start_time
-	var accuracy := (float(metrics["correct"]) / max(1.0, float(metrics["samples"])) )
+	var _total_time := Time.get_ticks_usec() - start_time
+	var accuracy: float = float(metrics["correct"]) / max(1.0, float(metrics["samples"]))
 	var verdict := _verdict_from_win_conditions(accuracy, metrics, spec)
 	return {
 		"ok": true,
@@ -64,7 +64,7 @@ static func _make_dataset_from_spec(spec: Dictionary) -> Array:
 		return spec["data"]["samples"]
 	var ds: Array = []
 	if spec.has("targets") and spec["targets"].has("lanes"):
-		var lanes := int(spec["targets"]["lanes"])
+		var lanes: int = int(spec["targets"]["lanes"])
 		var patt: Array = spec["targets"].get("pattern", [])
 		for i in range(32):
 			var x: Array = []
@@ -134,7 +134,7 @@ static func _process_from_node(node: PartNode, input_value: float, conns: Array,
 
 static func _mse(a: Array, b: Array) -> float:
 	var s := 0.0
-	var n := max(1, min(a.size(), b.size()))
+	var n: int = max(1, min(a.size(), b.size()))
 	for i in range(n):
 		var e := float(a[i]) - float(b[i])
 		s += e * e
@@ -145,13 +145,13 @@ static func _match_success(y_hat: Array, y_true: Array) -> bool:
 		return false
 	# Success if average absolute error below threshold
 	var s := 0.0
-	var n := max(1, min(y_hat.size(), y_true.size()))
+	var n: int = max(1, min(y_hat.size(), y_true.size()))
 	for i in range(n):
 		s += abs(float(y_hat[i]) - float(y_true[i]))
 	return (s / float(n)) < 0.1
 
 static func _verdict_from_win_conditions(acc: float, metrics: Dictionary, spec: Dictionary) -> Dictionary:
-	var vc := spec.get("win_conditions", {})
+	var vc: Variant = spec.get("win_conditions", {})
 	var passed := true
 	var reasons: Array[String] = []
 	if typeof(vc) == TYPE_DICTIONARY:

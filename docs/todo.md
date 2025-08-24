@@ -35,22 +35,12 @@
 ## Theming
 - [x] Create steampunk toggle switch (2‑state) control.
 - [x] Create rotary knob control (TextureProgress‑based) for values.
-- [ ] Update `steampunk_theme.tres` to style GraphEdit wires, buttons, panels.
+- [x] Update `steampunk_theme.tres` to style GraphEdit wires, buttons, panels.
 
 ## Title/Backstory
 - [x] Ensure backstory scene uses large readable font and inline illustrations.
 - [x] Title screen: fix overlapping animation and clickable Settings.
 
 ## Stability/Logging
-- [ ] Add DEBUG on PartNode creation (id, ports, instance class) [in code].
+- [x] Add DEBUG on PartNode creation (id, ports, instance class) [in code].
 - [ ] Guard against missing `story.title`/`description` with safe fallbacks.
-
----
-
-## Today’s Plan
-1. Replace TopBar/Inspector controls with themed switches/knobs and wire them up.
-2. Make Inspector context‑aware (selected node) and expose WeightWheel spokes.
-3. Ensure drawers reflect `allowed_parts` order and include Steam Source/Spyglass.
-4. Add right‑click “Inspect with Spyglass” to open inspection window.
-
-

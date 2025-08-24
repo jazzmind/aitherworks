@@ -595,7 +595,7 @@ func _on_run_backprop() -> void:
 		# reverse pulse highlight (red hues)
 		_pulse_connection(str(c["to"]), int(c["to_port"]), str(c["from"]), int(c["from_port"]), Color(1.0, 0.2, 0.2, 1.0))
 
-func _pulse_connection(from_node: String, from_port: int, to_node: String, to_port: int, color: Color) -> void:
+func _pulse_connection(from_node: String, from_port: int, to_node: String, to_port: int, _color: Color) -> void:
 	# Try to use GraphEdit's per-connection activity if available; otherwise, briefly toggle selection
 	if graph.has_method("set_connection_activity"):
 		graph.set_connection_activity(from_node, from_port, to_node, to_port, 1.0)
@@ -603,20 +603,20 @@ func _pulse_connection(from_node: String, from_port: int, to_node: String, to_po
 		await get_tree().create_timer(0.15).timeout
 		graph.set_connection_activity(from_node, from_port, to_node, to_port, 0.0)
 	else:
-		# Fallback: temporarily select the connection to hint activity
-		graph.set_selected(None)
+		# Fallback: temporarily clear selection to hint activity
+		graph.set_selected(null)
 		await get_tree().create_timer(0.01).timeout
 
 func _on_evaluate() -> void:
-	var res := Evaluator.evaluate_graph(graph, current_spec)
-	if not res.ok:
+	var res: Dictionary = Evaluator.evaluate_graph(graph, current_spec)
+	if not bool(res.get("ok", false)):
 		_log("❌ Eval failed: " + String(res.get("reason", "unknown")))
 		return
-	var acc := float(res.get("accuracy", 0.0))
-	var m := res.get("metrics", {})
+	var acc: float = float(res.get("accuracy", 0.0))
+	var m: Dictionary = res.get("metrics", {})
 	_log("📊 Eval: acc=%.3f mse=%.4f samples=%d" % [acc, float(m.get("mse", 0.0)), int(m.get("samples", 0))])
 	_log("🌫️ Steam=%.2f 💧 Water=%.2f ⏱️ Infer=%.2fms Train=%.2fms" % [float(m.get("steam_used", 0.0)), float(m.get("water_used", 0.0)), float(m.get("inference_ms", 0.0)), float(m.get("training_ms", 0.0))])
-	var verdict := res.get("verdict", {"passed": false, "reasons": ["no verdict"]})
+	var verdict: Dictionary = res.get("verdict", {"passed": false, "reasons": ["no verdict"]})
 	if bool(verdict.get("passed", false)):
 		_log("✅ PASS")
 	else:
@@ -782,4 +782,3 @@ func _inspector_slider(label_text: String, min_v: float, max_v: float, step: flo
 	knob.value_changed.connect(func(v: float): on_change.call(v))
 	row.add_child(knob)
 	inspector_content.add_child(row)
-

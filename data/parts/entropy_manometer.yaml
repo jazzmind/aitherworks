@@ -23,7 +23,7 @@ simulation:
   learnable: false
 
 ports:
-  north: predictions
-  west: targets
-  south: loss
+  in-1: predictions
+  in-2: targets
+  out-1: loss
 

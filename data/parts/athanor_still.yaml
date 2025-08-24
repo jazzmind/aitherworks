@@ -24,7 +24,7 @@ simulation:
   learnable: false
 
 ports:
-  north: teacher_logits
-  west: student_logits
-  south: distilled_loss
+  in-1: teacher_logits
+  in-2: student_logits
+  out-1: distilled_loss
 

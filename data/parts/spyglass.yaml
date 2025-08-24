@@ -22,7 +22,7 @@ simulation:
 
 # Port configuration
 ports:
-  data_in: "input"  # Data to inspect (optional)
+  in-1: "input"  # Data to inspect (optional)
 
 # Steampunk flavor
 materials: ["brass", "glass", "copper"]
