@@ -382,6 +382,8 @@ func _apply_spec_to_ui(spec: Dictionary) -> void:
 	if spec.has("story") and spec["story"].has("text"):
 		story_label.text = str(spec["story"]["text"]) 
 		story_dialog.popup_centered()
+	else:
+		story_label.text = "Welcome to AItherworks! Build and train your first contraption."
 	# set up lanes and per-lane controls
 	var packed: Array = _lanes_and_epochs_from_spec()
 	var lanes: int = int(packed[0])

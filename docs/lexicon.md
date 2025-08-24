@@ -1,3 +1,25 @@
+## Port Key Conventions
+
+- Prefer explicit direction values in part `ports` maps: values must be `input` or `output`.
+- Port keys may be descriptive (e.g., `steam_out`, `data_in`). Cardinal keys (`north/east/south/west`) are allowed but should be paired with clear values.
+- Existing parts mixing cardinal keys will still load; the validator warns and suggests converging on descriptive keys.
+
+Examples:
+
+```yaml
+ports:
+  data_in: input
+  steam_out: output
+```
+
+Legacy (allowed, but consider migrating):
+
+```yaml
+ports:
+  north: input
+  south: output
+```
+
 ## Steampunk Component Lexicon (1:1 to ML)
 
 This lexicon maps in-world contraptions to the ML concepts they teach. Use it when writing levels, designing UI overlays, or explaining pedagogy.

@@ -23,6 +23,7 @@ func setup_from_spec(id: String, spec: Dictionary) -> void:
 	_setup_visual_appearance(id)
 	_build_ports(spec.get("ports", {}))
 	_create_part_instance(id)
+	print("DEBUG PartNode created id=", part_id, " title=", title, " ports_in=", input_names, " ports_out=", output_names, " instance=", (part_instance.get_class() if part_instance else "null"))
 
 func _build_ports(ports: Dictionary) -> void:
 	input_names.clear()
