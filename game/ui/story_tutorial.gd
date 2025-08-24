@@ -98,7 +98,14 @@ func _build_story() -> void:
 				{
 					"character": "aether_sage",
 					"name": "Aether Sage",
-					"text": "Precisely! But first, we need components. Every thinking machine needs [color=yellow]eyes[/color] to see the data. Click on the [color=yellow]Signal Loom[/color] to add the input processor.",
+					"text": "Precisely! But first, every machine needs a [color=yellow]Steam Source[/color] – the boiler that produces input steam signals.",
+					"action": "place_steam_source",
+					"target": "MarginContainer/MainLayout/RightPanel/ComponentDrawers"
+				},
+				{
+					"character": "aether_sage",
+					"name": "Aether Sage",
+					"text": "Now add the [color=yellow]Signal Loom[/color] – the eyes that process raw steam into usable signals.",
 					"action": "place_signal_loom",
 					"target": "MarginContainer/MainLayout/RightPanel/ComponentDrawers"
 				}
@@ -137,9 +144,21 @@ func _build_story() -> void:
 				{
 					"character": "master_cogwright",
 					"name": "Master Cogwright",
-					"text": "Exactly! [color=yellow]Drag from a yellow output port to a blue input port[/color] to connect them. This creates the data flow path through your thinking machine.",
+					"text": "Exactly! [color=yellow]Connect the Steam Source's output to the Signal Loom's input[/color]. Drag from a yellow output port to a blue input port.",
 					"action": "connect_components",
 					"target": "MarginContainer/MainLayout/CenterPanel/BlueprintArea/GraphEdit"
+				}
+			]
+		},
+		{
+			"title": "Peering Through the Spyglass",
+			"dialogues": [
+				{
+					"character": "aether_sage",
+					"name": "Aether Sage",
+					"text": "To see inside your machine, place a [color=yellow]Spyglass[/color], or simply [b]double-click[/b] a component to open the Inspector.",
+					"action": "place_spyglass",
+					"target": "MarginContainer/MainLayout/RightPanel/ComponentDrawers"
 				}
 			]
 		},

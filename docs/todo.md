@@ -1,22 +1,22 @@
 # Project TODO
 
 ## Gameplay/Data Flow
-- [ ] Add `Steam Source` to palettes and tutorial; ensure it connects to `Signal Loom`.
-- [ ] Add `Spyglass` inspection window trigger from node context menu or double‑click.
-- [ ] Persist inspection window position; allow multiple spyglasses.
+- [x] Add `Steam Source` to palettes and tutorial; ensure it connects to `Signal Loom`.
+- [x] Add `Spyglass` inspection window trigger from node context menu or double‑click.
+- [x] Persist inspection window position; allow multiple spyglasses.
 - [ ] Forward pass: visualize wire activity (pulse/tint) along GraphEdit connections.
 - [ ] Backprop pass: visualize gradient flow in reverse with red hues.
 
 ## YAML/Specs
 - [x] Fix SpecLoader to handle `key:` followed by lists (sequences).
-- [ ] Validate all part/level YAMLs on startup; log readable errors.
+- [x] Validate all part/level YAMLs on startup; log readable errors.
 - [ ] Normalize port keys across parts (`north/south` or `in/out`) and document.
 
 ## Parts/Simulation
 - [x] Implement `WeightWheel` with multi‑spoke weights and SGD apply.
 - [x] Implement `SteamSource` and data patterns.
 - [x] Implement `Spyglass` and `InspectionWindow`.
-- [ ] Add `AdderManifold`, `ActivationGate` functional scripts (sum / ReLU).
+- [x] Add `AdderManifold`, `ActivationGate` functional scripts (sum / ReLU).
 - [ ] Connect engine training loop to graph topology (not just demo paths).
 
 ## Workbench UI
@@ -29,7 +29,7 @@
 ## Tutorial/UX
 - [x] Level selection placeholder and gating (must select Act I L1, then Load).
 - [ ] Tutorial: highlight dropdown, then Load; validate exact selection.
-- [ ] Tutorial steps for placing `Steam Source → Signal Loom → Weight Wheel → Spyglass`.
+- [x] Tutorial steps for placing `Steam Source → Signal Loom → Weight Wheel → Spyglass`.
 - [ ] Show story panel messages in BBCode with proper sizes once font setup is final.
 
 ## Theming

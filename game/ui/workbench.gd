@@ -46,6 +46,8 @@ var lane_sliders: Array = []
 var weight_slider: HSlider
 var weight_label: Label
 
+var _last_inspection_window_pos: Vector2i = Vector2i(-1, -1)
+
 func _ready() -> void:
 	engine = Act1Engine.new()
 	add_child(engine)
@@ -75,6 +77,7 @@ func _ready() -> void:
 		level_select.add_item(p.get_file())
 	level_select.select(0)  # Select placeholder initially
 	_log("Workbench ready")
+	_validate_yaml_files()
 	# Apply default UI scale
 	get_window().content_scale_factor = 1.4
 	# Set up story tutorial
@@ -98,6 +101,11 @@ func _ready() -> void:
 
 func _populate_palette() -> void:
 	var input_parts = [
+		{
+			"id": "steam_source",
+			"icon": "res://assets/icons/steam_pipe.svg",
+			"tooltip": "Steam Source\n\nThe heart of your contraption - generates steam pressure.\nProvides the input data your machine needs to process."
+		},
 		{
 			"id": "signal_loom", 
 			"icon": "res://assets/icons/steam_pipe.svg",
@@ -128,6 +136,11 @@ func _populate_palette() -> void:
 			"id": "entropy_manometer", 
 			"icon": "res://assets/icons/pressure_gauge.svg",
 			"tooltip": "Entropy Manometer\n\nMeasures uncertainty and information content.\nHelps optimize learning efficiency."
+		},
+		{
+			"id": "spyglass",
+			"icon": "res://assets/icons/gear.svg",
+			"tooltip": "Spyglass\n\nPeer into components to see what's happening inside.\nShows real-time data flow and component states."
 		}
 	]
 	
@@ -203,16 +216,25 @@ func _on_palette_part_pressed(id: String) -> void:
 	var scene := load("res://game/ui/part_node.tscn") as PackedScene
 	var node := scene.instantiate()
 	node.setup_from_spec(id, spec)
+	# Ensure unique name so Spyglass can target by name
+	node.name = "%s_%d" % [id, Time.get_ticks_msec()]
+	# Connect inspection request from node
+	if node.has_signal("inspect_requested"):
+		node.inspect_requested.connect(_open_inspection_window)
 	node.position_offset = Vector2(randi()%400, randi()%200)
 	graph.add_child(node)
 	
 	# Notify tutorial of specific part placement
-	if id == "signal_loom":
+	if id == "steam_source":
+		story_tutorial.notify_action("place_steam_source")
+	elif id == "signal_loom":
 		# tutorial.notify("placed_part")  # Disabled
 		story_tutorial.notify_action("place_signal_loom")
 	elif id == "weight_wheel":
 		# tutorial.notify("placed_weight_wheel")  # Disabled
 		story_tutorial.notify_action("place_weight_wheel")
+	elif id == "spyglass":
+		story_tutorial.notify_action("place_spyglass")
 	else:
 		# tutorial.notify("placed_part")  # Disabled
 		story_tutorial.notify_action("place_part")
@@ -443,6 +465,37 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 	var mode := DisplayServer.WINDOW_MODE_FULLSCREEN if pressed else DisplayServer.WINDOW_MODE_WINDOWED
 	DisplayServer.window_set_mode(mode)
 
+func _open_inspection_window(part: PartNode) -> void:
+	# Create a spyglass bound to this part node's name
+	var spy := Spyglass.new()
+	add_child(spy)
+	spy.inspection_target = part.name
+	spy.start_inspection()
+	# Create window
+	var win_scene := load("res://game/ui/inspection_window.tscn") as PackedScene
+	var win: InspectionWindow = win_scene.instantiate()
+	add_child(win)
+	win.connect_to_spyglass(spy)
+	if _last_inspection_window_pos.x >= 0:
+		win.position = _last_inspection_window_pos
+	win.window_closed.connect(func():
+		_last_inspection_window_pos = win.position
+		if is_instance_valid(spy):
+			spy.stop_inspection()
+			spy.queue_free()
+		win.queue_free()
+	)
+	win.show_inspection_window()
+
+func _validate_yaml_files() -> void:
+	# Validate parts and specs, log readable errors
+	if Engine.is_editor_hint():
+		return
+	var validator := SpecValidator.new()
+	var result := validator.validate_parts_and_specs("res://data/parts", "res://data/specs")
+	for msg in result.messages:
+		_log(msg)
+
 func _on_run_forward() -> void:
 	_log("🚀 Running forward pass through your contraption...")
 	
@@ -572,3 +625,4 @@ func _populate_inspector_for_part(p: PartNode) -> void:
 			var info2 := Label.new()
 			info2.text = p.get_part_status()
 			inspector_content.add_child(info2)
+
