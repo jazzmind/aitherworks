@@ -616,6 +616,11 @@ func _on_evaluate() -> void:
 	var m := res.get("metrics", {})
 	_log("📊 Eval: acc=%.3f mse=%.4f samples=%d" % [acc, float(m.get("mse", 0.0)), int(m.get("samples", 0))])
 	_log("🌫️ Steam=%.2f 💧 Water=%.2f ⏱️ Infer=%.2fms Train=%.2fms" % [float(m.get("steam_used", 0.0)), float(m.get("water_used", 0.0)), float(m.get("inference_ms", 0.0)), float(m.get("training_ms", 0.0))])
+	var verdict := res.get("verdict", {"passed": false, "reasons": ["no verdict"]})
+	if bool(verdict.get("passed", false)):
+		_log("✅ PASS")
+	else:
+		_log("❌ FAIL: " + ", ".join(verdict.get("reasons", [])))
 
 func _train_graph_once(conns: Array) -> float:
 	# Simple training over the current graph: forward from steam sources, accumulate outputs,

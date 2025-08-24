@@ -49,10 +49,13 @@ static func evaluate_graph(graph: GraphEdit, spec: Dictionary) -> Dictionary:
 	if metrics["samples"] > 0:
 		metrics["mse"] /= float(metrics["samples"])
 	var total_time := Time.get_ticks_usec() - start_time
+	var accuracy := (float(metrics["correct"]) / max(1.0, float(metrics["samples"])) )
+	var verdict := _verdict_from_win_conditions(accuracy, metrics, spec)
 	return {
 		"ok": true,
-		"accuracy": (float(metrics["correct"]) / max(1.0, float(metrics["samples"]))),
-		"metrics": metrics
+		"accuracy": accuracy,
+		"metrics": metrics,
+		"verdict": verdict
 	}
 
 static func _make_dataset_from_spec(spec: Dictionary) -> Array:
@@ -146,4 +149,29 @@ static func _match_success(y_hat: Array, y_true: Array) -> bool:
 	for i in range(n):
 		s += abs(float(y_hat[i]) - float(y_true[i]))
 	return (s / float(n)) < 0.1
+
+static func _verdict_from_win_conditions(acc: float, metrics: Dictionary, spec: Dictionary) -> Dictionary:
+	var vc := spec.get("win_conditions", {})
+	var passed := true
+	var reasons: Array[String] = []
+	if typeof(vc) == TYPE_DICTIONARY:
+		if vc.has("accuracy"):
+			var need := float(vc["accuracy"])
+			if acc < need:
+				passed = false
+				reasons.append("accuracy %.3f < %.3f" % [acc, need])
+		if vc.has("pressure"):
+			var max_pressure := float(vc["pressure"]) # modeled as steam_used
+			if float(metrics.get("steam_used", 0.0)) > max_pressure:
+				passed = false
+				reasons.append("steam %.2f > %.2f" % [float(metrics.get("steam_used", 0.0)), max_pressure])
+		if vc.has("mass"):
+			# not tracked yet; placeholder
+			pass
+		if vc.has("latency_ms"):
+			var max_ms := float(vc["latency_ms"])
+			if float(metrics.get("inference_ms", 0.0)) > max_ms:
+				passed = false
+				reasons.append("inference %.2fms > %.2fms" % [float(metrics.get("inference_ms", 0.0)), max_ms])
+	return {"passed": passed, "reasons": reasons}
 

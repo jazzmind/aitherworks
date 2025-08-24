@@ -30,6 +30,8 @@ allowed_parts:
 
 win_conditions:
   accuracy: 0.95
+  latency_ms: 50
+  pressure: 5
 
 training:
   optimizer: sgd
