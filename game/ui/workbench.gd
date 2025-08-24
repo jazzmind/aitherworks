@@ -369,7 +369,7 @@ func _apply_spec_to_ui(spec: Dictionary) -> void:
 	else:
 		allowed = ["signal_loom", "weight_wheel", "adder_manifold", "activation_gate", "entropy_manometer"]
 	
-	# Re-populate drawers with only allowed parts
+	# Re-populate drawers with only allowed parts, preserving ordering per allowed_parts
 	_populate_allowed_parts(allowed)
 	# Story
 	if spec.has("story") and spec["story"].has("text"):
@@ -565,6 +565,8 @@ func _process_connected_components(source_node: PartNode, signal_value: float, c
 		if conn["from"] == source_node.name:
 			var target_node = graph.get_node(conn["to"])
 			if target_node is PartNode and target_node not in processed:
+				# forward pulse highlight
+				_pulse_connection(conn["from"], int(conn["from_port"]), conn["to"], int(conn["to_port"]), Color(1.0, 0.8, 0.3, 1.0))
 				var output = target_node.process_inputs([signal_value])
 				_log("⚙️ %s processed [%.3f] → %.3f" % [target_node.title, signal_value, output])
 				_log("   Status: %s" % target_node.get_part_status())
@@ -579,6 +581,20 @@ func _on_run_backprop() -> void:
 	for i in range(conns.size()-1, -1, -1):
 		var c = conns[i]
 		_log("grad: %s[%d] <- %s[%d]" % [str(c["from"]), int(c["from_port"]), str(c["to"]), int(c["to_port"])])
+		# reverse pulse highlight (red hues)
+		_pulse_connection(str(c["to"]), int(c["to_port"]), str(c["from"]), int(c["from_port"]), Color(1.0, 0.2, 0.2, 1.0))
+
+func _pulse_connection(from_node: String, from_port: int, to_node: String, to_port: int, color: Color) -> void:
+	# Try to use GraphEdit's per-connection activity if available; otherwise, briefly toggle selection
+	if graph.has_method("set_connection_activity"):
+		graph.set_connection_activity(from_node, from_port, to_node, to_port, 1.0)
+		# fade after a short delay
+		await get_tree().create_timer(0.15).timeout
+		graph.set_connection_activity(from_node, from_port, to_node, to_port, 0.0)
+	else:
+		# Fallback: temporarily select the connection to hint activity
+		graph.set_selected(None)
+		await get_tree().create_timer(0.01).timeout
 
 func _on_graph_node_selected(node_name: StringName) -> void:
 	var node := graph.get_node_or_null(String(node_name))
@@ -621,8 +637,40 @@ func _populate_inspector_for_part(p: PartNode) -> void:
 				var info := Label.new()
 				info.text = "Wheel instance not ready"
 				inspector_content.add_child(info)
+		"steam_source":
+			if p.part_instance and p.part_instance is SteamSource:
+				var src := p.part_instance as SteamSource
+				_inspector_slider("Amplitude", 0.1, 5.0, 0.01, src.amplitude, func(v: float): src.set_amplitude(v))
+				_inspector_slider("Frequency", 0.1, 3.0, 0.01, src.frequency, func(v: float): src.set_frequency(v))
+				_inspector_slider("Noise", 0.0, 1.0, 0.01, src.noise_level, func(v: float): src.set_noise_level(v))
+				_inspector_slider("Channels", 1, 8, 1, src.num_channels, func(v: float): src.set_num_channels(int(v)))
+				var info3 := Label.new()
+				info3.text = src.get_source_status()
+				inspector_content.add_child(info3)
+		"signal_loom":
+			if p.part_instance and p.part_instance is SignalLoom:
+				var loom := p.part_instance as SignalLoom
+				_inspector_slider("Input Channels", 1, 8, 1, loom.input_channels, func(v: float): loom.set_input_channels(int(v)))
+				_inspector_slider("Output Width", 1, 16, 1, loom.output_width, func(v: float): loom.set_output_width(int(v)))
+				_inspector_slider("Signal Strength", 0.0, 2.0, 0.01, loom.signal_strength, func(v: float): loom.set_signal_strength(v))
 		_:
 			var info2 := Label.new()
 			info2.text = p.get_part_status()
 			inspector_content.add_child(info2)
+
+func _inspector_slider(label_text: String, min_v: float, max_v: float, step: float, cur: float, on_change: Callable) -> void:
+	var row := HBoxContainer.new()
+	var lbl := Label.new()
+	lbl.text = label_text
+	row.add_child(lbl)
+	var knob_script := load("res://game/ui/controls/knob.gd")
+	var knob: Control = knob_script.new()
+	knob.min_value = min_v
+	knob.max_value = max_v
+	knob.step = step
+	knob.value = cur
+	knob.custom_minimum_size = Vector2(44, 44)
+	knob.value_changed.connect(func(v: float): on_change.call(v))
+	row.add_child(knob)
+	inspector_content.add_child(row)
 

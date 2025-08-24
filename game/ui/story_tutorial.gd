@@ -391,7 +391,10 @@ func _update_chat_display() -> void:
 		
 		# Try forcing BBCode configuration again
 		story_panel.bbcode_enabled = true
-		
+		# set base size and then use BBCode sizes for headings
+		story_panel.add_theme_font_size_override("normal_font_size", 16)
+		story_panel.add_theme_font_size_override("bold_font_size", 18)
+		story_panel.add_theme_font_size_override("italics_font_size", 16)
 		story_panel.text = chat_history
 		
 		print("DEBUG: Text after setting: ", story_panel.text.substr(0, 100) + "...")
