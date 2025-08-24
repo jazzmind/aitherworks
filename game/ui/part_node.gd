@@ -5,6 +5,8 @@ extends GraphNode
 
 class_name PartNode
 
+signal inspect_requested(part: PartNode)
+
 var part_id: String = ""
 var input_names: Array[String] = []
 var output_names: Array[String] = []
@@ -21,6 +23,7 @@ func setup_from_spec(id: String, spec: Dictionary) -> void:
 	_setup_visual_appearance(id)
 	_build_ports(spec.get("ports", {}))
 	_create_part_instance(id)
+	print("DEBUG PartNode created id=", part_id, " title=", title, " ports_in=", input_names, " ports_out=", output_names, " instance=", (part_instance.get_class() if part_instance else "null"))
 
 func _build_ports(ports: Dictionary) -> void:
 	input_names.clear()
@@ -112,11 +115,9 @@ func _create_part_instance(id: String) -> void:
 		"spyglass":
 			part_instance = Spyglass.new()
 		"adder_manifold":
-			# TODO: Implement AdderManifold class
-			pass
+			part_instance = AdderManifold.new()
 		"activation_gate":
-			# TODO: Implement ActivationGate class  
-			pass
+			part_instance = ActivationGate.new()
 		"entropy_manometer":
 			# TODO: Implement EntropyManometer class
 			pass
@@ -158,6 +159,16 @@ func process_inputs(inputs: Array[float]) -> float:
 			if part_instance is WeightWheel:
 				var wheel = part_instance as WeightWheel
 				output_value = wheel.process_signals(inputs)
+		"adder_manifold":
+			if part_instance is AdderManifold:
+				var add = part_instance as AdderManifold
+				add.input_signals = inputs.duplicate()
+				output_value = add.process_signals()
+		"activation_gate":
+			if part_instance is ActivationGate:
+				var gate = part_instance as ActivationGate
+				var x: float = inputs[0] if inputs.size() > 0 else 0.0
+				output_value = gate.apply_activation(x)
 		"spyglass":
 			if part_instance is Spyglass:
 				# Spyglass is passive - just passes through input
@@ -171,6 +182,12 @@ func process_inputs(inputs: Array[float]) -> float:
 				output_value += val
 	
 	return output_value
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.pressed and mb.double_click and mb.button_index == MOUSE_BUTTON_LEFT:
+			emit_signal("inspect_requested", self)
 
 func get_part_status() -> String:
 	"""Get current status of the part for debugging"""

@@ -24,6 +24,7 @@ extends Control
 @onready var fullscreen_toggle := $SettingsDialog/VBox/Fullscreen
 @onready var run_fwd_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunFwd
 @onready var run_back_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunBack
+@onready var eval_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/EvalButton
 @onready var story_dialog := $StoryDialog
 @onready var story_label := $StoryDialog/StoryLabel
 # @onready var tutorial := $TutorialLayer
@@ -46,6 +47,8 @@ var lane_sliders: Array = []
 var weight_slider: HSlider
 var weight_label: Label
 
+var _last_inspection_window_pos: Vector2i = Vector2i(-1, -1)
+
 func _ready() -> void:
 	engine = Act1Engine.new()
 	add_child(engine)
@@ -65,6 +68,7 @@ func _ready() -> void:
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	run_fwd_btn.pressed.connect(_on_run_forward)
 	run_back_btn.pressed.connect(_on_run_backprop)
+	eval_btn.pressed.connect(_on_evaluate)
 	# Connect drawer headers
 	input_header.pressed.connect(_on_drawer_toggled.bind(input_palette))
 	processing_header.pressed.connect(_on_drawer_toggled.bind(processing_palette))
@@ -75,6 +79,7 @@ func _ready() -> void:
 		level_select.add_item(p.get_file())
 	level_select.select(0)  # Select placeholder initially
 	_log("Workbench ready")
+	_validate_yaml_files()
 	# Apply default UI scale
 	get_window().content_scale_factor = 1.4
 	# Set up story tutorial
@@ -98,6 +103,11 @@ func _ready() -> void:
 
 func _populate_palette() -> void:
 	var input_parts = [
+		{
+			"id": "steam_source",
+			"icon": "res://assets/icons/steam_pipe.svg",
+			"tooltip": "Steam Source\n\nThe heart of your contraption - generates steam pressure.\nProvides the input data your machine needs to process."
+		},
 		{
 			"id": "signal_loom", 
 			"icon": "res://assets/icons/steam_pipe.svg",
@@ -128,6 +138,11 @@ func _populate_palette() -> void:
 			"id": "entropy_manometer", 
 			"icon": "res://assets/icons/pressure_gauge.svg",
 			"tooltip": "Entropy Manometer\n\nMeasures uncertainty and information content.\nHelps optimize learning efficiency."
+		},
+		{
+			"id": "spyglass",
+			"icon": "res://assets/icons/gear.svg",
+			"tooltip": "Spyglass\n\nPeer into components to see what's happening inside.\nShows real-time data flow and component states."
 		}
 	]
 	
@@ -203,16 +218,25 @@ func _on_palette_part_pressed(id: String) -> void:
 	var scene := load("res://game/ui/part_node.tscn") as PackedScene
 	var node := scene.instantiate()
 	node.setup_from_spec(id, spec)
+	# Ensure unique name so Spyglass can target by name
+	node.name = "%s_%d" % [id, Time.get_ticks_msec()]
+	# Connect inspection request from node
+	if node.has_signal("inspect_requested"):
+		node.inspect_requested.connect(_open_inspection_window)
 	node.position_offset = Vector2(randi()%400, randi()%200)
 	graph.add_child(node)
 	
 	# Notify tutorial of specific part placement
-	if id == "signal_loom":
+	if id == "steam_source":
+		story_tutorial.notify_action("place_steam_source")
+	elif id == "signal_loom":
 		# tutorial.notify("placed_part")  # Disabled
 		story_tutorial.notify_action("place_signal_loom")
 	elif id == "weight_wheel":
 		# tutorial.notify("placed_weight_wheel")  # Disabled
 		story_tutorial.notify_action("place_weight_wheel")
+	elif id == "spyglass":
+		story_tutorial.notify_action("place_spyglass")
 	else:
 		# tutorial.notify("placed_part")  # Disabled
 		story_tutorial.notify_action("place_part")
@@ -222,12 +246,19 @@ func on_train_pressed() -> void:
 	var packed: Array = _lanes_and_epochs_from_spec()
 	var lanes: int = int(packed[0])
 	var epochs: int = int(packed[1])
-	engine.set_num_lanes(lanes)
-	for e in range(epochs):
-		var samples: Array = _make_synthetic_samples(lanes)
-		var loss: float = engine.run_epoch(samples)
-		_log("epoch %d loss=%.4f" % [e + 1, loss])
-	_sync_weight_ui()
+	# If there is a built graph with connections, train over it; otherwise use engine fallback
+	var conns: Array = graph.get_connection_list()
+	if conns.is_empty():
+		engine.set_num_lanes(lanes)
+		for e in range(epochs):
+			var samples: Array = _make_synthetic_samples(lanes)
+			var loss: float = engine.run_epoch(samples)
+			_log("epoch %d loss=%.4f" % [e + 1, loss])
+		_sync_weight_ui()
+	else:
+		for e in range(epochs):
+			var loss := _train_graph_once(conns)
+			_log("epoch %d graph_loss=%.4f" % [e + 1, loss])
 	# tutorial.notify("trained")  # Disabled
 	story_tutorial.notify_action("start_training")
 
@@ -347,12 +378,14 @@ func _apply_spec_to_ui(spec: Dictionary) -> void:
 	else:
 		allowed = ["signal_loom", "weight_wheel", "adder_manifold", "activation_gate", "entropy_manometer"]
 	
-	# Re-populate drawers with only allowed parts
+	# Re-populate drawers with only allowed parts, preserving ordering per allowed_parts
 	_populate_allowed_parts(allowed)
 	# Story
 	if spec.has("story") and spec["story"].has("text"):
 		story_label.text = str(spec["story"]["text"]) 
 		story_dialog.popup_centered()
+	else:
+		story_label.text = "Welcome to AItherworks! Build and train your first contraption."
 	# set up lanes and per-lane controls
 	var packed: Array = _lanes_and_epochs_from_spec()
 	var lanes: int = int(packed[0])
@@ -443,6 +476,37 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 	var mode := DisplayServer.WINDOW_MODE_FULLSCREEN if pressed else DisplayServer.WINDOW_MODE_WINDOWED
 	DisplayServer.window_set_mode(mode)
 
+func _open_inspection_window(part: PartNode) -> void:
+	# Create a spyglass bound to this part node's name
+	var spy := Spyglass.new()
+	add_child(spy)
+	spy.inspection_target = part.name
+	spy.start_inspection()
+	# Create window
+	var win_scene := load("res://game/ui/inspection_window.tscn") as PackedScene
+	var win: InspectionWindow = win_scene.instantiate()
+	add_child(win)
+	win.connect_to_spyglass(spy)
+	if _last_inspection_window_pos.x >= 0:
+		win.position = _last_inspection_window_pos
+	win.window_closed.connect(func():
+		_last_inspection_window_pos = win.position
+		if is_instance_valid(spy):
+			spy.stop_inspection()
+			spy.queue_free()
+		win.queue_free()
+	)
+	win.show_inspection_window()
+
+func _validate_yaml_files() -> void:
+	# Validate parts and specs, log readable errors
+	if Engine.is_editor_hint():
+		return
+	var validator := SpecValidator.new()
+	var result := validator.validate_parts_and_specs("res://data/parts", "res://data/specs")
+	for msg in result.messages:
+		_log(msg)
+
 func _on_run_forward() -> void:
 	_log("🚀 Running forward pass through your contraption...")
 	
@@ -512,6 +576,8 @@ func _process_connected_components(source_node: PartNode, signal_value: float, c
 		if conn["from"] == source_node.name:
 			var target_node = graph.get_node(conn["to"])
 			if target_node is PartNode and target_node not in processed:
+				# forward pulse highlight
+				_pulse_connection(conn["from"], int(conn["from_port"]), conn["to"], int(conn["to_port"]), Color(1.0, 0.8, 0.3, 1.0))
 				var output = target_node.process_inputs([signal_value])
 				_log("⚙️ %s processed [%.3f] → %.3f" % [target_node.title, signal_value, output])
 				_log("   Status: %s" % target_node.get_part_status())
@@ -526,6 +592,118 @@ func _on_run_backprop() -> void:
 	for i in range(conns.size()-1, -1, -1):
 		var c = conns[i]
 		_log("grad: %s[%d] <- %s[%d]" % [str(c["from"]), int(c["from_port"]), str(c["to"]), int(c["to_port"])])
+		# reverse pulse highlight (red hues)
+		_pulse_connection(str(c["to"]), int(c["to_port"]), str(c["from"]), int(c["from_port"]), Color(1.0, 0.2, 0.2, 1.0))
+
+func _pulse_connection(from_node: String, from_port: int, to_node: String, to_port: int, color: Color) -> void:
+	# Try to use GraphEdit's per-connection activity if available; otherwise, briefly toggle selection
+	if graph.has_method("set_connection_activity"):
+		graph.set_connection_activity(from_node, from_port, to_node, to_port, 1.0)
+		# fade after a short delay
+		await get_tree().create_timer(0.15).timeout
+		graph.set_connection_activity(from_node, from_port, to_node, to_port, 0.0)
+	else:
+		# Fallback: temporarily select the connection to hint activity
+		graph.set_selected(None)
+		await get_tree().create_timer(0.01).timeout
+
+func _on_evaluate() -> void:
+	var res := Evaluator.evaluate_graph(graph, current_spec)
+	if not res.ok:
+		_log("❌ Eval failed: " + String(res.get("reason", "unknown")))
+		return
+	var acc := float(res.get("accuracy", 0.0))
+	var m := res.get("metrics", {})
+	_log("📊 Eval: acc=%.3f mse=%.4f samples=%d" % [acc, float(m.get("mse", 0.0)), int(m.get("samples", 0))])
+	_log("🌫️ Steam=%.2f 💧 Water=%.2f ⏱️ Infer=%.2fms Train=%.2fms" % [float(m.get("steam_used", 0.0)), float(m.get("water_used", 0.0)), float(m.get("inference_ms", 0.0)), float(m.get("training_ms", 0.0))])
+	var verdict := res.get("verdict", {"passed": false, "reasons": ["no verdict"]})
+	if bool(verdict.get("passed", false)):
+		_log("✅ PASS")
+	else:
+		_log("❌ FAIL: " + ", ".join(verdict.get("reasons", [])))
+
+func _train_graph_once(conns: Array) -> float:
+	# Simple training over the current graph: forward from steam sources, accumulate outputs,
+	# compute loss against spec target if present, and apply gradients to WeightWheels.
+	var part_nodes: Array[PartNode] = []
+	for child in graph.get_children():
+		if child is PartNode:
+			part_nodes.append(child)
+	if part_nodes.is_empty():
+		return 0.0
+	# Map names to nodes
+	var name_to_node: Dictionary = {}
+	for n in part_nodes:
+		name_to_node[n.name] = n
+	# Forward pass: breadth-first from steam_source(s)
+	var outputs: Dictionary = {}
+	# Find sources
+	var sources: Array = []
+	for pn in part_nodes:
+		if pn.part_id == "steam_source":
+			sources.append(pn)
+	if sources.is_empty():
+		# fallback: signal_loom as a starting node with dummy inputs
+		for pn in part_nodes:
+			if pn.part_id == "signal_loom":
+				sources.append(pn)
+	# Forward
+	for s in sources:
+		var out_val: float = 0.0
+		if s.part_id == "steam_source":
+			out_val = s.process_inputs([])
+		else:
+			out_val = s.process_inputs([1.0, 0.5, -0.3])
+		outputs[s.name] = out_val
+		# propagate
+		_forward_from_node(s, out_val, conns, name_to_node, outputs)
+	# Determine targets
+	var target: float = 0.0
+	if current_spec.has("targets") and current_spec["targets"].has("pattern"):
+		# use average of pattern as scalar goal for this simple graph trainer
+		var patt: Array = current_spec["targets"]["pattern"]
+		for v in patt:
+			target += float(v)
+		target /= max(1, patt.size())
+	# Identify terminals (nodes with no outgoing edges)
+	var to_names: Array = []
+	for c in conns:
+		to_names.append(str(c["to"]))
+	var terminals: Array[PartNode] = []
+	for pn2 in part_nodes:
+		if pn2.name not in to_names:
+			terminals.append(pn2)
+	# Compute loss as MSE across terminal outputs vs target
+	var total_loss: float = 0.0
+	var grads_per_wheel: Dictionary = {}
+	for t in terminals:
+		var y_hat := float(outputs.get(t.name, 0.0))
+		var err := (y_hat - target)
+		total_loss += err * err
+		# Backprop only into direct upstream WeightWheels for now
+		for c2 in conns:
+			if str(c2["to"]) == t.name:
+				var up_name := str(c2["from"])
+				if name_to_node.has(up_name):
+					var up_node: PartNode = name_to_node[up_name]
+					if up_node.part_id == "weight_wheel" and up_node.part_instance is WeightWheel:
+						grads_per_wheel[up_node.name] = float(err)
+	# Apply gradients to wheels
+	for k in grads_per_wheel.keys():
+		var wheel_node: PartNode = name_to_node[k]
+		var wheel := wheel_node.part_instance as WeightWheel
+		wheel.apply_gradients(grads_per_wheel[k])
+	return total_loss / max(1, terminals.size())
+
+func _forward_from_node(node: PartNode, input_value: float, conns: Array, name_to_node: Dictionary, outputs: Dictionary) -> void:
+	for c in conns:
+		if str(c["from"]) == node.name:
+			var target_name := str(c["to"])
+			if name_to_node.has(target_name):
+				var tgt: PartNode = name_to_node[target_name]
+				var out := tgt.process_inputs([input_value])
+				outputs[target_name] = out
+				_forward_from_node(tgt, out, conns, name_to_node, outputs)
 
 func _on_graph_node_selected(node_name: StringName) -> void:
 	var node := graph.get_node_or_null(String(node_name))
@@ -568,7 +746,40 @@ func _populate_inspector_for_part(p: PartNode) -> void:
 				var info := Label.new()
 				info.text = "Wheel instance not ready"
 				inspector_content.add_child(info)
+		"steam_source":
+			if p.part_instance and p.part_instance is SteamSource:
+				var src := p.part_instance as SteamSource
+				_inspector_slider("Amplitude", 0.1, 5.0, 0.01, src.amplitude, func(v: float): src.set_amplitude(v))
+				_inspector_slider("Frequency", 0.1, 3.0, 0.01, src.frequency, func(v: float): src.set_frequency(v))
+				_inspector_slider("Noise", 0.0, 1.0, 0.01, src.noise_level, func(v: float): src.set_noise_level(v))
+				_inspector_slider("Channels", 1, 8, 1, src.num_channels, func(v: float): src.set_num_channels(int(v)))
+				var info3 := Label.new()
+				info3.text = src.get_source_status()
+				inspector_content.add_child(info3)
+		"signal_loom":
+			if p.part_instance and p.part_instance is SignalLoom:
+				var loom := p.part_instance as SignalLoom
+				_inspector_slider("Input Channels", 1, 8, 1, loom.input_channels, func(v: float): loom.set_input_channels(int(v)))
+				_inspector_slider("Output Width", 1, 16, 1, loom.output_width, func(v: float): loom.set_output_width(int(v)))
+				_inspector_slider("Signal Strength", 0.0, 2.0, 0.01, loom.signal_strength, func(v: float): loom.set_signal_strength(v))
 		_:
 			var info2 := Label.new()
 			info2.text = p.get_part_status()
 			inspector_content.add_child(info2)
+
+func _inspector_slider(label_text: String, min_v: float, max_v: float, step: float, cur: float, on_change: Callable) -> void:
+	var row := HBoxContainer.new()
+	var lbl := Label.new()
+	lbl.text = label_text
+	row.add_child(lbl)
+	var knob_script := load("res://game/ui/controls/knob.gd")
+	var knob: Control = knob_script.new()
+	knob.min_value = min_v
+	knob.max_value = max_v
+	knob.step = step
+	knob.value = cur
+	knob.custom_minimum_size = Vector2(44, 44)
+	knob.value_changed.connect(func(v: float): on_change.call(v))
+	row.add_child(knob)
+	inspector_content.add_child(row)
+
