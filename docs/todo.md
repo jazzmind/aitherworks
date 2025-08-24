@@ -4,8 +4,8 @@
 - [x] Add `Steam Source` to palettes and tutorial; ensure it connects to `Signal Loom`.
 - [x] Add `Spyglass` inspection window trigger from node context menu or double‑click.
 - [x] Persist inspection window position; allow multiple spyglasses.
-- [ ] Forward pass: visualize wire activity (pulse/tint) along GraphEdit connections.
-- [ ] Backprop pass: visualize gradient flow in reverse with red hues.
+- [x] Forward pass: visualize wire activity (pulse/tint) along GraphEdit connections.
+- [x] Backprop pass: visualize gradient flow in reverse with red hues.
 
 ## YAML/Specs
 - [x] Fix SpecLoader to handle `key:` followed by lists (sequences).
@@ -17,29 +17,29 @@
 - [x] Implement `SteamSource` and data patterns.
 - [x] Implement `Spyglass` and `InspectionWindow`.
 - [x] Add `AdderManifold`, `ActivationGate` functional scripts (sum / ReLU).
-- [ ] Connect engine training loop to graph topology (not just demo paths).
+- [x] Connect engine training loop to graph topology (not just demo paths).
 
 ## Workbench UI
-- [ ] Align Component Drawers strictly to `allowed_parts` ordering from spec.
+- [x] Align Component Drawers strictly to `allowed_parts` ordering from spec.
 - [ ] Replace generic sliders/checkboxes with steampunk toggles/knobs.
-- [ ] Make Inspector context‑aware: show properties of selected `PartNode`.
-- [ ] Add per‑part editors (e.g., WeightWheel spokes/weights list with knobs).
-- [ ] Fix initial anchors/offsets so layout is centered without manual offsets.
+- [x] Make Inspector context‑aware: show properties of selected `PartNode`.
+- [x] Add per‑part editors (e.g., WeightWheel spokes/weights list with knobs).
+- [x] Fix initial anchors/offsets so layout is centered without manual offsets.
 
 ## Tutorial/UX
 - [x] Level selection placeholder and gating (must select Act I L1, then Load).
 - [ ] Tutorial: highlight dropdown, then Load; validate exact selection.
 - [x] Tutorial steps for placing `Steam Source → Signal Loom → Weight Wheel → Spyglass`.
-- [ ] Show story panel messages in BBCode with proper sizes once font setup is final.
+- [x] Show story panel messages in BBCode with proper sizes once font setup is final.
 
 ## Theming
-- [ ] Create steampunk toggle switch (2‑state) control.
-- [ ] Create rotary knob control (TextureProgress‑based) for values.
+- [x] Create steampunk toggle switch (2‑state) control.
+- [x] Create rotary knob control (TextureProgress‑based) for values.
 - [ ] Update `steampunk_theme.tres` to style GraphEdit wires, buttons, panels.
 
 ## Title/Backstory
-- [ ] Ensure backstory scene uses large readable font and inline illustrations.
-- [ ] Title screen: fix overlapping animation and clickable Settings.
+- [x] Ensure backstory scene uses large readable font and inline illustrations.
+- [x] Title screen: fix overlapping animation and clickable Settings.
 
 ## Stability/Logging
 - [ ] Add DEBUG on PartNode creation (id, ports, instance class) [in code].

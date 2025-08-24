@@ -244,12 +244,19 @@ func on_train_pressed() -> void:
 	var packed: Array = _lanes_and_epochs_from_spec()
 	var lanes: int = int(packed[0])
 	var epochs: int = int(packed[1])
-	engine.set_num_lanes(lanes)
-	for e in range(epochs):
-		var samples: Array = _make_synthetic_samples(lanes)
-		var loss: float = engine.run_epoch(samples)
-		_log("epoch %d loss=%.4f" % [e + 1, loss])
-	_sync_weight_ui()
+	# If there is a built graph with connections, train over it; otherwise use engine fallback
+	var conns: Array = graph.get_connection_list()
+	if conns.is_empty():
+		engine.set_num_lanes(lanes)
+		for e in range(epochs):
+			var samples: Array = _make_synthetic_samples(lanes)
+			var loss: float = engine.run_epoch(samples)
+			_log("epoch %d loss=%.4f" % [e + 1, loss])
+		_sync_weight_ui()
+	else:
+		for e in range(epochs):
+			var loss := _train_graph_once(conns)
+			_log("epoch %d graph_loss=%.4f" % [e + 1, loss])
 	# tutorial.notify("trained")  # Disabled
 	story_tutorial.notify_action("start_training")
 
@@ -595,6 +602,89 @@ func _pulse_connection(from_node: String, from_port: int, to_node: String, to_po
 		# Fallback: temporarily select the connection to hint activity
 		graph.set_selected(None)
 		await get_tree().create_timer(0.01).timeout
+
+func _train_graph_once(conns: Array) -> float:
+	# Simple training over the current graph: forward from steam sources, accumulate outputs,
+	# compute loss against spec target if present, and apply gradients to WeightWheels.
+	var part_nodes: Array[PartNode] = []
+	for child in graph.get_children():
+		if child is PartNode:
+			part_nodes.append(child)
+	if part_nodes.is_empty():
+		return 0.0
+	# Map names to nodes
+	var name_to_node: Dictionary = {}
+	for n in part_nodes:
+		name_to_node[n.name] = n
+	# Forward pass: breadth-first from steam_source(s)
+	var outputs: Dictionary = {}
+	# Find sources
+	var sources: Array = []
+	for pn in part_nodes:
+		if pn.part_id == "steam_source":
+			sources.append(pn)
+	if sources.is_empty():
+		# fallback: signal_loom as a starting node with dummy inputs
+		for pn in part_nodes:
+			if pn.part_id == "signal_loom":
+				sources.append(pn)
+	# Forward
+	for s in sources:
+		var out_val: float = 0.0
+		if s.part_id == "steam_source":
+			out_val = s.process_inputs([])
+		else:
+			out_val = s.process_inputs([1.0, 0.5, -0.3])
+		outputs[s.name] = out_val
+		# propagate
+		_forward_from_node(s, out_val, conns, name_to_node, outputs)
+	# Determine targets
+	var target: float = 0.0
+	if current_spec.has("targets") and current_spec["targets"].has("pattern"):
+		# use average of pattern as scalar goal for this simple graph trainer
+		var patt: Array = current_spec["targets"]["pattern"]
+		for v in patt:
+			target += float(v)
+		target /= max(1, patt.size())
+	# Identify terminals (nodes with no outgoing edges)
+	var to_names: Array = []
+	for c in conns:
+		to_names.append(str(c["to"]))
+	var terminals: Array[PartNode] = []
+	for pn2 in part_nodes:
+		if pn2.name not in to_names:
+			terminals.append(pn2)
+	# Compute loss as MSE across terminal outputs vs target
+	var total_loss: float = 0.0
+	var grads_per_wheel: Dictionary = {}
+	for t in terminals:
+		var y_hat := float(outputs.get(t.name, 0.0))
+		var err := (y_hat - target)
+		total_loss += err * err
+		# Backprop only into direct upstream WeightWheels for now
+		for c2 in conns:
+			if str(c2["to"]) == t.name:
+				var up_name := str(c2["from"])
+				if name_to_node.has(up_name):
+					var up_node: PartNode = name_to_node[up_name]
+					if up_node.part_id == "weight_wheel" and up_node.part_instance is WeightWheel:
+						grads_per_wheel[up_node.name] = float(err)
+	# Apply gradients to wheels
+	for k in grads_per_wheel.keys():
+		var wheel_node: PartNode = name_to_node[k]
+		var wheel := wheel_node.part_instance as WeightWheel
+		wheel.apply_gradients(grads_per_wheel[k])
+	return total_loss / max(1, terminals.size())
+
+func _forward_from_node(node: PartNode, input_value: float, conns: Array, name_to_node: Dictionary, outputs: Dictionary) -> void:
+	for c in conns:
+		if str(c["from"]) == node.name:
+			var target_name := str(c["to"])
+			if name_to_node.has(target_name):
+				var tgt: PartNode = name_to_node[target_name]
+				var out := tgt.process_inputs([input_value])
+				outputs[target_name] = out
+				_forward_from_node(tgt, out, conns, name_to_node, outputs)
 
 func _on_graph_node_selected(node_name: StringName) -> void:
 	var node := graph.get_node_or_null(String(node_name))
