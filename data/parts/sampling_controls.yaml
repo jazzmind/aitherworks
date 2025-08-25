@@ -1,0 +1,23 @@
+id: sampling_controls
+name: "Sampling Controls"
+category: control
+description: |
+  Adjust temperature, top-k, and top-p to see how sampling changes outputs.
+
+visual:
+  scene: "res://game/parts/sampling_controls.tscn"
+  scale: [1.0, 1.0, 1.0]
+
+simulation:
+  type: transformer_sampling
+  inputs: 1
+  outputs: 2
+  parameters:
+    temperature: 1.0
+    top_k: 3
+    top_p: 0.95
+
+ports:
+  in-1: logits_topk         # {ids:[], logits:[]}
+  out-1: params             # {temperature, top_k, top_p}
+  out-2: sampled_token_id   # int

@@ -1,0 +1,23 @@
+id: attention_head_viewer
+name: "Attention Head Viewer"
+category: visualization
+description: |
+  Visualize self-attention as a heatmap for a selected layer and head.
+
+visual:
+  scene: "res://game/parts/attention_head_viewer.tscn"
+  scale: [1.0, 1.0, 1.0]
+
+simulation:
+  type: transformer_attention_view
+  inputs: 2
+  outputs: 1
+  parameters:
+    layer: 0
+    head: 0
+    show_arcs: true
+
+ports:
+  in-1: attention_weights   # [L,H,S,S] packed/normalized
+  in-2: tokens              # [S] strings
+  out-1: selected_span      # [start,end]

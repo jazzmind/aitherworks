@@ -1,0 +1,21 @@
+id: logits_explorer
+name: "Logits Explorer"
+category: visualization
+description: |
+  Inspect next-token logits/probabilities and see how parameters change outputs.
+
+visual:
+  scene: "res://game/parts/logits_explorer.tscn"
+  scale: [1.0, 1.0, 1.0]
+
+simulation:
+  type: transformer_logits_view
+  inputs: 2
+  outputs: 1
+  parameters:
+    show_topk: 5
+
+ports:
+  in-1: token_vocab_subset  # ids->strings map
+  in-2: logits_topk         # {ids:[], logits:[]}
+  out-1: chosen_token_id    # int

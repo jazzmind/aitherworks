@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "model_name": "gpt2-small",
+    "layers": 2,
+    "heads": 4,
+    "tokenizer": "gpt2",
+    "sequence_max": 16,
+    "vocab_subset": [464, 3290, 318, 262, 198, 50256]
+  },
+  "tokens": {
+    "ids": [464, 3290, 318, 262],
+    "text": ["The", "bridge", "is", "the"],
+    "offsets": [[0,3],[4,10],[11,13],[14,17]]
+  },
+  "attention": {
+    "shape": [2, 4, 4, 4],
+    "dtype": "uint8",
+    "scale": 255,
+    "data": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "logits": {
+    "per_position": [
+      {"topk_ids": [262, 198, 50256], "topk_logits": [7.1, 6.4, 5.9]},
+      {"topk_ids": [262, 198, 50256], "topk_logits": [7.3, 6.2, 6.0]},
+      {"topk_ids": [262, 198, 50256], "topk_logits": [7.0, 6.3, 5.8]},
+      {"topk_ids": [262, 198, 50256], "topk_logits": [7.5, 6.5, 6.1]}
+    ],
+    "temperature_default": 1.0
+  },
+  "extras": {}
+}
