@@ -22,8 +22,8 @@ simulation:
 
 # Port configuration
 ports:
-  north: "input"     # Input signal to be weighted
-  south: "output"    # Weighted output signal
+  in-1: "input"     # Input signal to be weighted
+  out-1: "output"    # Weighted output signal
 
 # Steampunk flavor
 materials: ["brass", "iron", "copper"]

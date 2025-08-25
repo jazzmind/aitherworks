@@ -37,8 +37,8 @@ simulation:
 
 # Ports define how this part connects to other parts in the
 # spatial grid.  The coordinate system and port orientation will be
-# interpreted by the plugin when placing scenes.  Use cardinal
-# directions (north/east/south/west) to specify where signals flow.
+# interpreted by the plugin when placing scenes.  Use port names
+# (in-1/out-1) to specify where signals flow.
 ports:
-  north: input
-  south: output
+  in-1: input
+  out-1: output

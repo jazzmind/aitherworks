@@ -8,8 +8,8 @@ Examples:
 
 ```yaml
 ports:
-  data_in: input
-  steam_out: output
+  in-1: input
+  out-1: output
 ```
 
 Legacy (allowed, but consider migrating):

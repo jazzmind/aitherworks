@@ -23,7 +23,7 @@ simulation:
   learnable: false
 
 ports:
-  north: query
-  south: retrieved_text
-  east: retrieved_embeddings
+  in-1: query
+  out-1: retrieved_text
+  out-2: retrieved_embeddings
 
