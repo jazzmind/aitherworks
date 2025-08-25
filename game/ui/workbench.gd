@@ -24,6 +24,7 @@ extends Control
 @onready var fullscreen_toggle := $SettingsDialog/VBox/Fullscreen
 @onready var run_fwd_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunFwd
 @onready var run_back_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/RunBack
+@onready var eval_btn := $MarginContainer/MainLayout/CenterPanel/TopBar/EvalButton
 @onready var story_dialog := $StoryDialog
 @onready var story_label := $StoryDialog/StoryLabel
 # @onready var tutorial := $TutorialLayer
@@ -67,6 +68,7 @@ func _ready() -> void:
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	run_fwd_btn.pressed.connect(_on_run_forward)
 	run_back_btn.pressed.connect(_on_run_backprop)
+	eval_btn.pressed.connect(_on_evaluate)
 	# Connect drawer headers
 	input_header.pressed.connect(_on_drawer_toggled.bind(input_palette))
 	processing_header.pressed.connect(_on_drawer_toggled.bind(processing_palette))
@@ -382,6 +384,8 @@ func _apply_spec_to_ui(spec: Dictionary) -> void:
 	if spec.has("story") and spec["story"].has("text"):
 		story_label.text = str(spec["story"]["text"]) 
 		story_dialog.popup_centered()
+	else:
+		story_label.text = "Welcome to AItherworks! Build and train your first contraption."
 	# set up lanes and per-lane controls
 	var packed: Array = _lanes_and_epochs_from_spec()
 	var lanes: int = int(packed[0])
@@ -602,6 +606,21 @@ func _pulse_connection(from_node: String, from_port: int, to_node: String, to_po
 		# Fallback: temporarily select the connection to hint activity
 		graph.set_selected(None)
 		await get_tree().create_timer(0.01).timeout
+
+func _on_evaluate() -> void:
+	var res := Evaluator.evaluate_graph(graph, current_spec)
+	if not res.ok:
+		_log("❌ Eval failed: " + String(res.get("reason", "unknown")))
+		return
+	var acc := float(res.get("accuracy", 0.0))
+	var m := res.get("metrics", {})
+	_log("📊 Eval: acc=%.3f mse=%.4f samples=%d" % [acc, float(m.get("mse", 0.0)), int(m.get("samples", 0))])
+	_log("🌫️ Steam=%.2f 💧 Water=%.2f ⏱️ Infer=%.2fms Train=%.2fms" % [float(m.get("steam_used", 0.0)), float(m.get("water_used", 0.0)), float(m.get("inference_ms", 0.0)), float(m.get("training_ms", 0.0))])
+	var verdict := res.get("verdict", {"passed": false, "reasons": ["no verdict"]})
+	if bool(verdict.get("passed", false)):
+		_log("✅ PASS")
+	else:
+		_log("❌ FAIL: " + ", ".join(verdict.get("reasons", [])))
 
 func _train_graph_once(conns: Array) -> float:
 	# Simple training over the current graph: forward from steam sources, accumulate outputs,

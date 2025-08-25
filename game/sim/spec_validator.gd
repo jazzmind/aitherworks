@@ -49,6 +49,9 @@ func validate_parts_and_specs(parts_dir: String, specs_dir: String) -> Dictionar
 				var v := String(data["ports"][k])
 				if v != "input" and v != "output":
 					messages.append("⚠️ Port '"+k+"' on "+id+" is '"+v+"' (expected 'input'|'output')")
+				# Normalize: allow cardinal names and map to in/out in docs; just warn for now
+				if k in ["north", "east", "south", "west"]:
+					messages.append("ℹ️ Port uses cardinal key '"+k+"' on "+id+"; consider 'in'/'out' naming.")
 	# Specs
 	var catalog := _load_catalog(parts_dir)
 	var spec_files := _list_yaml(specs_dir)
