@@ -1,0 +1,22 @@
+id: layer_navigator
+name: "Layer Navigator"
+category: control
+description: |
+  Step through layers and toggle heads to explore compositional attention.
+
+visual:
+  scene: "res://game/parts/layer_navigator.tscn"
+  scale: [1.0, 1.0, 1.0]
+
+simulation:
+  type: transformer_layer_control
+  inputs: 1
+  outputs: 2
+  parameters:
+    current_layer: 0
+    head_mask: []
+
+ports:
+  in-1: attention_weights   # [L,H,S,S]
+  out-1: layer_index        # int
+  out-2: head_mask_out      # [H] booleans

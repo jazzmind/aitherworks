@@ -1,0 +1,22 @@
+id: token_tape
+name: "Token Tape"
+category: visualization
+description: |
+  Displays input/output tokens, subwords, and selection state across steps.
+
+visual:
+  scene: "res://game/parts/token_tape.tscn"
+  scale: [1.0, 1.0, 1.0]
+
+simulation:
+  type: transformer_token_tape
+  inputs: 2
+  outputs: 2
+  parameters:
+    show_probabilities: true
+
+ports:
+  in-1: tokens              # [S] strings
+  in-2: next_token_probs    # top-k distribution
+  out-1: selected_token_idx # int
+  out-2: span_selection     # [start,end]

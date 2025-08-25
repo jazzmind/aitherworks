@@ -1,0 +1,52 @@
+# Mid-Act: Transformer Explainer Intro
+
+id: act_mid_transformer_explainer_intro
+name: "Transformer Explainer: Attention Basics"
+description: |
+  Explore how a tiny transformer focuses on words to predict the next token.
+  Toggle heads, step through layers, and adjust sampling to hit the target.
+
+story:
+  title: "Lines of Sight"
+  text: |
+    Brass lenses reveal invisible threads between words. Align the optics, and
+    the machine speaks with clarity.
+
+budget:
+  mass: 2000
+  pressure: 6
+  brass: 80
+
+allowed_parts:
+  - attention_head_viewer
+  - token_tape
+  - logits_explorer
+  - sampling_controls
+  - layer_navigator
+
+transformer_explainer:
+  trace: "res://data/traces/intro_attention_gpt2_small.json"
+  ui:
+    show_attention: true
+    show_logits: true
+    allow_sampling_controls: [temperature, top_k, top_p]
+    max_sequence_len: 16
+  defaults:
+    temperature: 1.0
+    top_k: 3
+    top_p: 0.95
+
+win_conditions:
+  - type: reach_target_token
+    token_text: "bridge"
+  - type: attention_head_focus
+    layer: 1
+    head: 2
+    min_weight_on_span:
+      span_tokens: ["The", "bridge"]
+      threshold: 0.3
+
+training:
+  optimizer: sgd
+  learning_rate: 0.05
+  epochs: 0  # no training; visualization-only
