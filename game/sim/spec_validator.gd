@@ -71,4 +71,3 @@ func validate_parts_and_specs(parts_dir: String, specs_dir: String) -> Dictionar
 	if ok:
 		messages.push_front("✅ YAML validation OK ("+str(part_files.size())+" parts, "+str(spec_files.size())+" specs)")
 	return {"ok": ok, "messages": messages}
-
