@@ -26,20 +26,20 @@ jobs:
       - name: Install Godot 4.4 headless
         run: |
           GODOT_VERSION=4.4.1-stable
-          wget https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v$GODOT_VERSION_linux.x86_64.zip -O godot.zip
+          wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip -O godot.zip
           unzip -q godot.zip -d godot
-          sudo mv godot/Godot_v$GODOT_VERSION_linux.x86_64 /usr/local/bin/godot
+          sudo mv godot/Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
           chmod +x /usr/local/bin/godot
 
       - name: Install export templates
         run: |
           GODOT_VERSION=4.4.1-stable
-          mkdir -p ~/.local/share/godot/export_templates/$GODOT_VERSION
-          wget https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v$GODOT_VERSION_export_templates.tpz -O templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}
+          wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz -O templates.tpz
           mkdir -p templates && bsdtar -xf templates.tpz -C templates
-          mv templates/templates/linux_export_templates/* ~/.local/share/godot/export_templates/$GODOT_VERSION/ || true
+          mv templates/templates/linux_export_templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
           # Fallback: some archives place files at root
-          mv templates/* ~/.local/share/godot/export_templates/$GODOT_VERSION/ || true
+          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
 
       - name: Export HTML5
         run: |
