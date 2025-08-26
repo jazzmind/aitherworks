@@ -1,21 +1,30 @@
 extends Control
 
-## Backstory Scene - Animated story presentation
-# Shows the game's lore with typewriter effect before starting tutorial
+## Enhanced Backstory Scene - Animated story presentation with parallax backgrounds
+# Shows the game's lore with typewriter effect and parallax backgrounds
+# Reusable for different chapters by setting chapter_number
 
-@onready var story_text := $VBoxContainer/StoryPanel/ScrollContainer/StoryText
-@onready var continue_btn := $VBoxContainer/ButtonContainer/ContinueButton
-@onready var skip_btn := $VBoxContainer/ButtonContainer/SkipButton
+@onready var background_layers := $BackgroundLayers
+@onready var story_card := $StoryCard
+@onready var story_text := $StoryCard/VBoxContainer/StoryText
+@onready var continue_btn := $StoryCard/VBoxContainer/ButtonContainer/ContinueButton
+@onready var skip_btn := $StoryCard/VBoxContainer/ButtonContainer/SkipButton
 @onready var typewriter_timer := $TypewriterTimer
+@onready var parallax_timer := $ParallaxTimer
 
 var full_story_text := ""
 var current_char_index := 0
 var is_typing := false
+var chapter_number := 1  # Default to chapter 1
+var background_textures := {}
+var parallax_speeds := [0.1, 0.05, 0.02, 0.01]  # Different speeds for each layer
 
 func _ready() -> void:
 	continue_btn.pressed.connect(_on_continue_pressed)
 	skip_btn.pressed.connect(_on_skip_pressed)
 	typewriter_timer.timeout.connect(_on_typewriter_tick)
+	parallax_timer.timeout.connect(_on_parallax_tick)
+	
 	# Ensure RichTextLabel parses BBCode
 	story_text.bbcode_enabled = true
 	
@@ -24,9 +33,89 @@ func _ready() -> void:
 	
 	# Start typewriter effect
 	_start_typewriter_effect()
+	
+	# Start parallax effect
+	_start_parallax_effect()
 
 	# Apply icons
 	_apply_backstory_icons()
+
+func set_chapter(chapter: int) -> void:
+	chapter_number = chapter
+	_setup_backgrounds()
+
+func _setup_backgrounds() -> void:
+	# Clear existing backgrounds
+	for child in background_layers.get_children():
+		child.queue_free()
+	
+	# Load background layers for the specified chapter
+	var chapter_path := "res://assets/backrounds/" + str(chapter_number) + "/"
+	
+	# Check what background files exist for this chapter
+	var dir := DirAccess.open(chapter_path)
+	if not dir:
+		print("Warning: Could not open background directory for chapter ", chapter_number)
+		return
+	
+	var files := dir.get_files()
+	var layer_count := 0
+	
+	# Create background layers (we'll use up to 4 numbered layers)
+	for i in range(1, 5):
+		var filename := str(i) + ".png"
+		var filepath := chapter_path + filename
+		
+		if FileAccess.file_exists(filepath):
+			var texture := load(filepath) as Texture2D
+			if texture:
+				var layer := TextureRect.new()
+				layer.name = "Layer" + str(i)
+				layer.texture = texture
+				layer.expand_mode = 1  # EXPAND_FILL
+				layer.anchors_preset = Control.PRESET_FULL_RECT
+				layer.anchor_right = 1.0
+				layer.anchor_bottom = 1.0
+				layer.grow_horizontal = 2
+				layer.grow_vertical = 2
+				
+				# Set initial position for parallax effect
+				layer.position = Vector2.ZERO
+				
+				background_layers.add_child(layer)
+				background_textures[layer] = texture
+				layer_count += 1
+	
+	# If no numbered layers found, try to use orig.png
+	if layer_count == 0:
+		var orig_path := chapter_path + "orig.png"
+		if FileAccess.file_exists(orig_path):
+			var texture := load(orig_path) as Texture2D
+			if texture:
+				var layer := TextureRect.new()
+				layer.name = "Background"
+				layer.texture = texture
+				layer.expand_mode = 1  # EXPAND_FILL
+				layer.anchors_preset = Control.PRESET_FULL_RECT
+				layer.anchor_right = 1.0
+				layer.anchor_bottom = 1.0
+				layer.grow_horizontal = 2
+				layer.grow_vertical = 2
+				background_layers.add_child(layer)
+				background_textures[layer] = texture
+
+func _start_parallax_effect() -> void:
+	parallax_timer.wait_time = 0.016  # ~60 FPS
+	parallax_timer.start()
+
+func _on_parallax_tick() -> void:
+	var children := background_layers.get_children()
+	for i in range(children.size()):
+		var child := children[i] as TextureRect
+		if child and i < parallax_speeds.size():
+			var speed: float = parallax_speeds[i]
+			var new_x := fmod(child.position.x - speed, 100)  # Loop every 100 pixels
+			child.position.x = new_x
 
 func _apply_backstory_icons() -> void:
 	var skip_icon := "res://assets/icons/ui_skip.svg"
@@ -41,9 +130,18 @@ func _apply_backstory_icons() -> void:
 			continue_btn.icon = t2
 
 func _load_backstory() -> void:
+	# Try to load chapter-specific backstory first
+	var chapter_backstory_path := "res://docs/act-" + _get_act_name(chapter_number) + ".md"
 	var backstory_path := "res://docs/backstory.md"
-	if FileAccess.file_exists(backstory_path):
-		var file := FileAccess.open(backstory_path, FileAccess.READ)
+	
+	var file_path := ""
+	if FileAccess.file_exists(chapter_backstory_path):
+		file_path = chapter_backstory_path
+	elif FileAccess.file_exists(backstory_path):
+		file_path = backstory_path
+	
+	if file_path != "":
+		var file := FileAccess.open(file_path, FileAccess.READ)
 		var raw_text := file.get_as_text()
 		file.close()
 		
@@ -51,80 +149,80 @@ func _load_backstory() -> void:
 		full_story_text = _convert_markdown_to_bbcode(raw_text)
 	else:
 		# Fallback story if file doesn't exist
-		full_story_text = """[center][color=goldenrod][font_size=38]⚙️ The Chronicle of AItherworks ⚙️[/font_size][/color][/center]
+		full_story_text = _get_fallback_story()
 
-[center][color=peru][font_size=26][i]Being a True Account of the City That Learned to Listen[/i][/font_size][/color][/center]
+func _get_act_name(chapter: int) -> String:
+	match chapter:
+		1: return "I"
+		2: return "II"
+		3: return "III"
+		4: return "IV"
+		5: return "V"
+		6: return "VI"
+		_: return "I"
+
+func _get_fallback_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Chapter """ + str(chapter_number) + """ ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]A New Chapter Begins[/i][/font_size][/color][/center]
 
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
-[font_size=20]
-In the brass-bound metropolis of [color=orange][b]New Babbage[/b][/color], where steam rises from a thousand copper chimneys and brass gears turn in endless harmony, there existed a peculiar guild unlike any other. The [color=gold][b]Guild of AItherworks Engineers[/b][/color] had discovered something extraordinary: machines that could [color=lightgreen][i][b]learn[/b][/i][/color].
-[/font_size]
-[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
 
-[color=lightblue][font_size=22][b]🔍 The Great Discovery[/b][/font_size][/color]
-[font_size=20]
-It began with [color=orange][b]Master Cogwright's[/b][/color] great revelation. While studying the ancient texts of the Analytical Engine builders by candlelight, he found that by connecting brass wheels, steam pipes, and crystallized aether in specific patterns, machines could adapt their behavior based on experience—much like how a craftsman's hands grow more skilled with practice.
-[/font_size]
-[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩 ⚙️ 🔧[/center]
+[font_size=24]
+[center][color=lightblue][b]Welcome to Chapter """ + str(chapter_number) + """ of your AItherworks journey![/b][/color][/center]
 
-[color=lightblue][font_size=22][b]🏭 The Learning Machines[/b][/font_size][/color]
-[font_size=20]
-These wondrous contraptions, known as [color=gold][b]Learning Engines[/b][/color], possessed an almost mystical ability:
-
-• [color=lightgreen][b]🧵 Signal Looms[/b][/color] could weave complex patterns from raw data streams
-• [color=lightgreen][b]⚖️ Weight Wheels[/b][/color] adjusted themselves automatically to improve performance  
-• [color=lightgreen][b]🕸️ Neural Networks[/b][/color] of brass and steam could recognize faces and forms
-• [color=lightgreen][b]💎 Memory Banks[/b][/color] of crystallized aether stored learned knowledge eternally
+[color=burlywood]In this chapter, you will discover new mysteries of the steam-powered learning machines and face challenges that will test your understanding of the ancient arts of artificial intelligence.[/color]
 [/font_size]
-[center]🎯 ⚙️ 🎯 ⚙️ 🎯 ⚙️ 🎯 ⚙️ 🎯[/center]
 
-[color=lightblue][font_size=22][b]🌟 The Great Work[/b][/font_size][/color]
-[font_size=20]
-But the guild's greatest achievement was yet to come. They discovered that by teaching these machines the patterns of human language, thought, and creativity, they could build [color=cyan][b]thinking assistants[/b][/color] that understood context, nuance, and meaning—true companions of brass and steam.
-[/font_size]
-[center]⭐ ⚙️ ⭐ ⚙️ ⭐ ⚙️ ⭐ ⚙️ ⭐[/center]
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
 
-[color=orange][font_size=22][b]🎓 Your Apprenticeship[/b][/font_size][/color]
-[font_size=20]
-Now, young apprentice, you stand at the threshold of this extraordinary art. You will learn to build [color=yellow][b]machines that think[/b][/color], [color=yellow][b]contraptions that create[/b][/color], and [color=yellow][b]engines that understand[/b][/color]. The steam-powered future of artificial intelligence awaits your skilled hands.
+[color=lightblue][font_size=26][b]🎯 Your Mission[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Prepare yourself, apprentice. The Guild of AItherworks Engineers has prepared new lessons, new machines, and new discoveries that await your skilled hands and curious mind.[/color]
 [/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 Ready to Begin?[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]The steam is rising, the gears are turning, and the aether is flowing. Your journey into the mysteries of learning machines continues...[/color]
+[/font_size]
+
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
 
-[center][color=goldenrod][i][font_size=20]Welcome to the Guild of AItherworks Engineers[/font_size][/i][/color][/center]
-[center][color=peru][i][font_size=20]May your gears turn true and your steam pressure hold steady[/font_size][/i][/color][/center]
+[center][color=goldenrod][i][font_size=24]Chapter """ + str(chapter_number) + """ - The Adventure Continues[/font_size][/i][/color][/center]
 
-[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]
-"""
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
 
 func _convert_markdown_to_bbcode(markdown: String) -> String:
 	var bbcode := markdown
 	
-	# Add steampunk styling header
-	bbcode = """[center][color=goldenrod][font_size=38]⚙️ The Chronicle of AItherworks ⚙️[/font_size][/color][/center]
+	# Add chapter header
+	bbcode = """[center][color=goldenrod][font_size=42]⚙️ Chapter """ + str(chapter_number) + """ ⚙️[/font_size][/color][/center]
 
-[center][color=peru][font_size=26][i]Being a True Account of the City That Learned to Listen[/i][/font_size][/color][/center]
+[center][color=peru][font_size=28][i]A New Chapter Begins[/i][/font_size][/color][/center]
 
 [center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
 
 """ + bbcode
 	
 	# Convert markdown headers to BBCode with steampunk styling
-	bbcode = bbcode.replace("## ", "[color=lightblue][font_size=20][b]🏭 ")
-	bbcode = bbcode.replace("# ", "[color=orange][font_size=24][b]📜 ")
-	bbcode = bbcode.replace("### ", "[color=lightgreen][font_size=18][b]⚙️ ")
+	bbcode = bbcode.replace("## ", "[color=lightblue][font_size=26][b]🏭 ")
+	bbcode = bbcode.replace("# ", "[color=orange][font_size=32][b]📜 ")
+	bbcode = bbcode.replace("### ", "[color=lightgreen][font_size=22][b]⚙️ ")
 	
 	# Add closing tags for headers and improve formatting
 	var lines := bbcode.split("\n")
 	for i in range(lines.size()):
-		if lines[i].begins_with("[color=orange][font_size=24][b]📜"):
+		if lines[i].begins_with("[color=orange][font_size=32][b]📜"):
 			lines[i] += "[/b][/font_size][/color]"
-		elif lines[i].begins_with("[color=lightblue][font_size=20][b]🏭"):
+		elif lines[i].begins_with("[color=lightblue][font_size=26][b]🏭"):
 			lines[i] += "[/b][/font_size][/color]"
-		elif lines[i].begins_with("[color=lightgreen][font_size=18][b]⚙️"):
+		elif lines[i].begins_with("[color=lightgreen][font_size=22][b]⚙️"):
 			lines[i] += "[/b][/font_size][/color]"
 		# Add steampunk flavor to regular paragraphs
 		elif lines[i].strip_edges() != "" and not lines[i].begins_with("["):
-			lines[i] = "[color=burlywood]" + lines[i] + "[/color]"
+			lines[i] = "[color=burlywood][font_size=22]" + lines[i] + "[/font_size][/color]"
 	bbcode = "\n".join(lines)
 	
 	# Convert markdown emphasis with colors
@@ -157,7 +255,7 @@ func _on_typewriter_tick() -> void:
 		story_text.visible_characters = current_char_index
 		
 		# Auto-scroll to bottom
-		var scroll_container := $VBoxContainer/StoryPanel/ScrollContainer
+		var scroll_container := $StoryCard/VBoxContainer/ScrollContainer
 		await get_tree().process_frame
 		scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
 	else:
@@ -169,7 +267,7 @@ func _finish_typewriter() -> void:
 	# Show all characters of the pre-rendered BBCode
 	story_text.visible_characters = -1
 	continue_btn.disabled = false
-	continue_btn.text = "⚙️ Begin Apprenticeship"
+	continue_btn.text = "⚙️ Begin Chapter " + str(chapter_number)
 
 func _on_skip_pressed() -> void:
 	if is_typing:

@@ -25,19 +25,34 @@ horizontal_alignment = 1
 vertical_alignment = 1
 offset_top = 40.0
 
-[node name="Body" type="RichTextLabel" parent="Panel"]
+[node name="Subtitle" type="Label" parent="Panel"]
 layout_mode = 2
-offset_top = 120.0
-offset_right = 1280.0
-offset_bottom = 620.0
-bbcode_enabled = true
-scroll_active = true
+text = "The Steam-Powered Learning Machines"
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+offset_top = 100.0
 
-[node name="StartButton" type="Button" parent="Panel"]
+[node name="ButtonContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-text = "Enter the Foundry"
 offset_left = 540.0
-offset_top = 640.0
+offset_top = 400.0
 offset_right = 740.0
-offset_bottom = 684.0
+offset_bottom = 500.0
+
+[node name="StartButton" type="Button" parent="Panel/ButtonContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 50)
+text = "⚙️ Enter the Foundry"
+theme_override_font_sizes/font_size = 18
+
+[node name="Spacer" type="Control" parent="Panel/ButtonContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+
+[node name="BackstoryButton" type="Button" parent="Panel/ButtonContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 50)
+text = "📜 Read the Tale"
+theme_override_font_sizes/font_size = 18
 
