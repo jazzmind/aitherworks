@@ -36,7 +36,7 @@ jobs:
           GODOT_VERSION=4.4.1-stable
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}
           wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz -O templates.tpz
-          mkdir -p templates && tar -xf templates.tpz -C templates
+          mkdir -p templates && unzip -q templates.tpz -d templates
           mv templates/templates/linux_export_templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
           # Fallback: some archives place files at root
           mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
