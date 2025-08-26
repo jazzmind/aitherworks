@@ -49,9 +49,9 @@ jobs:
 
       - name: Inject COI (mini-coi) for threads
         run: |
-          curl -sSfL https://cdn.jsdelivr.net/npm/mini-coi@0.5.0/mini-coi.js -o build/web/mini-coi.js
+          curl -sSfL https://cdn.jsdelivr.net/npm/coi-serviceworker@0.1.7/coi-serviceworker.min.js -o build/web/coi-serviceworker.js
           # Insert script after first <head> occurrence
-          awk 'BEGIN{inserted=0} {print} /<head>/{if(!inserted){print "    <script src=\"mini-coi.js\" scope=\"./\"></script>"; inserted=1}}' build/web/index.html > build/web/index.html.tmp && mv build/web/index.html.tmp build/web/index.html
+          awk 'BEGIN{inserted=0} {print} /<head>/{if(!inserted){print "    <script src=\"coi-serviceworker.js\"></script>"; inserted=1}}' build/web/index.html > build/web/index.html.tmp && mv build/web/index.html.tmp build/web/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
