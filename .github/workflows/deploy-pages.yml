@@ -34,12 +34,13 @@ jobs:
       - name: Install export templates
         run: |
           GODOT_VERSION=4.4.1-stable
-          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}
+          TEMPLATES_VERSION=$(echo "${GODOT_VERSION}" | tr '-' '.') # -> 4.4.1.stable
+          mkdir -p ~/.local/share/godot/export_templates/${TEMPLATES_VERSION}
           wget https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz -O templates.tpz
           mkdir -p templates && unzip -q templates.tpz -d templates
-          mv templates/templates/linux_export_templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
-          # Fallback: some archives place files at root
-          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}/ || true
+          # Move template zips into the exact versioned directory Godot expects
+          mv templates/templates/* ~/.local/share/godot/export_templates/${TEMPLATES_VERSION}/ || true
+          mv templates/* ~/.local/share/godot/export_templates/${TEMPLATES_VERSION}/ || true
 
       - name: Export HTML5
         run: |
