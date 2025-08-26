@@ -6,7 +6,7 @@ extends Control
 
 @onready var background_layers := $BackgroundLayers
 @onready var story_card := $StoryCard
-@onready var story_text := $StoryCard/VBoxContainer/StoryText
+@onready var story_text := $StoryCard/VBoxContainer/ScrollContainer/StoryText
 @onready var continue_btn := $StoryCard/VBoxContainer/ButtonContainer/ContinueButton
 @onready var skip_btn := $StoryCard/VBoxContainer/ButtonContainer/SkipButton
 @onready var typewriter_timer := $TypewriterTimer
@@ -20,6 +20,36 @@ var background_textures := {}
 var parallax_speeds := [0.1, 0.05, 0.02, 0.01]  # Different speeds for each layer
 
 func _ready() -> void:
+	# Wait for the scene to be fully ready
+	await get_tree().process_frame
+	
+	print("Backstory scene ready, checking nodes...")
+	
+	# Verify all required nodes are available
+	if not story_text:
+		push_error("StoryText node not found!")
+		return
+	else:
+		print("StoryText node found successfully")
+		
+	if not continue_btn:
+		push_error("ContinueButton node not found!")
+		return
+	else:
+		print("ContinueButton node found successfully")
+		
+	if not skip_btn:
+		push_error("SkipButton node not found!")
+		return
+	else:
+		print("SkipButton node found successfully")
+		
+	if not background_layers:
+		push_error("BackgroundLayers node not found!")
+		return
+	else:
+		print("BackgroundLayers node found successfully")
+	
 	continue_btn.pressed.connect(_on_continue_pressed)
 	skip_btn.pressed.connect(_on_skip_pressed)
 	typewriter_timer.timeout.connect(_on_typewriter_tick)
@@ -36,6 +66,9 @@ func _ready() -> void:
 	
 	# Start parallax effect
 	_start_parallax_effect()
+	
+	# Setup default backgrounds for chapter 1
+	_setup_backgrounds()
 
 	# Apply icons
 	_apply_backstory_icons()
@@ -45,6 +78,13 @@ func set_chapter(chapter: int) -> void:
 	_setup_backgrounds()
 
 func _setup_backgrounds() -> void:
+	# Verify background_layers is available
+	if not background_layers:
+		push_error("BackgroundLayers not available for setup!")
+		return
+		
+	print("Setting up backgrounds for chapter ", chapter_number)
+		
 	# Clear existing backgrounds
 	for child in background_layers.get_children():
 		child.queue_free()
@@ -59,6 +99,7 @@ func _setup_backgrounds() -> void:
 		return
 	
 	var files := dir.get_files()
+	print("Found background files: ", files)
 	var layer_count := 0
 	
 	# Create background layers (we'll use up to 4 numbered layers)
@@ -85,9 +126,11 @@ func _setup_backgrounds() -> void:
 				background_layers.add_child(layer)
 				background_textures[layer] = texture
 				layer_count += 1
+				print("Created background layer ", i, " for chapter ", chapter_number)
 	
 	# If no numbered layers found, try to use orig.png
 	if layer_count == 0:
+		print("No numbered layers found, trying orig.png fallback")
 		var orig_path := chapter_path + "orig.png"
 		if FileAccess.file_exists(orig_path):
 			var texture := load(orig_path) as Texture2D
@@ -103,12 +146,20 @@ func _setup_backgrounds() -> void:
 				layer.grow_vertical = 2
 				background_layers.add_child(layer)
 				background_textures[layer] = texture
+				print("Created fallback background using orig.png")
+		else:
+			print("No orig.png found either, using no background")
+	
+	print("Background setup complete. Total layers: ", layer_count)
 
 func _start_parallax_effect() -> void:
 	parallax_timer.wait_time = 0.016  # ~60 FPS
 	parallax_timer.start()
 
 func _on_parallax_tick() -> void:
+	if not background_layers:
+		return
+		
 	var children := background_layers.get_children()
 	for i in range(children.size()):
 		var child := children[i] as TextureRect
@@ -118,6 +169,10 @@ func _on_parallax_tick() -> void:
 			child.position.x = new_x
 
 func _apply_backstory_icons() -> void:
+	if not skip_btn or not continue_btn:
+		push_warning("Buttons not available for icon loading!")
+		return
+		
 	var skip_icon := "res://assets/icons/ui_skip.svg"
 	var cont_icon := "res://assets/icons/ui_continue.svg"
 	if FileAccess.file_exists(skip_icon):
@@ -238,6 +293,10 @@ func _convert_markdown_to_bbcode(markdown: String) -> String:
 	return bbcode
 
 func _start_typewriter_effect() -> void:
+	if not story_text or not continue_btn:
+		push_error("Required nodes not available for typewriter effect!")
+		return
+		
 	current_char_index = 0
 	is_typing = true
 	# Pre-render full BBCode and reveal characters gradually
@@ -248,6 +307,10 @@ func _start_typewriter_effect() -> void:
 	typewriter_timer.start()
 
 func _on_typewriter_tick() -> void:
+	if not story_text:
+		push_error("StoryText not available for typewriter tick!")
+		return
+		
 	# Use the RichTextLabel's visible characters to gradually reveal pre-rendered BBCode
 	var total_chars: int = story_text.get_total_character_count()
 	if current_char_index < total_chars:
@@ -256,12 +319,17 @@ func _on_typewriter_tick() -> void:
 		
 		# Auto-scroll to bottom
 		var scroll_container := $StoryCard/VBoxContainer/ScrollContainer
-		await get_tree().process_frame
-		scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
+		if scroll_container and scroll_container.get_v_scroll_bar():
+			await get_tree().process_frame
+			scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
 	else:
 		_finish_typewriter()
 
 func _finish_typewriter() -> void:
+	if not story_text or not continue_btn:
+		push_error("Required nodes not available for finishing typewriter!")
+		return
+		
 	is_typing = false
 	typewriter_timer.stop()
 	# Show all characters of the pre-rendered BBCode
