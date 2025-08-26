@@ -98,8 +98,9 @@ func _update_inspection() -> void:
 	
 	# Check for PartNode wrapper
 	var part_instance = null
-	if connected_component.has_property("part_instance"):
-		part_instance = connected_component.part_instance
+	if connected_component.has_method("has_property"):
+		if connected_component.has_property("part_instance"):
+			part_instance = connected_component.part_instance
 	else:
 		part_instance = connected_component
 	
@@ -163,12 +164,12 @@ func _inspect_generic_component(component: Node) -> Dictionary:
 		"name": component.name,
 		"class": component.get_class()
 	}
-	
-	# Try to get some common properties
-	if component.has_property("input_values"):
-		data["input_values"] = component.input_values
-	if component.has_property("output_value"):
-		data["output_value"] = component.output_value
+	if component.has_method("has_property"):
+		# Try to get some common properties
+		if component.has_property("input_values"):
+			data["input_values"] = component.input_values
+		if component.has_property("output_value"):
+			data["output_value"] = component.output_value
 	
 	return data
 

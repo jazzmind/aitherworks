@@ -63,7 +63,7 @@ grow_vertical = 2
 [node name="StoryTitle" type="Label" parent="MarginContainer/MainLayout/LeftPanel/StoryArea/StoryContent"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "📜 Chronicle & Instructions"
+text = "Chronicle & Instructions"
 
 [node name="StoryScroll" type="ScrollContainer" parent="MarginContainer/MainLayout/LeftPanel/StoryArea/StoryContent"]
 layout_mode = 2
@@ -193,7 +193,7 @@ size_flags_vertical = 3
 [node name="DrawerTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "⚙️ Component Drawers"
+text = "Component Drawers"
 
 [node name="InputDrawer" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers"]
 layout_mode = 2
@@ -202,7 +202,7 @@ layout_mode = 2
 layout_mode = 2
 toggle_mode = true
 button_pressed = true
-text = "📥 Input Components"
+text = "Input Components"
 
 [node name="InputPalette" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers/InputDrawer"]
 layout_mode = 2
@@ -214,7 +214,7 @@ layout_mode = 2
 layout_mode = 2
 toggle_mode = true
 button_pressed = true
-text = "🔧 Processing Components"
+text = "Processing Components"
 
 [node name="ProcessingPalette" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers/ProcessingDrawer"]
 layout_mode = 2
@@ -225,7 +225,7 @@ layout_mode = 2
 [node name="OutputHeader" type="Button" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers/OutputDrawer"]
 layout_mode = 2
 toggle_mode = true
-text = "📤 Output Components"
+text = "Output Components"
 
 [node name="OutputPalette" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/ComponentDrawers/OutputDrawer"]
 layout_mode = 2
@@ -236,7 +236,7 @@ layout_mode = 2
 
 [node name="InspectorTitle" type="Label" parent="MarginContainer/MainLayout/RightPanel/Inspector"]
 layout_mode = 2
-text = "🔍 Inspector"
+text = "Inspector"
 
 [node name="InspectorContent" type="VBoxContainer" parent="MarginContainer/MainLayout/RightPanel/Inspector"]
 layout_mode = 2

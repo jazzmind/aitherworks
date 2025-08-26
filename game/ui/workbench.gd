@@ -101,6 +101,23 @@ func _ready() -> void:
 	if is_instance_valid(weight_slider):
 		weight_slider.value_changed.connect(_on_weight_changed)
 
+	# Apply icons to top bar buttons
+	_apply_topbar_icons()
+
+func _apply_topbar_icons() -> void:
+	var assign := func(node_path: String, icon_path: String):
+		var btn := get_node_or_null(node_path)
+		if btn and FileAccess.file_exists(icon_path):
+			var tex := load(icon_path) as Texture2D
+			if tex:
+				btn.icon = tex
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/LoadButton", "res://assets/icons/ui_continue.svg")
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/TrainButton", "res://assets/icons/gear.svg")
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/StepButton", "res://assets/icons/gear.svg")
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/ResetButton", "res://assets/icons/gear.svg")
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/ReplayTut", "res://assets/icons/ui_skip.svg")
+	assign.call("MarginContainer/MainLayout/CenterPanel/TopBar/Settings", "res://assets/icons/ui_settings.svg")
+
 func _populate_palette() -> void:
 	var input_parts = [
 		{

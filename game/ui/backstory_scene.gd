@@ -25,6 +25,21 @@ func _ready() -> void:
 	# Start typewriter effect
 	_start_typewriter_effect()
 
+	# Apply icons
+	_apply_backstory_icons()
+
+func _apply_backstory_icons() -> void:
+	var skip_icon := "res://assets/icons/ui_skip.svg"
+	var cont_icon := "res://assets/icons/ui_continue.svg"
+	if FileAccess.file_exists(skip_icon):
+		var t := load(skip_icon) as Texture2D
+		if t:
+			skip_btn.icon = t
+	if FileAccess.file_exists(cont_icon):
+		var t2 := load(cont_icon) as Texture2D
+		if t2:
+			continue_btn.icon = t2
+
 func _load_backstory() -> void:
 	var backstory_path := "res://docs/backstory.md"
 	if FileAccess.file_exists(backstory_path):

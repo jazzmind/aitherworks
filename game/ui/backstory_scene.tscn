@@ -106,7 +106,7 @@ alignment = 1
 layout_mode = 2
 custom_minimum_size = Vector2(150, 45)
 theme_override_font_sizes/font_size = 16
-text = "⏭️ Skip Tale"
+text = "Skip Tale"
 
 [node name="Spacer" type="Control" parent="VBoxContainer/ButtonContainer"]
 layout_mode = 2
@@ -116,7 +116,7 @@ custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 custom_minimum_size = Vector2(200, 45)
 theme_override_font_sizes/font_size = 16
-text = "⚙️ Begin Apprenticeship"
+text = "Begin Apprenticeship"
 
 [node name="TypewriterTimer" type="Timer" parent="."]
 wait_time = 0.03

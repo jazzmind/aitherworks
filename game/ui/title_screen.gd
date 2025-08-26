@@ -38,6 +38,23 @@ func _ready() -> void:
 	# Entrance animation
 	_animate_entrance()
 
+	# Apply SVG icons to menu buttons
+	_apply_menu_icons()
+
+func _apply_menu_icons() -> void:
+	var icon_map := {
+		"NewGameButton": "res://assets/icons/ui_new.svg",
+		"LoadGameButton": "res://assets/icons/ui_continue.svg",
+		"SettingsButton": "res://assets/icons/ui_settings.svg",
+		"QuitButton": "res://assets/icons/ui_quit.svg"
+	}
+	for node_name in icon_map.keys():
+		var node := get_node_or_null("MainContainer/MenuPanel/MenuContent/" + node_name)
+		if node and FileAccess.file_exists(icon_map[node_name]):
+			var tex := load(icon_map[node_name]) as Texture2D
+			if tex:
+				node.icon = tex
+
 func _animate_entrance() -> void:
 	# Animate panels using scale and fade for a smoother effect
 	var title_panel := $MainContainer/TitlePanel

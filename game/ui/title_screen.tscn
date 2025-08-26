@@ -132,7 +132,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("4")
-text = "🎩 New Apprenticeship"
+text = "New Apprenticeship"
 
 [node name="Spacer2" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
 custom_minimum_size = Vector2(0, 15)
@@ -143,7 +143,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("4")
-text = "📜 Continue Journey"
+text = "Continue Journey"
 
 [node name="Spacer3" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
 custom_minimum_size = Vector2(0, 15)
@@ -154,7 +154,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("4")
-text = "⚙️ Guild Settings"
+text = "Guild Settings"
 
 [node name="Spacer4" type="Control" parent="MainContainer/MenuPanel/MenuContent"]
 custom_minimum_size = Vector2(0, 15)
@@ -165,7 +165,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("4")
-text = "🚪 Leave Guild"
+text = "Leave Guild"
 
 [node name="SettingsDialog" type="AcceptDialog" parent="."]
 title = "Guild Settings"
