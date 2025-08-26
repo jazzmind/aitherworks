@@ -121,6 +121,10 @@ func _create_part_instance(id: String) -> void:
 		"entropy_manometer":
 			# TODO: Implement EntropyManometer class
 			pass
+		"display_glass":
+			part_instance = DisplayGlass.new()
+		"evaluator":
+			part_instance = Evaluator.new()
 		_:
 			print("Unknown part type: ", id)
 			return
@@ -175,6 +179,24 @@ func process_inputs(inputs: Array[float]) -> float:
 				output_value = 0.0
 				for val in inputs:
 					output_value += val
+		"display_glass":
+			if part_instance is DisplayGlass:
+				var glass = part_instance as DisplayGlass
+				# Display the first input value or sum
+				var display_val = 0.0
+				for val in inputs:
+					display_val += val
+				glass.display_value(display_val)
+				# Display glass doesn't output anything
+				output_value = 0.0
+		"evaluator":
+			if part_instance is Evaluator:
+				var eval = part_instance as Evaluator
+				# Evaluate the first input value
+				var eval_val = inputs[0] if inputs.size() > 0 else 0.0
+				eval.evaluate_output(eval_val)
+				# Evaluator doesn't output anything
+				output_value = 0.0
 		_:
 			# Default: just sum inputs
 			output_value = 0.0
@@ -210,9 +232,17 @@ func get_part_status() -> String:
 				return "Processing %d channels" % status.input_channels
 		"spyglass":
 			if part_instance is Spyglass:
-				var spyglass = part_instance as Spyglass
-				return spyglass.get_spyglass_status()
+				var spy = part_instance as Spyglass
+				return spy.get_spyglass_status()
+		"display_glass":
+			if part_instance is DisplayGlass:
+				var glass = part_instance as DisplayGlass
+				return glass.get_glass_status()
+		"evaluator":
+			if part_instance is Evaluator:
+				var eval = part_instance as Evaluator
+				return eval.get_status_text()
 		_:
-			return "Active"
+			return "Part active"
 	
 	return "Unknown status"

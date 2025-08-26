@@ -22,8 +22,8 @@ simulation:
 
 # Port configuration
 ports:
-  in-1: "input"     # Input signal to be weighted
-  out-1: "output"    # Weighted output signal
+  signal_in: "input"     # Input signal to be weighted
+  weighted_out: "output"    # Weighted output signal
 
 # Steampunk flavor
 materials: ["brass", "iron", "copper"]

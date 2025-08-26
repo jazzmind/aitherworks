@@ -27,6 +27,8 @@ allowed_parts:
   - apprentice_sgd
   - entropy_manometer
   - spyglass
+  - display_glass
+  - evaluator
 
 win_conditions:
   accuracy: 0.95
