@@ -99,6 +99,16 @@ static func _parse_yaml(text: String) -> Dictionary:
 					var k := item_str.substr(0, item_str.length() - 1).strip_edges()
 					map[k] = {}
 					stack.append({"indent": indent + 2, "container": map, "key": k, "type": "map"})
+			elif item_str.find(":") > 0:
+				# inline map on the same line as the list dash (e.g., '- key: value')
+				var cidx := item_str.find(":")
+				var inline_key := item_str.substr(0, cidx).strip_edges()
+				var inline_rest := item_str.substr(cidx + 1).strip_edges()
+				var inline_map := {}
+				inline_map[inline_key] = _parse_scalar(inline_rest)
+				current["container"].append(inline_map)
+				# push a map context so following indented lines add to this map item
+				stack.append({"indent": indent, "container": inline_map, "key": null, "type": "map"})
 			else:
 				current["container"].append(value)
 			continue

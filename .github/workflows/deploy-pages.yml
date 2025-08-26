@@ -1,0 +1,71 @@
+name: Deploy Godot Web to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install Godot 4.4 headless
+        run: |
+          GODOT_VERSION=4.4-stable
+          wget https://downloads.tuxfamily.org/godotengine/$GODOT_VERSION/Godot_v$GODOT_VERSION_linux.x86_64.zip -O godot.zip
+          unzip -q godot.zip -d godot
+          sudo mv godot/Godot_v$GODOT_VERSION_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      - name: Install export templates
+        run: |
+          GODOT_VERSION=4.4-stable
+          mkdir -p ~/.local/share/godot/export_templates/$GODOT_VERSION
+          wget https://downloads.tuxfamily.org/godotengine/$GODOT_VERSION/Godot_v$GODOT_VERSION_export_templates.tpz -O templates.tpz
+          mkdir -p templates && bsdtar -xf templates.tpz -C templates
+          mv templates/templates/linux_export_templates/* ~/.local/share/godot/export_templates/$GODOT_VERSION/ || true
+          # Fallback: some archives place files at root
+          mv templates/* ~/.local/share/godot/export_templates/$GODOT_VERSION/ || true
+
+      - name: Export HTML5
+        run: |
+          mkdir -p build/web
+          /usr/local/bin/godot --headless --verbose --export-release "Web" build/web/index.html
+
+      - name: Inject COI service worker (for threads)
+        run: |
+          wget https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/main/coi-serviceworker.js -O build/web/coi-serviceworker.js
+          # Insert script after first <head> occurrence
+          awk 'BEGIN{inserted=0} {print} /<head>/{if(!inserted){print "    <script src=\"coi-serviceworker.js\"></script>"; inserted=1}}' build/web/index.html > build/web/index.html.tmp && mv build/web/index.html.tmp build/web/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+
