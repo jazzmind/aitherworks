@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4x8wbjk8v7nq"]
+
+[ext_resource type="Script" path="res://game/parts/evaluator.gd" id="1_0j2kx"]
+
+[node name="Evaluator" type="Node"]
+script = ExtResource("1_0j2kx")
+

@@ -1,0 +1,40 @@
+id: output_evaluator
+name: "Output Evaluator"
+category: output
+description: |
+  A brass inspection device with red and green indicator lights that compares
+  your machine's output with expected results. Essential for training and
+  testing your contraption's accuracy. The heart glows green when outputs
+  match expectations, red when they diverge.
+
+# Visual representation
+visual:
+  scene: "res://assets/icons/pressure_gauge.svg"
+  scale: [1.0, 1.0, 1.0]
+
+# Simulation behavior
+simulation:
+  type: evaluator
+  inputs: 1
+  outputs: 0
+  parameters:
+    tolerance: 0.1
+    evaluation_mode: "absolute"
+    expected_value: 0.0
+    show_metrics: true
+
+# Port configuration
+ports:
+  actual_in: "input"  # Actual output from the network
+
+# Steampunk flavor
+materials: ["brass", "copper", "glass", "emerald", "ruby"]
+steam_pressure: "low"
+complexity: "moderate"
+
+# Teaching points
+concepts:
+  - "loss calculation"
+  - "accuracy measurement"
+  - "error analysis"
+  - "performance evaluation"

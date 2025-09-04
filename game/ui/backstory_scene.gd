@@ -6,13 +6,15 @@ extends Control
 
 @onready var background_layers := $BackgroundLayers
 @onready var story_card := $StoryCard
-@onready var story_text := $StoryCard/VBoxContainer/ScrollContainer/StoryText
+@onready var story_text := $StoryCard/VBoxContainer/StoryText
+@onready var page_indicator := $StoryCard/VBoxContainer/PageIndicator
 @onready var continue_btn := $StoryCard/VBoxContainer/ButtonContainer/ContinueButton
 @onready var skip_btn := $StoryCard/VBoxContainer/ButtonContainer/SkipButton
 @onready var typewriter_timer := $TypewriterTimer
 @onready var parallax_timer := $ParallaxTimer
 
-var full_story_text := ""
+var story_pages := []
+var current_page := 0
 var current_char_index := 0
 var is_typing := false
 var chapter_number := 1  # Default to chapter 1
@@ -23,32 +25,22 @@ func _ready() -> void:
 	# Wait for the scene to be fully ready
 	await get_tree().process_frame
 	
-	print("Backstory scene ready, checking nodes...")
-	
 	# Verify all required nodes are available
 	if not story_text:
 		push_error("StoryText node not found!")
 		return
-	else:
-		print("StoryText node found successfully")
-		
+	if not page_indicator:
+		push_error("PageIndicator node not found!")
+		return
 	if not continue_btn:
 		push_error("ContinueButton node not found!")
 		return
-	else:
-		print("ContinueButton node found successfully")
-		
 	if not skip_btn:
 		push_error("SkipButton node not found!")
 		return
-	else:
-		print("SkipButton node found successfully")
-		
 	if not background_layers:
 		push_error("BackgroundLayers node not found!")
 		return
-	else:
-		print("BackgroundLayers node found successfully")
 	
 	continue_btn.pressed.connect(_on_continue_pressed)
 	skip_btn.pressed.connect(_on_skip_pressed)
@@ -83,8 +75,6 @@ func _setup_backgrounds() -> void:
 		push_error("BackgroundLayers not available for setup!")
 		return
 		
-	print("Setting up backgrounds for chapter ", chapter_number)
-		
 	# Clear existing backgrounds
 	for child in background_layers.get_children():
 		child.queue_free()
@@ -99,7 +89,6 @@ func _setup_backgrounds() -> void:
 		return
 	
 	var files := dir.get_files()
-	print("Found background files: ", files)
 	var layer_count := 0
 	
 	# Create background layers (we'll use up to 4 numbered layers)
@@ -120,17 +109,16 @@ func _setup_backgrounds() -> void:
 				layer.grow_horizontal = 2
 				layer.grow_vertical = 2
 				
-				# Set initial position for parallax effect
+				# Set initial position for parallax effect - make layers wider than screen
 				layer.position = Vector2.ZERO
+				layer.custom_minimum_size = Vector2(1200, 720)  # Wider than screen for parallax
 				
 				background_layers.add_child(layer)
 				background_textures[layer] = texture
 				layer_count += 1
-				print("Created background layer ", i, " for chapter ", chapter_number)
 	
 	# If no numbered layers found, try to use orig.png
 	if layer_count == 0:
-		print("No numbered layers found, trying orig.png fallback")
 		var orig_path := chapter_path + "orig.png"
 		if FileAccess.file_exists(orig_path):
 			var texture := load(orig_path) as Texture2D
@@ -144,13 +132,9 @@ func _setup_backgrounds() -> void:
 				layer.anchor_bottom = 1.0
 				layer.grow_horizontal = 2
 				layer.grow_vertical = 2
+				layer.custom_minimum_size = Vector2(1200, 720)  # Wider than screen for parallax
 				background_layers.add_child(layer)
 				background_textures[layer] = texture
-				print("Created fallback background using orig.png")
-		else:
-			print("No orig.png found either, using no background")
-	
-	print("Background setup complete. Total layers: ", layer_count)
 
 func _start_parallax_effect() -> void:
 	parallax_timer.wait_time = 0.016  # ~60 FPS
@@ -165,7 +149,8 @@ func _on_parallax_tick() -> void:
 		var child := children[i] as TextureRect
 		if child and i < parallax_speeds.size():
 			var speed: float = parallax_speeds[i]
-			var new_x := fmod(child.position.x - speed, 100)  # Loop every 100 pixels
+			# Move layers left for parallax effect, loop when they go off-screen
+			var new_x := fmod(child.position.x - speed, 200)  # Loop every 200 pixels
 			child.position.x = new_x
 
 func _apply_backstory_icons() -> void:
@@ -185,36 +170,250 @@ func _apply_backstory_icons() -> void:
 			continue_btn.icon = t2
 
 func _load_backstory() -> void:
-	# Try to load chapter-specific backstory first
-	var chapter_backstory_path := "res://docs/act-" + _get_act_name(chapter_number) + ".md"
-	var backstory_path := "res://docs/backstory.md"
-	
-	var file_path := ""
-	if FileAccess.file_exists(chapter_backstory_path):
-		file_path = chapter_backstory_path
-	elif FileAccess.file_exists(backstory_path):
-		file_path = backstory_path
-	
-	if file_path != "":
-		var file := FileAccess.open(file_path, FileAccess.READ)
-		var raw_text := file.get_as_text()
-		file.close()
-		
-		# Convert markdown to BBCode for RichTextLabel
-		full_story_text = _convert_markdown_to_bbcode(raw_text)
-	else:
-		# Fallback story if file doesn't exist
-		full_story_text = _get_fallback_story()
+	# Load chapter-specific story content and break into pages
+	var full_story = _get_chapter_story(chapter_number)
+	story_pages = _break_story_into_pages(full_story)
+	current_page = 0
 
-func _get_act_name(chapter: int) -> String:
+# Act name function removed - not needed for direct story loading
+
+func _break_story_into_pages(full_story: String) -> Array:
+	# Break story into pages at natural break points (horizontal rules, icon breaks)
+	var pages := []
+	var current_page := ""
+	var lines := full_story.split("\n")
+	
+	for line in lines:
+		# Check for page break indicators
+		if line.contains("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━") or \
+		   line.contains("⚡ ⚙️ ⚡") or \
+		   line.contains("🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩"):
+			# End current page and start new one
+			if current_page.strip_edges() != "":
+				pages.append(current_page.strip_edges())
+				current_page = ""
+			# Add the break line to the new page
+			current_page += line + "\n"
+		else:
+			current_page += line + "\n"
+	
+	# Add the final page
+	if current_page.strip_edges() != "":
+		pages.append(current_page.strip_edges())
+	
+	# If no pages were created, just return the full story as one page
+	if pages.size() == 0:
+		pages.append(full_story)
+	
+	return pages
+
+func _get_chapter_story(chapter: int) -> String:
 	match chapter:
-		1: return "I"
-		2: return "II"
-		3: return "III"
-		4: return "IV"
-		5: return "V"
-		6: return "VI"
-		_: return "I"
+		1: return _get_act_1_story()
+		2: return _get_act_2_story()
+		3: return _get_act_3_story()
+		4: return _get_act_4_story()
+		5: return _get_act_5_story()
+		6: return _get_act_6_story()
+		_: return _get_fallback_story()
+
+func _get_act_1_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act I - Cinders & Sums ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]Vectors, Loss, and the First Steps of Backpropagation[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]Welcome to the Foundry, Young Apprentice![/b][/color][/center]
+
+[color=burlywood]The oil-lamp mornings of Dock-Ward await you. Here, among the ledger dust and honest mathematics, you will learn the fundamental arts of the AItherworks Engineers.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]🔍 Your First Lessons[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]You will begin with simple parts and honest math: Signal Looms that weave patterns, Weight Wheels that adjust themselves, and the mysterious art of backpropagation with Stochastic Gradient Descent.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Path Ahead[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]From vectors and scaling to loss functions and learning rates, you will build machines that think. The steam is rising, the gears are turning, and your journey into artificial intelligence begins now.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]May your gears turn true and your steam pressure hold steady[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+
+func _get_act_2_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act II - The Cogwright's Challenge ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]Advanced Patterns and the Art of Composition[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]Your Skills Grow, Apprentice![/b][/color][/center]
+
+[color=burlywood]The Guild recognizes your progress. Now you face more complex challenges: combining multiple inputs, creating sophisticated patterns, and mastering the art of machine composition.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]🎯 New Challenges Await[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]You will learn to stamp the cog with precision, navigate the archives of knowledge, and discover the deeper mysteries that lie within the steam-powered learning machines.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Journey Continues[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Your understanding deepens, your machines grow more sophisticated, and the secrets of artificial intelligence reveal themselves layer by layer.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]The Guild watches with pride as you advance[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+
+func _get_act_3_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act III - Keys in the Looking Glass ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]Transformation and the Mini-Transformer[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]A New Realm Opens, Master Engineer![/b][/color][/center]
+
+[color=burlywood]You have reached a pivotal moment in your journey. The Looking Glass reveals new dimensions of understanding, and the Mini-Transformer awaits your skilled hands.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]🔑 Unlock New Powers[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]The transformation architecture opens doors to understanding that were previously hidden. Your machines will now possess the ability to see patterns in ways that transcend simple addition and multiplication.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Looking Glass Beckons[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Step through the mirror, engineer. A world of attention mechanisms, self-attention, and the true power of the transformer architecture awaits your discovery.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]The keys are in your hands[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+
+func _get_act_4_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act IV - Forger vs Examiner ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]The Mode Collapse Clinic and Advanced Ethics[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]The Ethical Dimensions Emerge, Wise Engineer![/b][/color][/center]
+
+[color=burlywood]Your journey takes a profound turn. Beyond the mechanics of learning machines, you now confront the deeper questions of what these machines should learn, and how they should behave.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]⚖️ The Balance of Power[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]The Forger creates, the Examiner judges. In this delicate dance, you will learn to build machines that not only learn efficiently, but learn wisely and ethically.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Ethical Governor[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Your machines will now possess conscience, restraint, and the ability to make ethical decisions. The steam-powered future of AI requires not just intelligence, but wisdom.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]Forge with wisdom, examine with care[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+
+func _get_act_5_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act V - The Teacher's Whisper ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]Press to Fit and Advanced Training[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]The Master's Voice Guides You, Esteemed Engineer![/b][/color][/center]
+
+[color=burlywood]You have reached the advanced levels of the Guild. The Teacher's Whisper carries secrets of optimization, fine-tuning, and the subtle art of making machines that truly understand.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]🎯 Precision and Mastery[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Press to fit, adjust with care, and listen to the subtle feedback of your machines. This is where true mastery emerges - in the details that separate good from great.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Whisper of Wisdom[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]The ancient knowledge flows through you now. Your machines will possess not just learning ability, but the refined understanding that comes from generations of accumulated wisdom.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]Listen carefully to the Teacher's Whisper[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
+
+func _get_act_6_story() -> String:
+	return """[center][color=goldenrod][font_size=42]⚙️ Act VI - The Charter ⚙️[/font_size][/color][/center]
+
+[center][color=peru][font_size=28][i]Citywide Dispatch and the Final Challenge[/i][/font_size][/color][/center]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[font_size=24]
+[center][color=lightblue][b]The Culmination of Your Journey, Master Engineer![/b][/color][/center]
+
+[color=burlywood]You stand at the pinnacle of the Guild's teachings. The citywide dispatch system awaits your mastery, and the Charter of AItherworks Engineering calls for your signature.[/color]
+[/font_size]
+
+[center]⚡ ⚙️ ⚡ ⚙️ ⚡ ⚙️ ⚡[/center]
+
+[color=lightblue][font_size=26][b]🏛️ The Final Challenge[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Coordinate the entire city's learning machines, manage the flow of knowledge across districts, and prove that you are worthy of the highest honor the Guild can bestow.[/color]
+[/font_size]
+
+[center]🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩[/center]
+
+[color=goldenrod][font_size=24][b]🌟 The Charter Awaits[/b][/font_size][/color]
+[font_size=22]
+[color=burlywood]Your name will be inscribed in the great ledger of AItherworks Engineers. You will join the ranks of those who have mastered the art of steam-powered artificial intelligence.[/color]
+[/font_size]
+
+[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
+
+[center][color=goldenrod][i][font_size=24]The Charter of Mastery awaits your signature[/font_size][/i][/color][/center]
+
+[center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
 
 func _get_fallback_story() -> String:
 	return """[center][color=goldenrod][font_size=42]⚙️ Chapter """ + str(chapter_number) + """ ⚙️[/font_size][/color][/center]
@@ -249,48 +448,7 @@ func _get_fallback_story() -> String:
 
 [center]⚙️ 🔧 ⚙️ 🔧 ⚙️ 🔧 ⚙️[/center]"""
 
-func _convert_markdown_to_bbcode(markdown: String) -> String:
-	var bbcode := markdown
-	
-	# Add chapter header
-	bbcode = """[center][color=goldenrod][font_size=42]⚙️ Chapter """ + str(chapter_number) + """ ⚙️[/font_size][/color][/center]
-
-[center][color=peru][font_size=28][i]A New Chapter Begins[/i][/font_size][/color][/center]
-
-[center]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/center]
-
-""" + bbcode
-	
-	# Convert markdown headers to BBCode with steampunk styling
-	bbcode = bbcode.replace("## ", "[color=lightblue][font_size=26][b]🏭 ")
-	bbcode = bbcode.replace("# ", "[color=orange][font_size=32][b]📜 ")
-	bbcode = bbcode.replace("### ", "[color=lightgreen][font_size=22][b]⚙️ ")
-	
-	# Add closing tags for headers and improve formatting
-	var lines := bbcode.split("\n")
-	for i in range(lines.size()):
-		if lines[i].begins_with("[color=orange][font_size=32][b]📜"):
-			lines[i] += "[/b][/font_size][/color]"
-		elif lines[i].begins_with("[color=lightblue][font_size=26][b]🏭"):
-			lines[i] += "[/b][/font_size][/color]"
-		elif lines[i].begins_with("[color=lightgreen][font_size=22][b]⚙️"):
-			lines[i] += "[/b][/font_size][/color]"
-		# Add steampunk flavor to regular paragraphs
-		elif lines[i].strip_edges() != "" and not lines[i].begins_with("["):
-			lines[i] = "[color=burlywood][font_size=22]" + lines[i] + "[/font_size][/color]"
-	bbcode = "\n".join(lines)
-	
-	# Convert markdown emphasis with colors
-	bbcode = bbcode.replace("**", "[color=gold][b]").replace("**", "[/b][/color]")
-	bbcode = bbcode.replace("*", "[color=lightcyan][i]").replace("*", "[/i][/color]")
-	
-	# Convert lists with steampunk bullets
-	bbcode = bbcode.replace("- ", "⚙️ ")
-	
-	# Add decorative elements between paragraphs
-	bbcode = bbcode.replace("\n\n", "\n\n[center]⚡ ⚙️ ⚡[/center]\n\n")
-	
-	return bbcode
+# Markdown conversion removed - using direct BBCode stories instead
 
 func _start_typewriter_effect() -> void:
 	if not story_text or not continue_btn:
@@ -299,29 +457,34 @@ func _start_typewriter_effect() -> void:
 		
 	current_char_index = 0
 	is_typing = true
-	# Pre-render full BBCode and reveal characters gradually
-	story_text.bbcode_text = full_story_text
-	story_text.visible_characters = 0
+	# Show current page
+	_show_current_page()
 	continue_btn.disabled = true
 	continue_btn.text = "⏳ Reading..."
 	typewriter_timer.start()
+
+func _show_current_page() -> void:
+	if not story_text or current_page >= story_pages.size():
+		return
+	
+	story_text.bbcode_text = story_pages[current_page]
+	story_text.visible_characters = 0
+	current_char_index = 0
+	
+	# Update page indicator
+	if page_indicator:
+		page_indicator.text = "Page " + str(current_page + 1) + " of " + str(story_pages.size())
 
 func _on_typewriter_tick() -> void:
 	if not story_text:
 		push_error("StoryText not available for typewriter tick!")
 		return
 		
-	# Use the RichTextLabel's visible characters to gradually reveal pre-rendered BBCode
+	# Use the RichTextLabel's visible characters to gradually reveal current page
 	var total_chars: int = story_text.get_total_character_count()
 	if current_char_index < total_chars:
 		current_char_index += 1
 		story_text.visible_characters = current_char_index
-		
-		# Auto-scroll to bottom
-		var scroll_container := $StoryCard/VBoxContainer/ScrollContainer
-		if scroll_container and scroll_container.get_v_scroll_bar():
-			await get_tree().process_frame
-			scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
 	else:
 		_finish_typewriter()
 
@@ -332,19 +495,37 @@ func _finish_typewriter() -> void:
 		
 	is_typing = false
 	typewriter_timer.stop()
-	# Show all characters of the pre-rendered BBCode
+	# Show all characters of the current page
 	story_text.visible_characters = -1
 	continue_btn.disabled = false
-	continue_btn.text = "⚙️ Begin Chapter " + str(chapter_number)
+	
+	# Check if there are more pages
+	if current_page < story_pages.size() - 1:
+		continue_btn.text = "⚙️ Continue Reading"
+	else:
+		continue_btn.text = "⚙️ Begin Chapter " + str(chapter_number)
 
 func _on_skip_pressed() -> void:
 	if is_typing:
 		_finish_typewriter()
+	elif current_page < story_pages.size() - 1:
+		# Skip to next page
+		current_page += 1
+		_start_typewriter_effect()
 	else:
+		# Last page, go to tutorial
 		_fade_to_tutorial()
 
 func _on_continue_pressed() -> void:
-	_fade_to_tutorial()
+	if is_typing:
+		_finish_typewriter()
+	elif current_page < story_pages.size() - 1:
+		# Go to next page
+		current_page += 1
+		_start_typewriter_effect()
+	else:
+		# Last page, go to tutorial
+		_fade_to_tutorial()
 
 func _fade_to_tutorial() -> void:
 	var tween := create_tween()
@@ -359,12 +540,9 @@ func _input(event: InputEvent) -> void:
 			# Speed up typewriter
 			typewriter_timer.wait_time = 0.01
 		elif event.double_click:
-			_fade_to_tutorial()
+			_on_continue_pressed()
 	
 	# Allow spacebar or enter to continue
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER:
-			if is_typing:
-				_finish_typewriter()
-			else:
-				_fade_to_tutorial()
+			_on_continue_pressed()

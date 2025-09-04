@@ -1,0 +1,39 @@
+id: display_glass
+name: "Display Glass"
+category: output
+description: |
+  A brass-framed looking glass that displays the final output of your machine.
+  Shows numerical readouts, patterns, or status messages in an elegant 
+  steampunk display. Essential for monitoring what your contraption produces.
+
+# Visual representation
+visual:
+  scene: "res://assets/icons/ui_settings.svg"
+  scale: [1.0, 1.0, 1.0]
+
+# Simulation behavior
+simulation:
+  type: display
+  inputs: 1
+  outputs: 0
+  parameters:
+    display_mode: "numeric"
+    precision: 3
+    show_history: true
+
+# Port configuration
+ports:
+  signal_in: "input"  # Input signal to display
+
+# Steampunk flavor
+materials: ["brass", "glass", "copper"]
+steam_pressure: "low"
+complexity: "simple"
+
+# Teaching points
+concepts:
+  - "output visualization"
+  - "data display"
+  - "result monitoring"
+  - "debugging"
+

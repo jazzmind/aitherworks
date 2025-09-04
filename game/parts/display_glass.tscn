@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3x8wbjk8v7nq"]
+
+[ext_resource type="Script" path="res://game/parts/display_glass.gd" id="1_0j2kx"]
+
+[node name="DisplayGlass" type="Node"]
+script = ExtResource("1_0j2kx")
+

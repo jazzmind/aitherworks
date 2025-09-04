@@ -5,6 +5,16 @@ extends GraphNode
 
 class_name PartNode
 
+# Import the part classes
+const SteamSource = preload("res://game/parts/steam_source.gd")
+const SignalLoom = preload("res://game/parts/signal_loom.gd")
+const WeightWheel = preload("res://game/parts/weight_wheel.gd")
+const Spyglass = preload("res://game/parts/spyglass.gd")
+const AdderManifold = preload("res://game/parts/adder_manifold.gd")
+const ActivationGate = preload("res://game/parts/activation_gate.gd")
+const DisplayGlass = preload("res://game/parts/display_glass.gd")
+const OutputEvaluator = preload("res://game/parts/evaluator.gd")
+
 signal inspect_requested(part: PartNode)
 
 var part_id: String = ""
@@ -121,6 +131,10 @@ func _create_part_instance(id: String) -> void:
 		"entropy_manometer":
 			# TODO: Implement EntropyManometer class
 			pass
+		"display_glass":
+			part_instance = DisplayGlass.new()
+		"output_evaluator":
+			part_instance = OutputEvaluator.new()
 		_:
 			print("Unknown part type: ", id)
 			return
@@ -175,6 +189,24 @@ func process_inputs(inputs: Array[float]) -> float:
 				output_value = 0.0
 				for val in inputs:
 					output_value += val
+		"display_glass":
+			if part_instance is DisplayGlass:
+				var glass = part_instance as DisplayGlass
+				# Display the first input value or sum
+				var display_val = 0.0
+				for val in inputs:
+					display_val += val
+				glass.display_value(display_val)
+				# Display glass doesn't output anything
+				output_value = 0.0
+		"output_evaluator":
+			if part_instance is OutputEvaluator:
+				var eval = part_instance as OutputEvaluator
+				# Evaluate the first input value
+				var eval_val = inputs[0] if inputs.size() > 0 else 0.0
+				eval.evaluate_output(eval_val)
+				# Evaluator doesn't output anything
+				output_value = 0.0
 		_:
 			# Default: just sum inputs
 			output_value = 0.0
@@ -210,9 +242,17 @@ func get_part_status() -> String:
 				return "Processing %d channels" % status.input_channels
 		"spyglass":
 			if part_instance is Spyglass:
-				var spyglass = part_instance as Spyglass
-				return spyglass.get_spyglass_status()
+				var spy = part_instance as Spyglass
+				return spy.get_spyglass_status()
+		"display_glass":
+			if part_instance is DisplayGlass:
+				var glass = part_instance as DisplayGlass
+				return glass.get_glass_status()
+		"output_evaluator":
+			if part_instance is OutputEvaluator:
+				var eval = part_instance as OutputEvaluator
+				return eval.get_status_text()
 		_:
-			return "Active"
+			return "Part active"
 	
 	return "Unknown status"
