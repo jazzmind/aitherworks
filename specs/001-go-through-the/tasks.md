@@ -5,19 +5,80 @@
 
 ## Overview
 
-This document provides an ordered, dependency-aware task list for implementing the complete AItherworks core system. Tasks are numbered T001-T200 and organized into 9 phases. Tasks marked `[P]` can be executed in parallel as they operate on independent files.
+This document provides an ordered, dependency-aware task list for implementing the complete AItherworks core system. Tasks are numbered T001-T264 and organized into 10 phases. Tasks marked `[P]` can be executed in parallel as they operate on independent files.
 
-**Total Estimated Tasks**: 164 across 9 categories (including 4 optional narrative enhancement tasks)
-**Constitution Version**: 1.1.0
+**⚠️ AUDIT NOTICE**: This task list has been revised based on `implementation-audit.md` (2025-10-03). Significant prior implementation exists that was not reflected in the original plan. Many tasks have been updated to reflect actual project state.
+
+**Total Estimated Tasks**: ~100 meaningful tasks remaining (164 original - 60 complete = 104 new/revised tasks + retrofit tasks)
+**Constitution Version**: 1.1.1
 **TDD Requirement**: All part and core functionality tests MUST be written and MUST FAIL before implementation.
+
+**See Also**: `implementation-audit.md` for detailed analysis of pre-existing vs planned implementation.
 
 ---
 
-## Phase 3.1: Setup & Infrastructure
+## ✅ Pre-Existing Implementation
+
+**Discovered**: 2025-10-03 via implementation audit  
+**Status**: The following components were already implemented before task planning began
+
+### Already Complete Infrastructure
+- ✅ Custom YAML parser (`SpecLoader`) - 217 lines, production-ready
+- ✅ YAML validator (`SpecValidator`) - 74 lines with catalog building
+- ✅ GUT test framework installed in `addons/gut/`
+- ✅ Test directories created (`tests/unit/`, `tests/integration/`, etc.)
+- ✅ `.editorconfig` and `docs/code_style.md` configured
+- ✅ `SimulationProfiler` with performance budgets
+- ✅ GitHub Actions CI/CD pipeline (`.github/workflows/godot-ci.yml`)
+
+### Already Complete Parts (11 of 33)
+- ✅ `steam_source.gd` (159 lines) - Multiple data patterns
+- ✅ `signal_loom.gd` (71 lines) - Vector processing
+- ✅ `weight_wheel.gd` (122 lines) - Trainable parameters, gradients
+- ✅ `adder_manifold.gd` (79 lines) - Multi-input addition
+- ✅ `activation_gate.gd` (103 lines) - 5 activation functions
+- ✅ `entropy_manometer.gd` (196 lines) - Multiple loss functions
+- ✅ `convolution_drum.gd` (149 lines) - Convolution operations
+- ✅ `aether_battery.gd` (209 lines) - Memory with similarity search
+- ✅ `display_glass.gd` (180 lines) - Multiple display modes
+- ✅ `spyglass.gd` (201 lines) - Component inspection
+- ✅ `evaluator.gd` (216 lines) - Output evaluation
+
+### Already Complete Simulation
+- ✅ `act1_engine.gd` (106 lines) - Forward/backward pass, MSE, SGD, ReLU
+- ✅ `evaluator.gd` (178 lines) - Graph evaluation, metrics, win conditions
+- ✅ `profiler.gd` (175 lines) - Performance timing and budgets
+- ✅ Basic test files (`tests_spec_validator.gd`, `tests_evaluator.gd`)
+
+### Already Complete UI (80-90% done)
+- ✅ `workbench.gd` (802 lines) - Full GraphEdit workbench with training controls
+- ✅ `backstory_scene.gd` (549 lines) - 6 Acts, typewriter, parallax
+- ✅ `story_tutorial.gd` (327 lines) - Character dialogue, action highlighting
+- ✅ `intro.gd` (24 lines) - Main menu
+- ✅ `part_node.gd` (259 lines) - GraphNode wrapper for parts
+- ✅ `inspection_window.gd` (237 lines) - Real-time inspection
+
+### Already Complete Data
+- ✅ 33 part YAML specs in `data/parts/`
+- ✅ 19 level YAML specs in `data/specs/`
+- ✅ Transformer trace in `data/traces/`
+- ✅ Documentation in `docs/` (11 files)
+
+**Impact**: Original Phase 3.1-3.6 tasks significantly reduced. Focus shifts to:
+1. Retrofit testing for existing parts
+2. Complete remaining 22 parts with TDD
+3. Build Steamfitter plugin (only major missing component)
+4. Polish existing UI
+5. Add save/load system
+
+---
+
+## Phase 3.1: Setup & Infrastructure ✅ COMPLETE
 
 **Duration**: 1-2 days  
 **Dependencies**: None  
-**Goal**: Establish project dependencies, tooling, and test infrastructure
+**Goal**: Establish project dependencies, tooling, and test infrastructure  
+**Status**: ✅ ALL TASKS COMPLETE (discovered via audit)
 
 - [x] **T001** YAML Parser (Custom SpecLoader Implementation)
   - ✅ Custom SpecLoader implemented in `game/sim/spec_loader.gd` (217 lines)
@@ -65,13 +126,147 @@ This document provides an ordered, dependency-aware task list for implementing t
 
 ---
 
-## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
+## Phase 3.2: Retrofit Testing for Existing Parts ⚠️ NEW PHASE
 
-**Duration**: 3-5 days  
-**Dependencies**: T001-T006  
-**CRITICAL**: These tests MUST be written and MUST FAIL before ANY implementation
+**Duration**: 2-3 days  
+**Dependencies**: T001-T006 (complete)  
+**Goal**: Create unit tests for the 11 already-implemented parts to **VALIDATE CORRECTNESS**  
+**Status**: ❌ CRITICAL - No tests exist, parts may have bugs (port types not working correctly)
 
-### Schema Validation Tests (Parallel)
+**⚠️ IMPORTANT**: These are **validation tests**, not documentation tests. Write tests based on:
+1. **Part YAML specs** in `data/parts/` (source of truth for expected behavior)
+2. **Port type contracts** from `contracts/part_schema.yaml` (8 types: scalar, vector, matrix, tensor, attention_weights, logits, gradient, signal)
+3. **Expected ML semantics** (e.g., Weight Wheel should do matrix multiplication, not element-wise)
+
+**Expected Outcome**: Tests **MAY FAIL** - this is good! Failures reveal bugs that need fixing before proceeding.
+
+- [ ] **T200** [P] Unit test for existing Steam Source in `tests/unit/test_steam_source.gd`
+  - Load `data/parts/steam_source.yaml` to check expected ports and types
+  - Test all 5 data patterns (sine_wave, random_walk, step_function, training_data, sensor_readings)
+  - Test amplitude, frequency, noise_level parameters
+  - Test multi-channel generation
+  - **Validate**: Output port type matches YAML spec (should be `vector` or `signal`)
+  - **Expected**: MAY FAIL if port types incorrect or data generation broken
+
+- [ ] **T201** [P] Unit test for existing Signal Loom in `tests/unit/test_signal_loom.gd`
+  - Load `data/parts/signal_loom.yaml` to check expected ports (in_north: vector, out_south: vector)
+  - Test vector passthrough with signal_strength
+  - Test input_channels and output_width configuration
+  - Test port connectivity and type validation
+  - **Validate**: Output vector size matches output_width parameter
+  - **Expected**: MAY FAIL if port types don't match or transformation is incorrect
+
+- [ ] **T202** [P] Unit test for existing Weight Wheel in `tests/unit/test_weight_wheel.gd`
+  - Load `data/parts/weight_wheel.yaml` to check expected ports (in: vector, out: vector, gradient_in: gradient)
+  - Test spoke initialization (num_weights parameter)
+  - Test process_signals (input × weights) - **CRITICAL**: Should be matrix multiplication, not element-wise
+  - Test apply_gradients (gradient descent update with learning_rate)
+  - Test set_weight and get_weight methods
+  - **Validate**: Port types match YAML, gradient flow works correctly
+  - **Expected**: MAY FAIL if ports incorrect or using element-wise instead of matrix multiply
+
+- [ ] **T203** [P] Unit test for existing Adder Manifold in `tests/unit/test_adder_manifold.gd`
+  - Load `data/parts/adder_manifold.yaml` to check expected ports (multiple inputs: vector, out: vector)
+  - Test multi-input addition (input_ports parameter)
+  - Test bias and scaling_factor parameters
+  - Test connect_input method
+  - **Validate**: All input ports accept same type, broadcasting works for scalar bias
+  - **Expected**: MAY FAIL if port types don't match or addition semantics wrong
+
+- [ ] **T204** [P] Unit test for existing Activation Gate in `tests/unit/test_activation_gate.gd`
+  - Load `data/parts/activation_gate.yaml` to check expected ports (in: vector, out: vector)
+  - Test all 5 activation types (RELU, SIGMOID, TANH, LINEAR, STEP)
+  - Test threshold and gain parameters
+  - Test apply_activation function with edge cases (negatives, zeros, large values)
+  - **Validate**: Activation math matches standard definitions (e.g., ReLU(x) = max(0, x))
+  - **Expected**: MAY FAIL if activation functions implemented incorrectly or ports wrong
+
+- [ ] **T205** [P] Unit test for existing Entropy Manometer in `tests/unit/test_entropy_manometer.gd`
+  - Load `data/parts/entropy_manometer.yaml` to check expected ports (predictions: vector, targets: vector, out: scalar)
+  - Test all measurement types (MSE, cross-entropy, variance, etc.)
+  - Test measure_entropy with predictions/targets
+  - Test smoothing_factor parameter
+  - **Validate**: Loss calculations match standard formulas (e.g., MSE = mean((pred - target)^2))
+  - **Expected**: MAY FAIL if loss math is wrong or port types incorrect
+
+- [ ] **T206** [P] Unit test for existing Convolution Drum in `tests/unit/test_convolution_drum.gd`
+  - Load `data/parts/convolution_drum.yaml` to check expected ports (in: matrix, out: matrix, gradient_in: gradient)
+  - Test apply_convolution operation with known input/kernel
+  - Test kernel_size, stride, padding parameters
+  - Test train_kernel method (gradient update)
+  - **Validate**: Convolution math matches standard 2D convolution formula
+  - **Expected**: MAY FAIL if convolution implementation is incorrect or ports wrong
+
+- [ ] **T207** [P] Unit test for existing Aether Battery in `tests/unit/test_aether_battery.gd`
+  - Load `data/parts/aether_battery.yaml` to check expected ports (key: vector, value: vector, query: vector, out: vector)
+  - Test store_pattern and retrieve_pattern
+  - Test similarity calculation (cosine similarity formula)
+  - Test storage_capacity and vector_dimension parameters
+  - Test LRU eviction with decay_rate
+  - **Validate**: Memory retrieval matches attention mechanism semantics
+  - **Expected**: MAY FAIL if similarity calculation wrong or port types incorrect
+
+- [ ] **T208** [P] Unit test for existing Display Glass in `tests/unit/test_display_glass.gd`
+  - Load `data/parts/display_glass.yaml` to check expected ports (in: vector/scalar)
+  - Test all display modes (numeric, gauge, waveform, binary, classification)
+  - Test display_value and display_array methods
+  - Test history tracking for waveform mode
+  - **Validate**: Port accepts correct types for each display mode
+  - **Expected**: MAY FAIL if port types restrictive or display logic broken
+
+- [ ] **T209** [P] Unit test for existing Spyglass in `tests/unit/test_spyglass.gd`
+  - Load `data/parts/spyglass.yaml` to check expected ports (target: signal - connection to other part)
+  - Test component connection and inspection
+  - Test data collection for Weight Wheel, Signal Loom, Steam Source
+  - Test update frequency parameter
+  - **Validate**: Can read internal state from other parts without disrupting simulation
+  - **Expected**: MAY FAIL if port connection mechanism broken or data access incorrect
+
+- [ ] **T210** [P] Unit test for existing Evaluator (Output Evaluator) in `tests/unit/test_output_evaluator.gd`
+  - Load `data/parts/output_evaluator.yaml` to check expected ports (output: vector, target: vector)
+  - Test all evaluation modes (absolute, relative, classification, threshold, pattern)
+  - Test evaluate_output and evaluate_batch methods
+  - Test tolerance and accuracy tracking
+  - **Validate**: Win condition logic matches level spec requirements
+  - **Expected**: MAY FAIL if evaluation logic is wrong or port types incorrect
+
+- [ ] **T211** Document test results and port issues
+  - Create `tests/retrofit_test_report.md`
+  - **List all failing tests** with root cause analysis
+  - **Document port type mismatches** between YAML specs and implementations
+  - **Document ML semantic bugs** (e.g., using wrong operation type)
+  - **Create bug fix tasks** (T212-T220 range reserved) for each failure
+  - **Prioritize fixes** by severity (blocking vs cosmetic)
+  - This report becomes the input for Phase 3.2.5: Bug Fixing
+
+---
+
+## Phase 3.2.5: Fix Bugs Found in Retrofit Testing ⚠️ BLOCKING
+
+**Duration**: 1-3 days (depends on T211 report)  
+**Dependencies**: T200-T211 (retrofit tests complete)  
+**Goal**: Fix all port type issues and ML semantic bugs discovered in Phase 3.2  
+**Status**: ❌ CANNOT PROCEED until retrofit tests run
+
+**Task Range**: T212-T220 reserved for bug fixes (will be created based on T211 report)
+
+**Example Tasks** (will be populated after T211):
+- T212: Fix Weight Wheel port types (vector → matrix if needed)
+- T213: Fix Activation Gate ReLU implementation
+- T214: Fix Adder Manifold broadcasting logic
+- ... (depends on actual test failures)
+
+**CRITICAL**: All T200-T210 tests MUST PASS before proceeding to Phase 3.3
+
+---
+
+## Phase 3.3: Schema Validation Tests (TDD) ⚠️ MUST COMPLETE BEFORE 3.4
+
+**Duration**: 2-3 days  
+**Dependencies**: T200-T211 (retrofit tests complete)  
+**CRITICAL**: These tests MUST be written and MUST FAIL before plugin implementation
+
+### Schema Validation Tests (Parallel) - Original Phase 3.2
 
 - [ ] **T007** [P] Schema validation test for all 28 levels in `tests/validation/test_level_schemas.gd`
   - Load each YAML in `data/specs/`
@@ -203,80 +398,35 @@ This document provides an ordered, dependency-aware task list for implementing t
 
 ---
 
-## Phase 3.4: Part Library (33 Parts × 2 Tasks Each)
+## Phase 3.5: Remaining Part Library (22 Parts × 2 Tasks Each)
 
-**Duration**: 10-15 days (parallelizable)  
-**Dependencies**: T018-T025 (plugin complete)  
-**Goal**: Implement all 33 machine parts with unit tests
+**Duration**: 8-12 days (parallelizable)  
+**Dependencies**: T018-T025 (plugin complete), T200-T211 (retrofit tests complete)  
+**Goal**: Implement remaining 22 machine parts with unit tests (11 already done)  
+**Status**: ⚠️ REVISED - 11 parts complete, 22 remaining
 
 **Strategy**: TDD strict - write test first, watch it fail, then implement
 
-### Act I Parts (Priority 1 - Core Gameplay)
+**Note**: Tasks T026-T035 are now T200-T210 (retrofit tests for existing parts)
 
-- [ ] **T026** [P] Unit test for Steam Source in `tests/unit/test_steam_source.gd`
-  - Test output port emits correct vector data
-  - Test data source configuration (dataset selection)
-  - Test batch iteration
-  - **Expected**: FAIL
+### ~~Act I Parts~~ ✅ COMPLETE (Now T200-T210 Retrofit Tests)
 
-- [ ] **T027** [P] Implement Steam Source in `game/parts/steam_source.tscn` and `steam_source.gd`
-  - Create scene with out_south port
-  - Implement `_forward()` function to emit data
-  - Add icon/visual representation
-  - Run T026 - should now pass
+**Note**: Original tasks T026-T035 for Steam Source, Signal Loom, Weight Wheel, Adder Manifold, and Entropy Manometer are complete. These parts already exist. Retrofit testing tasks are T200-T205.
 
-- [ ] **T028** [P] Unit test for Signal Loom in `tests/unit/test_signal_loom.gd`
-  - Test vector passthrough
-  - Test simple transformations
-  - Test port connectivity
+### ~~Act I-II Additional Parts~~ ⚠️ PARTIALLY COMPLETE
 
-- [ ] **T029** [P] Implement Signal Loom in `game/parts/signal_loom.tscn` and `signal_loom.gd`
-  - Scene with in_north, out_south ports
-  - Implement vector operations
-  - Run T028 - should now pass
+**Already Done** (Retrofit testing as T206-T210):
+- ✅ Display Glass - T208 retrofit test
+- ✅ Activation Gate - T204 retrofit test  
+- ✅ Convolution Drum - T206 retrofit test
+- ✅ Aether Battery (not in original Act I-II list, but exists) - T207 retrofit test
+- ✅ Spyglass (not in original list, but exists) - T209 retrofit test
+- ✅ Evaluator (not in original list, but exists) - T210 retrofit test
 
-- [ ] **T030** [P] Unit test for Weight Wheel in `tests/unit/test_weight_wheel.gd`
-  - Test spoke parameter initialization (default 3)
-  - Test weight multiplication (input × spokes)
-  - Test trainable parameter updates
-  - Test gradient flow (backward pass)
-
-- [ ] **T031** [P] Implement Weight Wheel in `game/parts/weight_wheel.tscn` and `weight_wheel.gd`
-  - Scene with in_north, out_south, gradient_in ports
-  - Implement `_forward(input: Array) -> Array`
-  - Implement `_backward(gradient: Array)`
-  - Add spoke configuration UI (Spyglass integration)
-  - Run T030 - should now pass
-
-- [ ] **T032** [P] Unit test for Adder Manifold in `tests/unit/test_adder_manifold.gd`
-  - Test two-input addition
-  - Test broadcasting (scalar + vector)
-
-- [ ] **T033** [P] Implement Adder Manifold in `game/parts/adder_manifold.tscn` and `adder_manifold.gd`
-  - Scene with in_north, in_east, out_south ports
-  - Implement element-wise addition
-  - Run T032 - should now pass
-
-- [ ] **T034** [P] Unit test for Entropy Manometer in `tests/unit/test_entropy_manometer.gd`
-  - Test loss calculation (MSE, cross-entropy)
-  - Test visual gauge updates
-
-- [ ] **T035** [P] Implement Entropy Manometer in `game/parts/entropy_manometer.tscn` and `entropy_manometer.gd`
-  - Scene with in_north (predictions), in_east (targets)
-  - Calculate loss value
-  - Update gauge visual
-  - Run T034 - should now pass
-
-### Act I-II Additional Parts (Priority 2)
-
-- [ ] **T036** [P] Unit test for Display Glass in `tests/unit/test_display_glass.gd`
-- [ ] **T037** [P] Implement Display Glass in `game/parts/display_glass.tscn` and `display_glass.gd`
+**Still Needed** (Priority 2):
 
 - [ ] **T038** [P] Unit test for Calibration Feeder in `tests/unit/test_calibration_feeder.gd`
 - [ ] **T039** [P] Implement Calibration Feeder in `game/parts/calibration_feeder.tscn` and `calibration_feeder.gd`
-
-- [ ] **T040** [P] Unit test for Activation Gate in `tests/unit/test_activation_gate.gd`
-- [ ] **T041** [P] Implement Activation Gate in `game/parts/activation_gate.tscn` and `activation_gate.gd`
 
 - [ ] **T042** [P] Unit test for Matrix Frame in `tests/unit/test_matrix_frame.gd`
 - [ ] **T043** [P] Implement Matrix Frame in `game/parts/matrix_frame.tscn` and `matrix_frame.gd`
@@ -287,8 +437,7 @@ This document provides an ordered, dependency-aware task list for implementing t
 - [ ] **T046** [P] Unit test for Drop Valves in `tests/unit/test_drop_valves.gd`
 - [ ] **T047** [P] Implement Drop Valves in `game/parts/drop_valves.tscn` and `drop_valves.gd`
 
-- [ ] **T048** [P] Unit test for Convolution Drum in `tests/unit/test_convolution_drum.gd`
-- [ ] **T049** [P] Implement Convolution Drum in `game/parts/convolution_drum.tscn` and `convolution_drum.gd`
+- ~~**T048-T049** Convolution Drum~~ ✅ COMPLETE (T206 retrofit test)
 
 - [ ] **T050** [P] Unit test for Cog Ratchet Press in `tests/unit/test_cog_ratchet_press.gd`
 - [ ] **T051** [P] Implement Cog Ratchet Press in `game/parts/cog_ratchet_press.tscn` and `cog_ratchet_press.gd`
