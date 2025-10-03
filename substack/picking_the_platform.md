@@ -28,6 +28,8 @@ Alternatives like Unity or Unreal were close but fell short on openness or AI-fr
 
 With the platform set, I'm diving into prototyping the first parts. Expect updates on that soon!
 
+**Contribute or follow along**: [github.com/jazzmind/aitherworks](https://github.com/jazzmind/aitherworks)
+
 If you're a dev interested in contributing (it's open-source!), or just want to follow along, subscribe now. Share this with your network – let's build this together!
 
 What platform would you have chosen? Comment below!

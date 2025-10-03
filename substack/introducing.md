@@ -14,7 +14,9 @@ This Substack will share the full process: from concept refinement using AI tool
 
 - Behind-the-scenes on game design and AI integration
 - Tutorials on AI concepts mirrored in the game's mechanics
-- Progress reports, challenges, and how you can get involved (the game will be open-source!)
+- Progress reports, challenges, and how you can get involved (the game is open-source!)
+
+**Repository**: [github.com/jazzmind/aitherworks](https://github.com/jazzmind/aitherworks)
 
 If you're into AI, game dev, or steampunk vibes, hit subscribe to follow along. I'll be posting weekly updates starting with how I refined the core concept using AI.
 

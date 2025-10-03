@@ -44,3 +44,8 @@
 ## Stability/Logging
 - [x] Add DEBUG on PartNode creation (id, ports, instance class) [in code].
 - [ ] Guard against missing `story.title`/`description` with safe fallbacks.
+
+## Documentation/Substack
+- [ ] Create workflow for generating Substack drafts from milestone commits
+- [ ] Weekly Substack posts (Tuesdays per constitution v1.1.0, Principle VI)
+- [ ] Reference completed TODO items in Dev Update posts

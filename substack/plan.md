@@ -23,8 +23,16 @@ Building to 20k subscribers on Substack is ambitious but achievable over 6-12 mo
 
 Overall, focus on value: 70% educational (AI/game insights), 20% personal journey, 10% calls to action. Consistency is key—don't miss posts. Track progress weekly and pivot (e.g., more video embeds if they boost engagement).
 
+**Constitutional Requirement**: Weekly publishing (Tuesdays) is now a non-negotiable principle in the project constitution (v1.1.0, Principle VI: Public Documentation & Process Chronicle). This isn't optional marketing—it's part of the educational mission. If development stalls, write reflective posts about challenges or design decisions. The chronicle continues regardless of implementation pace.
+
 ### 2) Templates/Ideas/Cadence for Future Posts
-Publish **weekly** (e.g., every Tuesday) to build habit and SEO. Alternate between types for variety: dev updates, AI explainers, narrative teases, and community spotlights. Keep posts 800-1500 words, with visuals (screenshots, diagrams) and embedded tweets/comments for dynamism. End every post with a subscription prompt and question.
+Publish **weekly** (e.g., every Tuesday) to build habit and SEO. Alternate between types for variety: dev updates (70%), AI explainers (20%), narrative teases (10%), and occasional community spotlights. Keep posts 800-1500 words, with visuals (screenshots, diagrams) and embedded tweets/comments for dynamism. End every post with a subscription prompt and question.
+
+**Post Templates**: Four ready-to-use templates are available in `substack/templates/`:
+- `dev_update_template.md` - Weekly progress reports (most frequent)
+- `ai_explainer_template.md` - Deep-dives on AI concepts via game mechanics
+- `narrative_story_template.md` - Story beats, character arcs, world-building
+- `community_reflection_template.md` - Reader feedback and design decisions (every 4-6 weeks)
 
 #### Template 1: Dev Update (e.g., "Week 4: Prototyping the Signal Loom")
 - **Hook**: Start with a quick win or challenge (e.g., "This week, I built the first AI mechanic—and hit a bug that taught me about gradients.").

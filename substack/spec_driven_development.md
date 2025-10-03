@@ -14,7 +14,8 @@ The irony: A game about systematic thinking was being built unsystematically.
 
 ## The Solution: Constitutional Principles + Spec Templates
 
-I created a **constitution** ([see `.specify/memory/constitution.md` on GitHub](https://github.com/wessonnenreich/aitherworks)) defining six core principles:
+### The Constitution (for the curious)
+I created a **constitution** ([see `.specify/memory/constitution.md` on GitHub](https://github.com/jazzmind/aitherworks/blob/main/.specify/memory/constitution.md)) defining six core principles:
 
 ### I. Data-Driven Design
 All puzzle levels and machine parts live as YAML files under `data/specs/` and `data/parts/`. Game logic stays in GDScript, but design constants belong in data. Why? Because the endgame is a **visual AI design environment**—players need to export their contraptions as specs.
@@ -32,7 +33,7 @@ cost_steam: 10
 ```
 
 ### II-V. Godot 4 Native, Plugin Integrity, Scene-Based Architecture, Narrative Integration
-(See the [full constitution](link) for details—each principle has rationale and non-negotiable requirements.)
+(See the [full constitution](https://github.com/jazzmind/aitherworks/blob/main/.specify/memory/constitution.md) for details—each principle has rationale and non-negotiable requirements.)
 
 ### VI. Public Documentation & Process Chronicle
 This one's new: **Major design decisions MUST be documented publicly** via this Substack. It's not marketing—it's part of the educational mission. AItherworks teaches AI *and* demonstrates AI-assisted development.
@@ -114,11 +115,11 @@ If you're building with AI assistants and feeling the chaos, try this: Write a c
 **Constitution version**: 1.1.0 (ratified 2025-10-03)
 **Latest amendment**: Added Principle VI (Public Documentation) to mandate this chronicle.
 
-Full constitution: [GitHub link]  
-Current spec-in-progress: [Link to quantization puzzle spec if available]
+**Full constitution**: [github.com/jazzmind/aitherworks/blob/main/.specify/memory/constitution.md](https://github.com/jazzmind/aitherworks/blob/main/.specify/memory/constitution.md)  
+**Repository root**: [github.com/jazzmind/aitherworks](https://github.com/jazzmind/aitherworks)
 
 ---
 
-*Draft Status: Ready for technical review. Check YAML examples for validity. Add GitHub links before publish.*
+*Draft Status: Ready for publication. YAML examples validated. GitHub links added.*
 
 

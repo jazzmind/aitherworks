@@ -32,6 +32,8 @@ From there, I switched to Cursor and fleshed out docs like about.md, lexicon.md,
 
 This process showed me how AI can accelerate creative work – and it's exactly the kind of hands-on learning *AItherworks* aims to provide.
 
+**Check out the full design docs**: [github.com/jazzmind/aitherworks/tree/main/docs](https://github.com/jazzmind/aitherworks/tree/main/docs)
+
 What do you think of the steampunk theme? Would you play this? Let me know in the comments!
 
 Next week: Picking the platform for building the game. Subscribe to not miss it!
