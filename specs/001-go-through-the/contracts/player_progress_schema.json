@@ -1,0 +1,192 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aitherworks.game/schemas/player_progress.json",
+  "title": "PlayerProgress",
+  "description": "Player campaign progress and save data",
+  "type": "object",
+  "required": [
+    "player_id",
+    "created_date",
+    "last_played",
+    "completed_levels",
+    "current_level",
+    "unlocked_parts",
+    "sandbox_unlocked",
+    "tutorial_status",
+    "stats"
+  ],
+  "properties": {
+    "player_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique player identifier"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When save file was created"
+    },
+    "last_played": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time player loaded the game"
+    },
+    "completed_levels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^act_(I|II|III|IV|V|VI)_l\\d+_[a-z_]+$"
+      },
+      "uniqueItems": true,
+      "description": "Array of completed level IDs"
+    },
+    "current_level": {
+      "type": "string",
+      "pattern": "^act_(I|II|III|IV|V|VI)_l\\d+_[a-z_]+$",
+      "description": "Currently active level"
+    },
+    "unlocked_parts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_]+$"
+      },
+      "uniqueItems": true,
+      "description": "Array of unlocked part IDs"
+    },
+    "sandbox_unlocked": {
+      "type": "boolean",
+      "description": "True if all campaign levels complete"
+    },
+    "tutorial_status": {
+      "type": "object",
+      "required": ["completed", "skipped"],
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        },
+        "skipped": {
+          "type": "boolean"
+        },
+        "current_step": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "If tutorial in progress"
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "required": [
+        "total_playtime_seconds",
+        "levels_completed",
+        "machines_built",
+        "training_runs"
+      ],
+      "properties": {
+        "total_playtime_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "levels_completed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 28
+        },
+        "machines_built": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "training_runs": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "level_saves": {
+      "type": "object",
+      "description": "Per-level machine configurations",
+      "patternProperties": {
+        "^act_(I|II|III|IV|V|VI)_l\\d+_[a-z_]+$": {
+          "$ref": "#/definitions/machine_configuration"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "machine_configuration": {
+      "type": "object",
+      "required": ["level_id", "created_date", "modified_date", "parts", "connections", "budget_used"],
+      "properties": {
+        "level_id": {
+          "type": "string"
+        },
+        "created_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["instance_id", "part_id", "position"],
+            "properties": {
+              "instance_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "part_id": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              },
+              "position": {
+                "type": "object",
+                "required": ["x", "y"],
+                "properties": {
+                  "x": {"type": "number"},
+                  "y": {"type": "number"}
+                }
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Part-specific configuration"
+              }
+            }
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to"],
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[a-f0-9-]+\\.(in|out)_(north|south|east|west)$",
+                "description": "instance_id.port_name"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[a-f0-9-]+\\.(in|out)_(north|south|east|west)$"
+              }
+            }
+          }
+        },
+        "budget_used": {
+          "type": "object",
+          "required": ["mass", "pressure", "brass"],
+          "properties": {
+            "mass": {"type": "integer", "minimum": 0},
+            "pressure": {"type": "string", "enum": ["None", "Low", "Medium", "High"]},
+            "brass": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    }
+  }
+}
+
