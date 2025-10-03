@@ -140,13 +140,14 @@ This document provides an ordered, dependency-aware task list for implementing t
 
 **Expected Outcome**: Tests **MAY FAIL** - this is good! Failures reveal bugs that need fixing before proceeding.
 
-- [ ] **T200** [P] Unit test for existing Steam Source in `tests/unit/test_steam_source.gd`
-  - Load `data/parts/steam_source.yaml` to check expected ports and types
-  - Test all 5 data patterns (sine_wave, random_walk, step_function, training_data, sensor_readings)
-  - Test amplitude, frequency, noise_level parameters
-  - Test multi-channel generation
-  - **Validate**: Output port type matches YAML spec (should be `vector` or `signal`)
-  - **Expected**: MAY FAIL if port types incorrect or data generation broken
+- [x] **T200** [P] Unit test for existing Steam Source in `tests/unit/test_steam_source.gd`
+  - ✅ Load `data/parts/steam_source.yaml` to check expected ports and types
+  - ✅ Test all 5 data patterns (sine_wave, random_walk, step_function, training_data, sensor_readings)
+  - ✅ Test amplitude, frequency, noise_level parameters
+  - ✅ Test multi-channel generation
+  - ✅ **Validate**: Output port type matches YAML spec (vector type: 1D Array[float])
+  - ✅ 28 test methods covering YAML validation, port types, ML semantics, edge cases, signals, performance
+  - **Status**: Test written, ready to run (may reveal bugs)
 
 - [ ] **T201** [P] Unit test for existing Signal Loom in `tests/unit/test_signal_loom.gd`
   - Load `data/parts/signal_loom.yaml` to check expected ports (in_north: vector, out_south: vector)
