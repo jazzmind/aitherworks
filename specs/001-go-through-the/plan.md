@@ -48,7 +48,7 @@ This implementation plan addresses the complete AItherworks core system: a steam
 
 ## Technical Context
 **Language/Version**: GDScript (Godot 4.x native scripting language), targeting Godot 4.3+  
-**Primary Dependencies**: Godot 4.x engine, YAML parser for GDScript (requires research/selection), JSON for transformer traces  
+**Primary Dependencies**: Godot 4.x engine, ✅ Custom SpecLoader YAML parser (`game/sim/spec_loader.gd` - zero external dependencies), JSON for transformer traces  
 **Storage**: Local file system for YAML specs (`data/specs/`, `data/parts/`), local save files for player progress  
 **Testing**: Godot's GUT (Godot Unit Test) framework, manual playtesting validation  
 **Target Platform**: Desktop (Windows/Mac/Linux) and Web (WASM) in Phase 1; Mobile (iOS/Android) deferred to Phase 2  

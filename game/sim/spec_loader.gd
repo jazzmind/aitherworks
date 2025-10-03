@@ -13,7 +13,6 @@ static func load_yaml(path: String) -> Dictionary:
 		push_error("SpecLoader: cannot open %s" % path)
 		return {}
 	var text := file.get_as_text()
-	print("DEBUG: Loaded file: ", file.get_as_text().substr(0, 100))
 	return _parse_yaml(text)
 
 static func _parse_yaml(text: String) -> Dictionary:

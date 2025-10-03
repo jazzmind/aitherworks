@@ -24,3 +24,5 @@ Thumbs.db
 # Build outputs
 builds/
 export/
+
+addons/

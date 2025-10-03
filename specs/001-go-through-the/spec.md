@@ -300,7 +300,7 @@ This specification defines the complete AItherworks core system: a steampunk puz
 
 **Dependencies**:
 - Godot 4.x engine (confirmed, already in use)
-- YAML parsing library for GDScript (may need third-party or custom implementation)
+- ✅ YAML parsing: Custom SpecLoader implementation (zero external dependencies) - see `game/sim/spec_loader.gd`
 - Pre-generated transformer traces (requires separate trace generation tooling)
 - Steampunk art assets (backgrounds, part visuals, UI elements)
 - Audio assets (piston thumps, valve hisses, chimes)

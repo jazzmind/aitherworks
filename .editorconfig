@@ -1,0 +1,53 @@
+# EditorConfig for AItherworks
+# https://editorconfig.org
+
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# GDScript files
+[*.gd]
+indent_style = tab
+indent_size = 4
+
+# YAML files (data specs, part definitions)
+[*.yaml]
+indent_style = space
+indent_size = 2
+
+# JSON files (player progress, transformer traces)
+[*.json]
+indent_style = tab
+indent_size = 4
+
+# Markdown files
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+# Godot scene files (TSCN)
+[*.tscn]
+indent_style = space
+indent_size = 2
+
+# Godot resource files
+[*.tres]
+indent_style = space
+indent_size = 2
+
+# Configuration files
+[*.cfg]
+indent_style = space
+indent_size = 2
+
+# Git and CI/CD
+[*.{yml,sh}]
+indent_style = space
+indent_size = 2
+

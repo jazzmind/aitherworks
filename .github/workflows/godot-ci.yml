@@ -1,0 +1,216 @@
+name: Godot CI/CD
+
+on:
+  push:
+    branches: [ main, 001-go-through-the ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GODOT_VERSION: 4.3
+  EXPORT_NAME: aitherworks
+
+jobs:
+  # Run GUT tests in headless mode
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      
+      - name: Install Dependencies
+        run: |
+          # Note: gdyaml and GUT must be committed to repo or installed here
+          echo "Checking for required addons..."
+          ls -la addons/
+      
+      - name: Run GUT Tests
+        run: |
+          godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=tests/ -gexit
+        continue-on-error: false
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: .gut_editor_config.json
+  
+  # Validate YAML schemas
+  validate-schemas:
+    name: Validate YAML Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install PyYAML
+        run: pip install pyyaml
+      
+      - name: Validate Level Specs
+        run: |
+          python3 -c "
+          import yaml
+          import sys
+          from pathlib import Path
+          
+          failed = []
+          for spec_file in Path('data/specs').glob('*.yaml'):
+              try:
+                  with open(spec_file) as f:
+                      yaml.safe_load(f)
+                  print(f'✅ {spec_file.name}')
+              except Exception as e:
+                  print(f'❌ {spec_file.name}: {e}')
+                  failed.append(spec_file.name)
+          
+          if failed:
+              print(f'\n{len(failed)} files failed validation')
+              sys.exit(1)
+          else:
+              print(f'\nAll level specs valid')
+          "
+      
+      - name: Validate Part Definitions
+        run: |
+          python3 -c "
+          import yaml
+          import sys
+          from pathlib import Path
+          
+          failed = []
+          for part_file in Path('data/parts').glob('*.yaml'):
+              try:
+                  with open(part_file) as f:
+                      yaml.safe_load(f)
+                  print(f'✅ {part_file.name}')
+              except Exception as e:
+                  print(f'❌ {part_file.name}: {e}')
+                  failed.append(part_file.name)
+          
+          if failed:
+              print(f'\n{len(failed)} files failed validation')
+              sys.exit(1)
+          else:
+              print(f'\nAll part definitions valid')
+          "
+  
+  # Export for Web (WASM)
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      
+      - name: Web Build
+        run: |
+          mkdir -v -p build/web
+          godot --headless --export-release "Web" build/web/index.html
+      
+      - name: Check Export Size
+        run: |
+          SIZE=$(du -sm build/web | cut -f1)
+          echo "Web export size: ${SIZE}MB"
+          if [ $SIZE -gt 500 ]; then
+            echo "❌ Export exceeds 500MB limit (actual: ${SIZE}MB)"
+            exit 1
+          else
+            echo "✅ Export within 500MB budget"
+          fi
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: build/web
+  
+  # Export for Desktop (Linux, Windows, macOS)
+  export-desktop:
+    name: Desktop Export
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        platform: [Linux, Windows, macOS]
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      
+      - name: Build ${{ matrix.platform }}
+        run: |
+          mkdir -v -p build/${{ matrix.platform }}
+          godot --headless --export-release "${{ matrix.platform }}" build/${{ matrix.platform }}/${{ env.EXPORT_NAME }}
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-build
+          path: build/${{ matrix.platform }}
+
+  # Performance regression tests
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: test
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      
+      - name: Run Performance Tests
+        run: |
+          godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=tests/performance/ -gexit
+        continue-on-error: true
+      
+      - name: Upload Performance Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: .gut_editor_config.json
+
