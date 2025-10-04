@@ -63,6 +63,9 @@ func generate_steam_pressure() -> Array[float]:
 	var output: Array[float] = []
 	time_step += 0.1
 	
+	# DEBUG: Print time_step and pattern for debugging BUG #2
+	# print("DEBUG generate_steam_pressure: time_step=%.2f, pattern=%s" % [time_step, data_pattern])
+	
 	match data_pattern:
 		"sine_wave":
 			for i in range(num_channels):
