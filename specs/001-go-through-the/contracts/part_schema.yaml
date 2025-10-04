@@ -40,9 +40,9 @@ fields:
   ports:
     type: object
     min_properties: 1
-    description: "Named ports with type and direction"
+    description: "Named ports with type and direction (hybrid cardinal + numbered)"
     pattern_properties:
-      "^(in|out)_(north|south|east|west)$":
+      "^(in|out)_(north|south|east|west)(?:_[1-9][0-9]*)?$":
         type: object
         required:
           - type
@@ -61,6 +61,14 @@ fields:
       out_south:
         type: "vector"
         direction: "output"
+      in_north_1:
+        type: "vector"
+        direction: "input"
+        description: "Example of numbered port for complex parts"
+    notes:
+      - "Simple parts (≤4 ports per direction) use cardinal names only: in_north, out_south"
+      - "Complex parts (>4 ports per direction) use numbered suffix: in_north_1, in_north_2"
+      - "Visual layout matches Godot GraphNode sides: north=top, south=bottom, east=right, west=left"
   
   costs:
     type: object

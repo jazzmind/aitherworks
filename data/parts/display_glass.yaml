@@ -23,7 +23,9 @@ simulation:
 
 # Port configuration
 ports:
-  signal_in: "input"  # Input signal to display
+  in_north:
+    type: "vector"
+    direction: "input"  # Input signal to display
 
 # Steampunk flavor
 materials: ["brass", "glass", "copper"]

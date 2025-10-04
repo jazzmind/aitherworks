@@ -22,7 +22,7 @@ simulation:
   learnable: false
 
 ports:
-  in-1: input
-  in-2: input
-  out-1: output
+  in_north: input
+  in_east: input
+  out_south: output
 

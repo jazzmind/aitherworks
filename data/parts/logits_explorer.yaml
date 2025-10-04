@@ -16,6 +16,12 @@ simulation:
     show_topk: 5
 
 ports:
-  in-1: token_vocab_subset  # ids->strings map
-  in-2: logits_topk         # {ids:[], logits:[]}
-  out-1: chosen_token_id    # int
+  in_north:
+    type: "vector"
+    direction: "input"  # token_vocab_subset (ids->strings map)
+  in_east:
+    type: "vector"
+    direction: "input"  # logits_topk {ids:[], logits:[]}
+  out_south:
+    type: "scalar"
+    direction: "output"  # chosen_token_id (int)

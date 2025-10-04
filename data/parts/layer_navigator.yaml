@@ -17,6 +17,12 @@ simulation:
     head_mask: []
 
 ports:
-  in-1: attention_weights   # [L,H,S,S]
-  out-1: layer_index        # int
-  out-2: head_mask_out      # [H] booleans
+  in_north:
+    type: "attention_weights"
+    direction: "input"  # [L,H,S,S]
+  out_south:
+    type: "scalar"
+    direction: "output"  # layer_index (int)
+  out_east:
+    type: "vector"
+    direction: "output"  # head_mask_out [H] booleans

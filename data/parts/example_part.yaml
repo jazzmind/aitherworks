@@ -40,5 +40,5 @@ simulation:
 # interpreted by the plugin when placing scenes.  Use port names
 # (in-1/out-1) to specify where signals flow.
 ports:
-  in-1: input
-  out-1: output
+  in_north: input
+  out_south: output

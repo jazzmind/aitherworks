@@ -25,7 +25,9 @@ simulation:
 
 # Port configuration
 ports:
-  actual_in: "input"  # Actual output from the network
+  in_north:
+    type: "vector"
+    direction: "input"  # Actual output from the network
 
 # Steampunk flavor
 materials: ["brass", "copper", "glass", "emerald", "ruby"]

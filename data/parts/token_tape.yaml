@@ -16,7 +16,15 @@ simulation:
     show_probabilities: true
 
 ports:
-  in-1: tokens              # [S] strings
-  in-2: next_token_probs    # top-k distribution
-  out-1: selected_token_idx # int
-  out-2: span_selection     # [start,end]
+  in_north:
+    type: "vector"
+    direction: "input"  # [S] tokens (strings)
+  in_east:
+    type: "vector"
+    direction: "input"  # top-k distribution (next_token_probs)
+  out_south:
+    type: "scalar"
+    direction: "output"  # selected_token_idx (int)
+  out_west:
+    type: "vector"
+    direction: "output"  # span_selection [start,end]
