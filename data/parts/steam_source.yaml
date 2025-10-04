@@ -24,7 +24,9 @@ simulation:
 
 # Port configuration
 ports:
-  steam_out: "output"  # Generated steam pressure
+  out_south:
+    type: "vector"
+    direction: "output"  # Generated steam pressure
 
 # Steampunk flavor
 materials: ["brass", "iron", "coal"]
