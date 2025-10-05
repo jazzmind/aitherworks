@@ -26,8 +26,8 @@ ports:
     type: "vector"
     direction: "input"     # Input signal to be weighted
   out_south:
-    type: "vector"
-    direction: "output"    # Weighted output signal
+    type: "scalar"
+    direction: "output"    # Weighted output signal (dot product result)
 
 # Steampunk flavor
 materials: ["brass", "iron", "copper"]
