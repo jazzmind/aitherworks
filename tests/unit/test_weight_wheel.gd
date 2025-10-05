@@ -74,7 +74,7 @@ func test_yaml_ports_match_schema():
 	
 	if typeof(out_port) == TYPE_DICTIONARY and out_port.has("type"):
 		assert_has(out_port, "type", "out_south should have type field")
-		assert_eq(out_port["type"], "vector", "out_south should be vector type")
+		assert_eq(out_port["type"], "scalar", "out_south should be scalar type (dot product result)")
 		assert_has(out_port, "direction", "out_south should have direction field")
 		assert_eq(out_port["direction"], "output", "out_south should be output direction")
 
