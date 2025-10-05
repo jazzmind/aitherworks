@@ -43,7 +43,7 @@ func _build_ports(ports: Dictionary) -> void:
 	
 	# Treat any entry with value 'input' as left ports and 'output' as right ports
 	for k in ports.keys():
-		var v := String(ports[k])
+		var v := str(ports[k])
 		print("DEBUG: Port ", k, " = ", v)
 		if v == "input":
 			input_names.append(k)

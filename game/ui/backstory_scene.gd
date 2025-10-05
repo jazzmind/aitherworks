@@ -88,7 +88,6 @@ func _setup_backgrounds() -> void:
 		print("Warning: Could not open background directory for chapter ", chapter_number)
 		return
 	
-	var files := dir.get_files()
 	var layer_count := 0
 	
 	# Create background layers (we'll use up to 4 numbered layers)
@@ -102,12 +101,12 @@ func _setup_backgrounds() -> void:
 				var layer := TextureRect.new()
 				layer.name = "Layer" + str(i)
 				layer.texture = texture
-				layer.expand_mode = 1  # EXPAND_FILL
+				layer.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 				layer.anchors_preset = Control.PRESET_FULL_RECT
 				layer.anchor_right = 1.0
 				layer.anchor_bottom = 1.0
-				layer.grow_horizontal = 2
-				layer.grow_vertical = 2
+				layer.grow_horizontal = Control.GROW_DIRECTION_BOTH
+				layer.grow_vertical = Control.GROW_DIRECTION_BOTH
 				
 				# Set initial position for parallax effect - make layers wider than screen
 				layer.position = Vector2.ZERO
@@ -126,12 +125,12 @@ func _setup_backgrounds() -> void:
 				var layer := TextureRect.new()
 				layer.name = "Background"
 				layer.texture = texture
-				layer.expand_mode = 1  # EXPAND_FILL
+				layer.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 				layer.anchors_preset = Control.PRESET_FULL_RECT
 				layer.anchor_right = 1.0
 				layer.anchor_bottom = 1.0
-				layer.grow_horizontal = 2
-				layer.grow_vertical = 2
+				layer.grow_horizontal = Control.GROW_DIRECTION_BOTH
+				layer.grow_vertical = Control.GROW_DIRECTION_BOTH
 				layer.custom_minimum_size = Vector2(1200, 720)  # Wider than screen for parallax
 				background_layers.add_child(layer)
 				background_textures[layer] = texture
@@ -180,7 +179,7 @@ func _load_backstory() -> void:
 func _break_story_into_pages(full_story: String) -> Array:
 	# Break story into pages at natural break points (horizontal rules, icon breaks)
 	var pages := []
-	var current_page := ""
+	var page_text := ""
 	var lines := full_story.split("\n")
 	
 	for line in lines:
@@ -189,17 +188,17 @@ func _break_story_into_pages(full_story: String) -> Array:
 		   line.contains("⚡ ⚙️ ⚡") or \
 		   line.contains("🔧 ⚙️ 🔩 ⚙️ 🔧 ⚙️ 🔩"):
 			# End current page and start new one
-			if current_page.strip_edges() != "":
-				pages.append(current_page.strip_edges())
-				current_page = ""
+			if page_text.strip_edges() != "":
+				pages.append(page_text.strip_edges())
+				page_text = ""
 			# Add the break line to the new page
-			current_page += line + "\n"
+			page_text += line + "\n"
 		else:
-			current_page += line + "\n"
+			page_text += line + "\n"
 	
 	# Add the final page
-	if current_page.strip_edges() != "":
-		pages.append(current_page.strip_edges())
+	if page_text.strip_edges() != "":
+		pages.append(page_text.strip_edges())
 	
 	# If no pages were created, just return the full story as one page
 	if pages.size() == 0:
@@ -506,15 +505,8 @@ func _finish_typewriter() -> void:
 		continue_btn.text = "⚙️ Begin Chapter " + str(chapter_number)
 
 func _on_skip_pressed() -> void:
-	if is_typing:
-		_finish_typewriter()
-	elif current_page < story_pages.size() - 1:
-		# Skip to next page
-		current_page += 1
-		_start_typewriter_effect()
-	else:
-		# Last page, go to tutorial
-		_fade_to_tutorial()
+	# Skip button always skips the entire backstory
+	_fade_to_tutorial()
 
 func _on_continue_pressed() -> void:
 	if is_typing:
