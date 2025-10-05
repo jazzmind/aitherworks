@@ -52,9 +52,7 @@ func test_yaml_has_weight_parameter():
 func test_yaml_ports_exist():
 	var ports = yaml_spec["ports"]
 	assert_not_null(ports, "Ports should exist")
-	# NOTE: SpecLoader bug - only parses first port in nested YAML
-	# This is a known issue to be fixed in Phase 3.4 (Steamfitter Plugin)
-	assert_true(ports.size() >= 1, "Should have at least 1 port (SpecLoader limitation)")
+	assert_true(ports.size() >= 2, "Should have at least 2 ports (in + out)")
 
 func test_yaml_ports_match_schema():
 	var ports = yaml_spec["ports"]
@@ -71,17 +69,14 @@ func test_yaml_ports_match_schema():
 			assert_eq(in_port["direction"], "input", "in_north should be input direction")
 	
 	# Check for out_south (output)
-	# NOTE: SpecLoader bug - only parses first port, so out_south won't be present
-	# This will be fixed in Phase 3.4 (Steamfitter Plugin improvements)
-	if ports.has("out_south"):
-		var out_port = ports["out_south"]
-		
-		if typeof(out_port) == TYPE_DICTIONARY and out_port.has("type"):
-			assert_has(out_port, "type", "out_south should have type field")
-			assert_eq(out_port["type"], "vector", "out_south should be vector type")
-			# Direction field may not be parsed by SpecLoader - that's OK for now
-			if out_port.has("direction"):
-				assert_eq(out_port["direction"], "output", "out_south should be output direction")
+	assert_has(ports, "out_south", "Should have out_south port")
+	var out_port = ports["out_south"]
+	
+	if typeof(out_port) == TYPE_DICTIONARY and out_port.has("type"):
+		assert_has(out_port, "type", "out_south should have type field")
+		assert_eq(out_port["type"], "vector", "out_south should be vector type")
+		assert_has(out_port, "direction", "out_south should have direction field")
+		assert_eq(out_port["direction"], "output", "out_south should be output direction")
 
 ## Initialization Tests
 

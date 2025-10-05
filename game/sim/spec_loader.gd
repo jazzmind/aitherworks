@@ -38,7 +38,8 @@ static func _parse_yaml(text: String) -> Dictionary:
 			# allow inline comments by trimming after hash when preceded by space
 			var before := line.substr(0, hash_pos)
 			if before.ends_with(" "):
-				line = before.strip_edges()
+				# CRITICAL: Only strip trailing spaces, NOT leading spaces (preserve indentation!)
+				line = before.rstrip(" \t")
 		if line.strip_edges() == "":
 			# blank
 			continue
