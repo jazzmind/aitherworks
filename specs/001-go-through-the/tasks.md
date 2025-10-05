@@ -247,7 +247,7 @@ This document provides an ordered, dependency-aware task list for implementing t
 **Duration**: 1-3 days (depends on T211 report)  
 **Dependencies**: T200-T211 (retrofit tests complete)  
 **Goal**: Fix all port type issues and ML semantic bugs discovered in Phase 3.2  
-**Status**: ✅ ALL BUGS FIXED - T200 now passing 24/24 tests
+**Status**: ✅ ALL BUGS FIXED - T200 now passing 24/24 tests, ALL 33 PARTS SCHEMA-COMPLIANT
 
 **Tasks Completed**:
 - [x] **T212**: Fixed port naming in steam_source.yaml (steam_out → out_south with direction field)
@@ -255,12 +255,27 @@ This document provides an ordered, dependency-aware task list for implementing t
 - [x] **T214**: Fixed frequency test expectations (need 40 steps to see oscillation)
 - [x] **T215**: Adjusted noise level test threshold (0.02 instead of 0.1)
 - [x] **T216**: Fixed SimulationProfiler test (use Time.get_ticks_msec() directly)
+- [x] **T217**: ⭐ **MAJOR FIX** - Implemented Option 3 (Hybrid Cardinal+Numbered) port naming schema
+  - **Problem**: 23/33 part YAMLs violated schema (in-1, in-2 vs in_north, out_south)
+  - **Solution**: Updated schema to `^(in|out)_(north|south|east|west)(?:_[1-9][0-9]*)?$`
+  - **Result**: 33/33 parts now compliant (was 1/33)
+  - **Benefits**: 
+    - Visual clarity for simple parts (in_north = top of GraphNode)
+    - Unlimited scalability for complex parts (in_north_1, in_north_2)
+    - Future-proof for multi-head attention (8+ inputs)
+  - **Files Fixed**: All 33 part YAMLs converted to hybrid cardinal naming
+  - **Schema**: Updated `contracts/part_schema.yaml` with new pattern + examples
 
 **Infrastructure Added**:
 - [x] Created `run_tests.sh` with 30s timeout protection
 - [x] Added project memory for test runner usage
+- [x] Created `audit_ports.gd` for schema compliance validation (deleted after use)
+- [x] Created `fix_all_ports.gd` for automated port renaming (deleted after use)
 
-**Result**: ✅ Steam Source fully validated (24/24 tests passing, 95 assertions, 0.449s)
+**Result**: 
+- ✅ Steam Source fully validated (24/24 tests passing, 95 assertions, 0.449s)
+- ✅ Port naming schema crisis resolved (33/33 compliant, 0 violations)
+- ✅ Schema supports future scalability (hybrid cardinal+numbered)
 
 **GATE PASSED**: Ready to proceed to Phase 3.3 or continue T201-T210
 
