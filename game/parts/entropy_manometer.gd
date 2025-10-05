@@ -48,7 +48,19 @@ func measure_entropy(predictions: Array) -> Dictionary:
 	"""Calculate loss and entropy from predictions vs targets"""
 	current_predictions = predictions.duplicate()
 	
-	if target_values.size() == 0 or predictions.size() == 0:
+	# Early return only if predictions are empty
+	# Note: Some metrics (VARIANCE, INFORMATION_GAIN) don't require targets
+	if predictions.size() == 0:
+		return {"loss": 0.0, "entropy": 0.0}
+	
+	# For metrics that require targets, check if targets exist
+	var needs_targets = measurement_type in [
+		MeasurementType.MEAN_SQUARED_ERROR,
+		MeasurementType.CROSS_ENTROPY,
+		MeasurementType.BINARY_CROSSENTROPY
+	]
+	
+	if needs_targets and target_values.size() == 0:
 		return {"loss": 0.0, "entropy": 0.0}
 	
 	var loss: float = 0.0
