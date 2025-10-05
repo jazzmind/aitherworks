@@ -281,6 +281,62 @@ This document provides an ordered, dependency-aware task list for implementing t
 
 ---
 
+## Phase 3.2.5c: Fix Critical SpecLoader Bug ✅ COMPLETE
+
+**Duration**: 1 hour  
+**Dependencies**: Discovered during T202 (Weight Wheel tests)  
+**Status**: ✅ FIXED - SpecLoader now correctly parses all nested YAML with inline comments
+
+### Critical Bug: Inline Comments Destroyed Indentation
+
+**Problem**: SpecLoader was only parsing the first port in nested YAML structures when inline comments were present.
+
+**Root Cause**: 
+- Line 41 in `spec_loader.gd`: `line = before.strip_edges()`
+- When removing inline comments, `strip_edges()` removed BOTH leading and trailing whitespace
+- This destroyed indentation information, causing indent calculation to fail
+- Stack unwinding placed subsequent keys at wrong nesting level (root instead of nested)
+
+**Example**:
+```yaml
+ports:
+  in_north:
+    type: "vector"
+    direction: "input"     # Comment here
+  out_south:               # <-- This and below ended up at root level!
+    type: "vector"
+```
+
+**The Fix**:
+```gdscript
+# OLD (line 41):
+line = before.strip_edges()  # ❌ Removes leading spaces!
+
+# NEW (line 42):
+line = before.rstrip(" \t")  # ✅ Only removes trailing whitespace
+```
+
+**Impact**:
+- ✅ Affected 30+ part files with inline comments
+- ✅ All multi-port parts now parse correctly
+- ✅ No test failures - all 84 tests still passing
+- ✅ Stricter port validation now possible
+
+**Verification**:
+```
+Before: weight_wheel.yaml → {"ports": {"in_north": {...}}}  (1 port)
+After:  weight_wheel.yaml → {"ports": {"in_north": {...}, "out_south": {...}}}  (2 ports)
+```
+
+**Files Modified**:
+- [x] `game/sim/spec_loader.gd` - Fixed comment stripping logic (1 line)
+- [x] `tests/unit/test_weight_wheel.gd` - Stricter port assertions
+- [x] `tests/unit/test_signal_loom.gd` - Better documentation
+
+**Result**: ✅ SpecLoader now correctly parses all YAML files
+
+---
+
 ## Phase 3.3: Schema Validation Tests (TDD) ⚠️ MUST COMPLETE BEFORE 3.4
 
 **Duration**: 2-3 days  
