@@ -6,7 +6,7 @@
 # part.  The Steamfitter plugin will read these definitions and
 # generate corresponding scenes in Godot.
 
-id: weight_wheel
+id: example_part
 name: "Weight Wheel"
 category: basic
 description: |
