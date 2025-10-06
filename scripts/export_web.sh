@@ -1,11 +1,30 @@
 #!/bin/bash
 
 # Export Godot game to WebAssembly
-# This script should be run from the project root
+# Can be run from project root or web/ directory
 
 set -e
 
+# Determine project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# If called from web/ directory via npm, go to project root
+if [ -f "package.json" ] && [ -d "../game" ]; then
+    cd ..
+elif [ ! -f "project.godot" ]; then
+    # Try to find project root
+    cd "$PROJECT_ROOT"
+fi
+
+# Verify we're in the project root
+if [ ! -f "project.godot" ]; then
+    echo "Error: Cannot find project.godot. Please run from project root."
+    exit 1
+fi
+
 echo "🎮 Exporting AItherworks to WebAssembly..."
+echo "Working directory: $(pwd)"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -13,22 +32,38 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Check if Godot is installed
-if ! command -v godot &> /dev/null && ! command -v godot4 &> /dev/null; then
-    echo -e "${RED}Error: Godot not found in PATH${NC}"
-    echo "Please install Godot 4.x or add it to your PATH"
-    echo ""
-    echo "On macOS with Homebrew:"
-    echo "  brew install godot"
-    echo ""
-    echo "Or download from: https://godotengine.org/download"
-    exit 1
+# Find Godot executable
+GODOT_CMD=""
+
+# Check common locations
+if command -v godot &> /dev/null; then
+    GODOT_CMD="godot"
+elif command -v godot4 &> /dev/null; then
+    GODOT_CMD="godot4"
+elif [ -f "/Applications/Godot.app/Contents/MacOS/Godot" ]; then
+    GODOT_CMD="/Applications/Godot.app/Contents/MacOS/Godot"
+elif [ -f "/Applications/Godot_mono.app/Contents/MacOS/Godot" ]; then
+    GODOT_CMD="/Applications/Godot_mono.app/Contents/MacOS/Godot"
+elif [ -f "$HOME/Applications/Godot.app/Contents/MacOS/Godot" ]; then
+    GODOT_CMD="$HOME/Applications/Godot.app/Contents/MacOS/Godot"
 fi
 
-# Determine which Godot command to use
-GODOT_CMD="godot"
-if command -v godot4 &> /dev/null; then
-    GODOT_CMD="godot4"
+# If still not found, error out
+if [ -z "$GODOT_CMD" ]; then
+    echo -e "${RED}Error: Godot not found${NC}"
+    echo ""
+    echo "Searched locations:"
+    echo "  - PATH (godot or godot4 command)"
+    echo "  - /Applications/Godot.app"
+    echo "  - /Applications/Godot_mono.app"
+    echo "  - ~/Applications/Godot.app"
+    echo ""
+    echo "Solutions:"
+    echo "1. Install via Homebrew: brew install godot"
+    echo "2. Add Godot to PATH in ~/.zshrc:"
+    echo "   export PATH=\"/Applications/Godot.app/Contents/MacOS:\$PATH\""
+    echo "3. Download from: https://godotengine.org/download"
+    exit 1
 fi
 
 # Check Godot version
