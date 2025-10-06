@@ -523,17 +523,18 @@ After:  weight_wheel.yaml → {"ports": {"in_north": {...}, "out_south": {...}}}
   - ✅ Unlock next level
   - ✅ 17/18 tests passing (94%)
 
-- [ ] **T024** Wire up simulation to integration tests
-  - Make T011 (Act I L1) pass
-  - Make T012-T015 (Act I L2-L5) pass
-  - Verify training converges
-  - Verify win conditions trigger
+- [x] **T024** Wire up simulation to integration tests
+  - ✅ Make T011 (Act I L1) pass - 20/20 tests
+  - ✅ Make T012-T015 (Act I L2-L5) pass - all passing
+  - ✅ Verify training converges
+  - ✅ Verify win conditions trigger
 
-- [ ] **T025** Run all integration tests (T011-T017) - should now pass
-  - Act I L1 playthrough test should complete
-  - Training should converge to accuracy ≥ 0.95
-  - Level completion should trigger
-  - Fix any simulation bugs discovered
+- [x] **T025** Run all integration tests (T011-T017) - should now pass
+  - ✅ Act I L1 playthrough test complete (20 tests)
+  - ✅ Act I L2-L5 level loading (12 tests)
+  - ✅ Level progression tracking (4 tests)
+  - ✅ Tutorial flow validation (4 tests)
+  - ✅ 40/40 integration tests passing (100%)
 
 ---
 

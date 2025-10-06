@@ -23,9 +23,21 @@ Or verify from command line:
 godot --version
 ```
 
-### 2. Export Game to WASM
+### 2. Start the Dev Server First (Optional)
 
-From project root:
+You can start Next.js before exporting to see the helpful error message:
+
+```bash
+cd web
+npm install  # if you haven't already
+npm run dev
+```
+
+Open http://localhost:3000 - you'll see instructions to export the game.
+
+### 3. Export Game to WASM
+
+From project root (in a new terminal):
 ```bash
 ./scripts/export_web.sh
 ```
@@ -39,25 +51,20 @@ Exporting game...
 ✅ Export complete!
 ```
 
-### 3. Setup Next.js
+**Files created:**
+- `web/public/godot/aitherworks.wasm` (Godot engine)
+- `web/public/godot/aitherworks.pck` (Your game)
+- `web/public/godot/aitherworks.js` (Loader)
 
-```bash
-cd web
-npm install
-```
+### 4. Refresh Browser
 
-### 4. Test Locally
-
-```bash
-npm run dev
-```
-
-Visit http://localhost:3000
+Go back to http://localhost:3000 and refresh.
 
 You should see:
-1. Loading screen with progress bar
-2. Game canvas appears
-3. Your Godot game running
+1. "Loading game engine..."
+2. Progress bar: "Loading... XX%"
+3. Game canvas appears
+4. Your Godot game running in the browser! 🎮
 
 ### 5. Deploy to Vercel
 

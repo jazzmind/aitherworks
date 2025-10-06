@@ -112,15 +112,8 @@ func test_validate_machine_too_many_parts() -> void:
 	
 	var result := manager.validate_machine(machine)
 	
-	# Check if there's an error about too many parts
-	var has_too_many_error := false
-	for error in result["errors"]:
-		if "Too many parts" in error:
-			has_too_many_error = true
-	
-	# Note: This might not fail if budget is exceeded first
-	# assert_true(has_too_many_error or result["errors"].size() > 0, 
-	#	"Should have error")
+	# Should have some validation error (either too many parts or budget exceeded)
+	assert_gt(result["errors"].size(), 0, "Should have validation errors")
 	
 	# Clean up
 	for part in machine.placed_parts:

@@ -43,16 +43,18 @@ web/
 
 ### Development Workflow
 ```bash
-# 1. Export game to WASM
-./scripts/export_web.sh
-
-# 2. Start dev server
+# 1. Start dev server (in one terminal)
 cd web
 npm run dev
 
-# 3. Open browser
+# 2. Export game to WASM (in another terminal)
+./scripts/export_web.sh
+
+# 3. Open browser (or refresh if already open)
 open http://localhost:3000
 ```
+
+**Note**: You must export the game before it will load in the browser. The Next.js app will show helpful instructions if game files are missing.
 
 ### Production Build
 ```bash

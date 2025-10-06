@@ -13,6 +13,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the game.
 
+**Note**: The `dev` script uses a custom server (`server.mjs`) that sets COOP/COEP headers required for WebAssembly threading support. If you need the standard Next.js dev server, use `npm run dev:next`.
+
 ### Production Build
 
 ```bash

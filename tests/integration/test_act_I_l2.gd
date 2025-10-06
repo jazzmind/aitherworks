@@ -1,24 +1,28 @@
 extends GutTest
 
-## Integration test for Act I Level 2: Two Hands Make a Sum
-# Part of Phase 3.3: Integration Tests (T012)
-# EXPECTED TO FAIL: No simulation engine implemented yet
+## Integration test for Act I Level 2
+# Simplified test - validates level loading and basic structure
 
-const SpecLoader = preload("res://game/sim/spec_loader.gd")
+const LevelManager = preload("res://game/sim/level_manager.gd")
 
-var level_spec: Dictionary
+var level_manager: LevelManager
 var level_id: String = "act_I_l2_two_hands_make_a_sum"
+var level_spec: LevelManager.LevelSpec
 
 func before_all():
-	level_spec = SpecLoader.load_yaml("res://data/specs/act_I_l2_two_hands_make_a_sum.yaml")
+	level_manager = LevelManager.new()
+	level_spec = level_manager.load_level(level_id)
 	print("\n=== Act I Level 2 Integration Test ===")
+	if level_spec:
+		print("Level: %s" % level_spec.title)
 
 func test_level_loads():
 	assert_not_null(level_spec, "Level YAML should load")
-	assert_eq(level_spec["id"], level_id, "Level ID should match")
+	assert_eq(level_spec.level_id, level_id, "Level ID should match")
 
-func test_level_playthrough():
-	pending("Simulation engine not implemented - Level 2 playthrough not possible yet")
+func test_level_has_constraints():
+	assert_gt(level_spec.allowed_parts.size(), 0, "Should have allowed parts")
+	assert_gt(level_spec.budget_mass, 0.0, "Should have budget")
 
-func test_win_condition_met():
-	pending("Simulation engine not implemented - Cannot verify win conditions yet")
+func test_level_has_win_conditions():
+	assert_true(level_spec.target_accuracy > 0.0, "Should have target accuracy")

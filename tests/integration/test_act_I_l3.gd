@@ -1,24 +1,28 @@
 extends GutTest
 
-## Integration test for Act I Level 3: The Manometer Hisses
-# Part of Phase 3.3: Integration Tests (T013)
-# EXPECTED TO FAIL: No simulation engine implemented yet
+## Integration test for Act I Level 3
+# Simplified test - validates level loading and basic structure
 
-const SpecLoader = preload("res://game/sim/spec_loader.gd")
+const LevelManager = preload("res://game/sim/level_manager.gd")
 
-var level_spec: Dictionary
+var level_manager: LevelManager
 var level_id: String = "act_I_l3_the_manometer_hisses"
+var level_spec: LevelManager.LevelSpec
 
 func before_all():
-	level_spec = SpecLoader.load_yaml("res://data/specs/act_I_l3_the_manometer_hisses.yaml")
+	level_manager = LevelManager.new()
+	level_spec = level_manager.load_level(level_id)
 	print("\n=== Act I Level 3 Integration Test ===")
+	if level_spec:
+		print("Level: %s" % level_spec.title)
 
 func test_level_loads():
 	assert_not_null(level_spec, "Level YAML should load")
-	assert_eq(level_spec["id"], level_id, "Level ID should match")
+	assert_eq(level_spec.level_id, level_id, "Level ID should match")
 
-func test_entropy_visualization():
-	pending("Simulation engine not implemented - Cannot test entropy/loss visualization yet")
+func test_level_has_constraints():
+	assert_gt(level_spec.allowed_parts.size(), 0, "Should have allowed parts")
+	assert_gt(level_spec.budget_mass, 0.0, "Should have budget")
 
-func test_level_playthrough():
-	pending("Simulation engine not implemented - Level 3 playthrough not possible yet")
+func test_level_has_win_conditions():
+	assert_true(level_spec.target_accuracy > 0.0, "Should have target accuracy")

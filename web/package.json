@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.mjs",
+    "dev:next": "next dev",
     "build": "npm run build:godot && next build",
     "build:godot": "sh ../scripts/export_web.sh",
     "start": "next start",

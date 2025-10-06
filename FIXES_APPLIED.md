@@ -122,5 +122,113 @@ These enable `SharedArrayBuffer` for Godot threading support.
 
 ---
 
+### 4. "Godot Engine not loaded" Error
+
+**Error:**
+```
+Error: Godot Engine not loaded
+  at GamePage.useEffect.startGame (page.tsx:20:17)
+```
+
+**Root Cause:**
+The Godot engine JavaScript loader wasn't being dynamically loaded, and the app didn't check if game files existed before trying to load them.
+
+**Fix Applied:**
+
+1. Updated `web/app/page.tsx` to:
+   - Dynamically load the Godot engine script from `/godot/aitherworks.js`
+   - Check if game files exist before attempting to load
+   - Show helpful error messages with instructions
+   - Display step-by-step fix guide if files are missing
+
+2. Added helpful UI:
+   ```tsx
+   // Shows clear instructions to run ./scripts/export_web.sh
+   // Displays numbered steps to fix the issue
+   // Better error states with styled messages
+   ```
+
+3. Created `FIRST_RUN.md`:
+   - Quick reference for first-time setup
+   - Explains the export → load flow
+   - Troubleshooting common issues
+
+**Result:** ✅ App now gracefully handles missing game files and shows clear instructions
+
+---
+
+## Important Note: Export First!
+
+The Next.js app is a **wrapper** for your Godot game. Before the game can run in the browser, you must:
+
+1. Export your Godot game to WASM:
+   ```bash
+   ./scripts/export_web.sh
+   ```
+
+2. This creates files in `web/public/godot/`:
+   - `aitherworks.wasm` (Godot engine)
+   - `aitherworks.pck` (Your game data)
+   - `aitherworks.js` (Loader script)
+
+3. Then the Next.js app can load and display your game
+
+**Workflow:**
+```
+Godot Project → Export to WASM → Next.js loads it → Browser runs it
+```
+
+---
+
+---
+
+### 5. SharedArrayBuffer / Threading Error
+
+**Error:**
+```
+Runtime DataCloneError
+Worker.postMessage: The WebAssembly.Memory object cannot be serialized.
+The Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy HTTP headers can be used to enable this.
+```
+
+**Root Cause:**
+Godot uses threading via SharedArrayBuffer, which requires COOP/COEP headers. The standard Next.js dev server doesn't set these headers.
+
+**Fix Applied:**
+
+1. Created `web/server.mjs`:
+   - Custom Node.js server wrapping Next.js
+   - Automatically sets COOP/COEP headers
+   - Enables SharedArrayBuffer in development
+
+2. Updated `web/package.json`:
+   ```json
+   "dev": "node server.mjs"  // Now uses custom server
+   ```
+
+3. Created `THREADING_FIX.md`:
+   - Explains the issue
+   - Documents two solutions (custom server vs disable threading)
+   - Troubleshooting steps
+
+**Result:** ✅ SharedArrayBuffer works in development mode with proper headers
+
+**To apply**: Restart the dev server with `npm run dev`
+
+---
+
 All issues resolved! The web deployment setup is now fully functional. 🎉
+
+## Quick Start
+
+```bash
+# Terminal 1: Start Next.js dev server (with COOP/COEP headers)
+cd web
+npm run dev
+
+# Terminal 2: Export Godot game
+./scripts/export_web.sh
+
+# Open http://localhost:3000 and enjoy!
+```
 
