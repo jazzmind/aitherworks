@@ -271,6 +271,16 @@ func _show_current_dialogue() -> void:
 	# Handle action requirements
 	if dialogue.has("action"):
 		awaiting_action = dialogue.action
+		
+		# Check if action already satisfied
+		if _check_action_satisfied(awaiting_action):
+			print("Tutorial action already satisfied: ", awaiting_action)
+			awaiting_action = ""
+			_clear_highlights()
+			await get_tree().create_timer(1.0).timeout
+			_next_dialogue()
+			return
+		
 		if dialogue.has("target"):
 			_highlight_target(dialogue.target)
 		# Don't auto-advance - wait for user action
@@ -412,8 +422,54 @@ func start_story_tutorial() -> void:
 
 func notify_action(action: String) -> void:
 	print("Story tutorial received action: ", action, " (awaiting: ", awaiting_action, ")")
+	
+	# Check if the action requirement is already satisfied
+	if awaiting_action != "" and _check_action_satisfied(awaiting_action):
+		print("Action already satisfied, auto-advancing")
+		awaiting_action = ""
+		_clear_highlights()
+		_next_dialogue()
+		return
+	
 	if awaiting_action == action:
 		awaiting_action = ""
 		_clear_highlights()
 		# Auto-advance to next dialogue
 		_next_dialogue()
+
+func _check_action_satisfied(action: String) -> bool:
+	"""Check if the tutorial requirement is already met"""
+	if not target_workbench:
+		return false
+	
+	var graph = target_workbench.get_node_or_null("MarginContainer/MainLayout/CenterPanel/BlueprintArea/GraphEdit")
+	if not graph:
+		return false
+	
+	match action:
+		"select_level":
+			var level_select = target_workbench.get_node_or_null("MarginContainer/MainLayout/CenterPanel/TopBar/LevelSelect")
+			return level_select and level_select.get_selected() > 0
+		"load_level":
+			# Check if any parts are available (level loaded)
+			return target_workbench.current_spec.size() > 0
+		"place_steam_source":
+			return _has_part_on_workbench(graph, "steam_source")
+		"place_signal_loom":
+			return _has_part_on_workbench(graph, "signal_loom")
+		"place_weight_wheel":
+			return _has_part_on_workbench(graph, "weight_wheel")
+		"place_spyglass":
+			return _has_part_on_workbench(graph, "spyglass")
+		"connect_components":
+			return graph.get_connection_list().size() > 0
+		_:
+			return false
+
+func _has_part_on_workbench(graph: Node, part_id: String) -> bool:
+	"""Check if a specific part type exists on the workbench"""
+	for child in graph.get_children():
+		if child.has_method("get") and "part_id" in child:
+			if child.part_id == part_id:
+				return true
+	return false

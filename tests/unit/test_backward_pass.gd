@@ -135,7 +135,7 @@ func test_relu_gradient() -> void:
 	# wheel -> relu -> wheel2
 	var wheel1 := WeightWheel.new()
 	var activation := ActivationGate.new()
-	activation.activation_function = "relu"
+	activation.activation_type = ActivationGate.ActivationType.RELU
 	var wheel2 := WeightWheel.new()
 	
 	var parts := [

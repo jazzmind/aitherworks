@@ -229,6 +229,26 @@ func _gui_input(event: InputEvent) -> void:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.double_click and mb.button_index == MOUSE_BUTTON_LEFT:
 			emit_signal("inspect_requested", self)
+		elif mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:
+			# Right-click to delete
+			_show_context_menu(mb.global_position)
+
+func _show_context_menu(pos: Vector2) -> void:
+	var popup := PopupMenu.new()
+	popup.add_item("Delete Component", 0)
+	popup.add_separator()
+	popup.add_item("Inspect", 1)
+	popup.id_pressed.connect(_on_context_menu_item)
+	get_tree().root.add_child(popup)
+	popup.popup(Rect2i(pos, Vector2i(150, 0)))
+	popup.close_requested.connect(func(): popup.queue_free())
+
+func _on_context_menu_item(id: int) -> void:
+	match id:
+		0:  # Delete
+			queue_free()
+		1:  # Inspect
+			emit_signal("inspect_requested", self)
 
 func get_part_status() -> String:
 	"""Get current status of the part for debugging"""

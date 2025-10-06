@@ -687,8 +687,8 @@ func _train_graph_once(conns: Array) -> float:
 	
 	return total_loss / max(1, sinks.size())
 
-func _on_graph_node_selected(node_name: StringName) -> void:
-	var node := graph.get_node_or_null(String(node_name))
+func _on_graph_node_selected(node: Node) -> void:
+	# In Godot 4, node_selected passes the actual Node, not the name
 	if node == null:
 		return
 	if node is PartNode:
