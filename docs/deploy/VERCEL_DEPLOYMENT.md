@@ -134,10 +134,14 @@ This is acceptable for git, but consider:
 
 ## Vercel Configuration
 
-Your `web/vercel.json` is already configured:
+Your `web/vercel.json` is configured for static export:
 
 ```json
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "out",
+  "installCommand": "npm install",
+  "framework": null,
   "headers": [
     {
       "source": "/(.*)",
@@ -150,7 +154,10 @@ Your `web/vercel.json` is already configured:
 }
 ```
 
-This enables SharedArrayBuffer for threading.
+**Key settings**:
+- `framework: null` - Treats as static site (not Next.js app)
+- `outputDirectory: "out"` - Where Next.js exports to
+- Headers enable SharedArrayBuffer for threading
 
 ## Troubleshooting
 
