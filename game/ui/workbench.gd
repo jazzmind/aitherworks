@@ -2,6 +2,9 @@ extends Control
 
 ## Workbench UI (Act I scope)
 
+const SimulationGraph = preload("res://game/sim/graph.gd")
+const ForwardPass = preload("res://game/sim/forward_pass.gd")
+
 @onready var graph := $MarginContainer/MainLayout/CenterPanel/BlueprintArea/GraphEdit
 @onready var input_palette := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/InputDrawer/InputPalette
 @onready var processing_palette := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/ProcessingDrawer/ProcessingPalette
@@ -527,82 +530,64 @@ func _validate_yaml_files() -> void:
 func _on_run_forward() -> void:
 	_log("🚀 Running forward pass through your contraption...")
 	
-	# Get all connections
-	var conns: Array = graph.get_connection_list()
-	if conns.is_empty():
-		_log("⚠️ No connections found! Connect your components first.")
+	# Build simulation graph from UI
+	var sim_graph := SimulationGraph.new()
+	var success := sim_graph.build_from_graph_edit(graph)
+	
+	if not success:
+		_log("⚠️ Failed to build simulation graph!")
 		return
 	
-	# Find all PartNodes in the graph
-	var part_nodes: Array[PartNode] = []
-	for child in graph.get_children():
-		if child is PartNode:
-			part_nodes.append(child)
-	
-	if part_nodes.is_empty():
+	if sim_graph.node_count == 0:
 		_log("⚠️ No parts found! Add some components first.")
 		return
 	
-	# Process signal flow through connected components
-	_log("💨 Processing steam pressure through %d components..." % part_nodes.size())
+	if sim_graph.has_cycles:
+		_log("⚠️ Cycle detected in your contraption! Remove circular connections.")
+		return
 	
-	# Process signal flow starting from steam sources
-	var steam_sources: Array = []
-	var processed_nodes: Array = []
+	_log("💨 Processing steam pressure through %d components..." % sim_graph.node_count)
 	
-	# Find all steam sources
-	for part_node in part_nodes:
-		if part_node.part_id == "steam_source":
-			steam_sources.append(part_node)
+	# Execute forward pass
+	var forward_pass := ForwardPass.new()
+	var ctx := forward_pass.execute(sim_graph)
 	
-	# If no steam sources, look for signal looms as backup
-	if steam_sources.is_empty():
-		for part_node in part_nodes:
-			if part_node.part_id == "signal_loom":
-				steam_sources.append(part_node)
-	
-	# Process each steam source and follow the signal flow
-	for source_node in steam_sources:
-		var current_output: float = 0.0
+	# Log execution results
+	for node_name in ctx.execution_order:
+		var node := sim_graph.get_node(node_name)
+		var output = ctx.activations.get(node_name, 0.0)
+		var output_str := _format_output(output)
 		
-		if source_node.part_id == "steam_source":
-			# Steam source generates data
-			current_output = source_node.process_inputs([])
-			_log("🔥 %s generated steam → %.3f PSI" % [source_node.title, current_output])
-		else:
-			# Signal loom needs input data
-			var test_inputs = [1.0, 0.5, -0.3]
-			current_output = source_node.process_inputs(test_inputs)
-			_log("📡 %s processed [%s] → %.3f" % [source_node.title, str(test_inputs), current_output])
+		# Visual feedback: pulse connections from this node
+		for edge in node.outputs:
+			_pulse_connection(edge.from_node, edge.from_port, edge.to_node, edge.to_port, Color(1.0, 0.8, 0.3, 1.0))
+			await get_tree().create_timer(0.05).timeout  # Small delay for visual effect
 		
-		processed_nodes.append(source_node)
-		
-		# Follow connections from this source
-		_process_connected_components(source_node, current_output, conns, part_nodes, processed_nodes)
+		_log("⚙️ %s → %s" % [node_name, output_str])
 	
-	# Handle any spyglasses for inspection
-	for part_node in part_nodes:
-		if part_node.part_id == "spyglass":
-			_log("🔍 %s status: %s" % [part_node.title, part_node.get_part_status()])
+	# Report final outputs (sink nodes)
+	var sinks := sim_graph.get_sink_nodes()
+	if not sinks.is_empty():
+		_log("📊 Final outputs:")
+		for sink in sinks:
+			var output = ctx.activations.get(sink.name, 0.0)
+			_log("  • %s: %s" % [sink.name, _format_output(output)])
 	
-	_log("✅ Forward pass complete!")
+	_log("✅ Forward pass complete in %.2f ms!" % ctx.total_time_ms)
 
-func _process_connected_components(source_node: PartNode, signal_value: float, conns: Array, all_nodes: Array, processed: Array) -> void:
-	"""Recursively process components connected to the source"""
-	for conn in conns:
-		if conn["from"] == source_node.name:
-			var target_node = graph.get_node(conn["to"])
-			if target_node is PartNode and target_node not in processed:
-				# forward pulse highlight
-				_pulse_connection(conn["from"], int(conn["from_port"]), conn["to"], int(conn["to_port"]), Color(1.0, 0.8, 0.3, 1.0))
-				var output = target_node.process_inputs([signal_value])
-				_log("⚙️ %s processed [%.3f] → %.3f" % [target_node.title, signal_value, output])
-				_log("   Status: %s" % target_node.get_part_status())
-				
-				processed.append(target_node)
-				
-				# Continue processing down the chain
-				_process_connected_components(target_node, output, conns, all_nodes, processed)
+func _format_output(output: Variant) -> String:
+	"""Format output value for display"""
+	if output is Array:
+		if output.is_empty():
+			return "[]"
+		var vals: Array[String] = []
+		for v in output:
+			vals.append("%.3f" % float(v))
+		return "[%s]" % ", ".join(vals)
+	elif output is float or output is int:
+		return "%.3f" % float(output)
+	else:
+		return str(output)
 
 func _on_run_backprop() -> void:
 	var conns: Array = graph.get_connection_list()
