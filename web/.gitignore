@@ -17,6 +17,9 @@
 /build
 #/public/godot
 
+# Keep assets directory
+!/public/assets
+
 # misc
 .DS_Store
 *.pem

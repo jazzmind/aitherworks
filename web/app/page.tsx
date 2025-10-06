@@ -109,42 +109,55 @@ export default function GamePage() {
       <canvas ref={canvasRef} id="canvas" />
       {isLoading && (
         <div id="status">
-          <div>
-            {error ? (
-              <div id="status-notice" style={{ color: '#D4AF37', maxWidth: '600px' }}>
-                <div style={{ fontSize: '18px', marginBottom: '20px' }}>⚠️ {status}</div>
-                <div style={{ fontSize: '14px', marginBottom: '20px' }}>{error}</div>
-                <div style={{ fontSize: '12px', color: '#888', lineHeight: '1.6' }}>
-                  <strong>Steps to fix:</strong>
-                  <ol style={{ textAlign: 'left', marginTop: '10px' }}>
-                    <li>Open a terminal in the project root</li>
-                    <li>Run: <code style={{ background: '#333', padding: '2px 6px', borderRadius: '3px' }}>./scripts/export_web.sh</code></li>
-                    <li>Wait for export to complete</li>
-                    <li>Refresh this page</li>
-                  </ol>
-                </div>
+          {error ? (
+            <div id="status-notice" style={{ color: '#D4AF37', maxWidth: '600px' }}>
+              <div style={{ fontSize: '18px', marginBottom: '20px' }}>⚠️ {status}</div>
+              <div style={{ fontSize: '14px', marginBottom: '20px' }}>{error}</div>
+              <div style={{ fontSize: '12px', color: '#888', lineHeight: '1.6' }}>
+                <strong>Steps to fix:</strong>
+                <ol style={{ textAlign: 'left', marginTop: '10px' }}>
+                  <li>Open a terminal in the project root</li>
+                  <li>Run: <code style={{ background: '#333', padding: '2px 6px', borderRadius: '3px' }}>./scripts/export_web.sh</code></li>
+                  <li>Wait for export to complete</li>
+                  <li>Refresh this page</li>
+                </ol>
               </div>
-            ) : (
-              <>
-                <div id="status-progress" style={{ display: progress > 0 ? 'block' : 'none' }}>
-                  <div id="status-progress-inner" style={{ width: `${progress}%` }} />
-                </div>
-                <div id="status-indeterminate" style={{ display: progress === 0 ? 'block' : 'none' }}>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-                <div id="status-notice">{status}</div>
-              </>
-            )}
-          </div>
+            </div>
+          ) : (
+            <>
+              <img 
+                src="/assets/icons/gear.svg" 
+                alt="Loading" 
+                id="status-icon"
+                style={{ 
+                  animation: 'spin 2s linear infinite'
+                }}
+              />
+              <div id="status-title">AItherworks</div>
+              <div id="status-progress" style={{ display: progress > 0 ? 'block' : 'none' }}>
+                <div id="status-progress-inner" style={{ width: `${progress}%` }} />
+              </div>
+              <div id="status-indeterminate" style={{ display: progress === 0 ? 'block' : 'none' }}>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <div id="status-notice">{status}</div>
+            </>
+          )}
         </div>
       )}
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
