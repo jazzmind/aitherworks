@@ -217,7 +217,7 @@ func test_activation_gate_in_chain() -> void:
 	wheel1.set_weight(0, 1.0)
 	
 	var activation := ActivationGate.new()
-	activation.activation_function = "relu"
+	activation.set_activation_function("relu")
 	
 	var wheel2 := WeightWheel.new()
 	wheel2.set_num_weights(1)

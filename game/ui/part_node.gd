@@ -41,13 +41,22 @@ func _build_ports(ports: Dictionary) -> void:
 	
 	print("DEBUG: Building ports for ", part_id, " with ports: ", ports)
 	
-	# Treat any entry with value 'input' as left ports and 'output' as right ports
+	# Handle both simple string values and dictionary format
 	for k in ports.keys():
-		var v := str(ports[k])
-		print("DEBUG: Port ", k, " = ", v)
-		if v == "input":
+		var port_value = ports[k]
+		var direction: String = ""
+		
+		if port_value is Dictionary:
+			# New format: {type: "vector", direction: "input"}
+			direction = str(port_value.get("direction", ""))
+		else:
+			# Legacy format: "input" or "output"
+			direction = str(port_value)
+		
+		print("DEBUG: Port ", k, " = ", direction)
+		if direction == "input":
 			input_names.append(k)
-		elif v == "output":
+		elif direction == "output":
 			output_names.append(k)
 	
 	print("DEBUG: Input ports: ", input_names)
