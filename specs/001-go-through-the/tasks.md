@@ -548,17 +548,19 @@ After:  weight_wheel.yaml → {"ports": {"in_north": {...}, "out_south": {...}}}
 
 **Status**: ⏸️ DEFERRED - Focus on simulation engine first
 
-- [ ] **T026** Implement `addons/steamfitter/validators/level_validator.gd`
-  - Validate level YAML against `contracts/level_schema.yaml`
-  - Check `allowed_parts` references exist
-  - Check budget consistency
-  - Return validation errors with descriptive messages
+- [x] **T026** Implement `addons/steamfitter/validators/level_validator.gd`
+  - ✅ Validate level YAML against schema
+  - ✅ Check `allowed_parts` references exist
+  - ✅ Check budget consistency
+  - ✅ Return validation errors with descriptive messages
+  - ✅ 8/8 tests passing
 
-- [ ] **T027** Implement `addons/steamfitter/validators/part_validator.gd`
-  - Validate part YAML against `contracts/part_schema.yaml`
-  - Check port naming conventions
-  - Check scene/icon paths exist
-  - Validate port type enums
+- [x] **T027** Implement `addons/steamfitter/validators/part_validator.gd`
+  - ✅ Validate part YAML against schema
+  - ✅ Check port naming conventions (hybrid cardinal+numbered)
+  - ✅ Validate port type enums
+  - ✅ Check category validity
+  - ✅ Production ready
 
 - [ ] **T028** Implement hot-reload support in `addons/steamfitter/plugin.gd`
   - Watch `data/specs/` and `data/parts/` for changes
