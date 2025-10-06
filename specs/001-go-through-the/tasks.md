@@ -508,18 +508,20 @@ After:  weight_wheel.yaml → {"ports": {"in_north": {...}, "out_south": {...}}}
   - ✅ Emit progress signals (epoch, loss, accuracy)
   - ✅ 12/12 tests passing (100%)
 
-- [ ] **T022** Implement `game/sim/machine_configuration.gd`
-  - Store placed parts and connections
-  - Serialize/deserialize to/from save data
-  - Budget tracking (mass, brass, pressure)
-  - Validation (check all parts connected, no cycles unless allowed)
+- [x] **T022** Implement `game/sim/machine_configuration.gd`
+  - ✅ Store placed parts and connections
+  - ✅ Serialize/deserialize to/from save data
+  - ✅ Budget tracking (mass, brass, pressure)
+  - ✅ Validation (check all parts connected, no cycles unless allowed)
+  - ✅ 21/21 tests passing (100%)
 
-- [ ] **T023** Implement `game/sim/level_manager.gd`
-  - Load level spec from YAML
-  - Validate player's machine against level constraints
-  - Check win conditions (accuracy, budget)
-  - Trigger level completion
-  - Unlock next level
+- [x] **T023** Implement `game/sim/level_manager.gd`
+  - ✅ Load level spec from YAML
+  - ✅ Validate player's machine against level constraints  
+  - ✅ Check win conditions (accuracy, budget)
+  - ✅ Trigger level completion
+  - ✅ Unlock next level
+  - ✅ 17/18 tests passing (94%)
 
 - [ ] **T024** Wire up simulation to integration tests
   - Make T011 (Act I L1) pass
