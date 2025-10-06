@@ -15,7 +15,7 @@
 
 # production
 /build
-/public/godot
+#/public/godot
 
 # misc
 .DS_Store
