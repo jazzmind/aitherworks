@@ -7,24 +7,8 @@ const nextConfig: NextConfig = {
   },
   // Ensure static files are served correctly
   trailingSlash: true,
-  // Configure headers for WASM
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-        ],
-      },
-    ]
-  },
+  // Note: CORS headers are configured in vercel.json for static export
+  // The headers() function doesn't work with output: 'export'
 }
 
 export default nextConfig
