@@ -83,12 +83,13 @@ func build_from_graph_edit(graph_edit: GraphEdit) -> bool:
 	# Create edges from connections
 	var connections: Array = graph_edit.get_connection_list()
 	for conn in connections:
-		var edge := Edge.new(
-			conn["from"],
-			conn["from_port"],
-			conn["to"],
-			conn["to_port"]
-		)
+		# Handle both Godot 3 and Godot 4 connection dictionary formats
+		var from_name: String = str(conn.get("from_node", conn.get("from", "")))
+		var to_name: String = str(conn.get("to_node", conn.get("to", "")))
+		var from_p: int = int(conn.get("from_port", 0))
+		var to_p: int = int(conn.get("to_port", 0))
+		
+		var edge := Edge.new(from_name, from_p, to_name, to_p)
 		
 		# Try to resolve port names and types
 		_resolve_port_info(edge, graph_edit)

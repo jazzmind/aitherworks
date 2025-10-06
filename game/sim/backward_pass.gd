@@ -218,9 +218,8 @@ func _apply_gradients_to_node(node: SimulationGraph.SimNode, node_grad: float) -
 	
 	# Check if part is trainable and has apply_gradients method
 	if part_instance.has_method("apply_gradients"):
-		# Create gradient array (for now, just pass the single gradient)
-		var grad_array: Array[float] = [node_grad]
-		part_instance.apply_gradients(grad_array)
+		# Pass gradient as float (parts expect float, not Array)
+		part_instance.apply_gradients(node_grad)
 	elif part_instance.has_method("apply_gradient"):
 		# Singular version
 		part_instance.apply_gradient(node_grad)
