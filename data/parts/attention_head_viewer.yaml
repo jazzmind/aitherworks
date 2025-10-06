@@ -18,6 +18,12 @@ simulation:
     show_arcs: true
 
 ports:
-  in-1: attention_weights   # [L,H,S,S] packed/normalized
-  in-2: tokens              # [S] strings
-  out-1: selected_span      # [start,end]
+  in_north:
+    type: "attention_weights"
+    direction: "input"  # [L,H,S,S] packed/normalized
+  in_east:
+    type: "vector"
+    direction: "input"  # [S] tokens (strings)
+  out_south:
+    type: "vector"
+    direction: "output"  # selected_span [start,end]

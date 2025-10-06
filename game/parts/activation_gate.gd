@@ -33,6 +33,23 @@ func set_activation_type(value: ActivationType) -> void:
 	emit_signal("activation_changed", activation_type)
 	_recalculate_output()
 
+func set_activation_function(name: String) -> void:
+	"""Set activation function by string name (for backward compatibility)"""
+	match name.to_lower():
+		"relu":
+			activation_type = ActivationType.RELU
+		"sigmoid":
+			activation_type = ActivationType.SIGMOID
+		"tanh":
+			activation_type = ActivationType.TANH
+		"linear":
+			activation_type = ActivationType.LINEAR
+		"step":
+			activation_type = ActivationType.STEP
+		_:
+			push_warning("Unknown activation function: %s, defaulting to ReLU" % name)
+			activation_type = ActivationType.RELU
+
 func set_threshold(value: float) -> void:
 	threshold = value
 	emit_signal("threshold_changed", threshold)

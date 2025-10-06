@@ -1,0 +1,198 @@
+# Level Schema Definition
+# This schema defines the structure for level YAML files in data/specs/
+
+# Required fields
+required:
+  - id
+  - name
+  - description
+  - story
+  - budget
+  - allowed_parts
+  - win_conditions
+
+# Field definitions
+fields:
+  id:
+    type: string
+    pattern: "^act_(I|II|III|IV|V|VI)_l\\d+_[a-z_]+$"
+    description: "Unique level identifier following pattern: act_{act}_l{number}_{slug}"
+    example: "act_I_l1_dawn_in_dock_ward"
+  
+  name:
+    type: string
+    min_length: 3
+    max_length: 100
+    description: "Display name for the level"
+    example: "Dawn in Dock-Ward"
+  
+  description:
+    type: string
+    min_length: 10
+    max_length: 1000
+    description: "Level objective explanation"
+  
+  story:
+    type: object
+    required:
+      - title
+      - text
+    fields:
+      title:
+        type: string
+        max_length: 200
+      text:
+        type: string
+        description: "Multiline narrative text"
+  
+  budget:
+    type: object
+    required:
+      - mass
+      - pressure
+      - brass
+    fields:
+      mass:
+        type: integer
+        minimum: 100
+        maximum: 50000
+        description: "Parameter count limit (cogs)"
+      pressure:
+        type: string
+        enum: ["None", "Low", "Medium", "High"]
+        description: "Energy/latency constraint"
+      brass:
+        type: integer
+        minimum: 10
+        maximum: 10000
+        description: "Cost/budget limit"
+  
+  allowed_parts:
+    type: array
+    min_items: 1
+    max_items: 33
+    items:
+      type: string
+      pattern: "^[a-z_]+$"
+    description: "Array of part IDs allowed in this level"
+    example: ["steam_source", "weight_wheel", "signal_loom"]
+  
+  win_conditions:
+    type: object
+    required:
+      - accuracy
+    fields:
+      accuracy:
+        type: float
+        minimum: 0.0
+        maximum: 1.0
+        description: "Required accuracy threshold (0.0-1.0)"
+      max_mass:
+        type: integer
+        optional: true
+        description: "Override budget.mass if stricter"
+      max_pressure:
+        type: string
+        optional: true
+        enum: ["None", "Low", "Medium", "High"]
+      fairness_threshold:
+        type: float
+        optional: true
+        minimum: 0.0
+        maximum: 1.0
+        description: "For alignment levels (Act V-VI)"
+  
+  training:
+    type: object
+    optional: true
+    fields:
+      optimizer:
+        type: string
+        enum: ["sgd", "adam", "rmsprop"]
+        default: "sgd"
+      learning_rate:
+        type: float
+        minimum: 0.0001
+        maximum: 1.0
+        default: 0.1
+      max_epochs:
+        type: integer
+        minimum: 10
+        maximum: 1000
+        default: 100
+      convergence_hints:
+        type: object
+        optional: true
+        fields:
+          divergence:
+            type: string
+            description: "Hint when loss increases"
+          oscillation:
+            type: string
+            description: "Hint when loss oscillates"
+          stagnation:
+            type: string
+            description: "Hint when loss plateaus"
+  
+  simulation:
+    type: object
+    optional: true
+    fields:
+      max_recurrent_iterations:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      recurrent_convergence_epsilon:
+        type: float
+        minimum: 0.00001
+        maximum: 0.1
+        default: 0.001
+      allow_feedback_loops:
+        type: boolean
+        default: false
+
+# Validation rules
+validation_rules:
+  - name: "unique_id"
+    description: "Level ID must be unique across all levels"
+    check: "id not in existing_level_ids"
+  
+  - name: "valid_part_references"
+    description: "All allowed_parts must reference existing part definitions"
+    check: "all(part_id in existing_part_ids for part_id in allowed_parts)"
+  
+  - name: "budget_consistency"
+    description: "win_conditions limits must not exceed budget"
+    check: "win_conditions.max_mass <= budget.mass (if specified)"
+  
+  - name: "act_progression"
+    description: "Level numbers within acts should be sequential"
+    check: "level numbers within act don't skip (warning only)"
+
+# Examples
+examples:
+  - id: "act_I_l1_dawn_in_dock_ward"
+    name: "Dawn in Dock-Ward"
+    description: "Build your first Signal Loom and learn vector operations."
+    story:
+      title: "A Humble Beginning"
+      text: |
+        Fresh from the Dock-Ward, you have one day to prove yourself.
+        The Guild will repossess your foundry if you cannot add two numbers.
+    budget:
+      mass: 1000
+      pressure: "Low"
+      brass: 100
+    allowed_parts:
+      - steam_source
+      - signal_loom
+      - weight_wheel
+      - adder_manifold
+    win_conditions:
+      accuracy: 0.95
+    training:
+      optimizer: "sgd"
+      learning_rate: 0.1
+      max_epochs: 50
+

@@ -46,7 +46,20 @@ func validate_parts_and_specs(parts_dir: String, specs_dir: String) -> Dictionar
 			messages.append("⚠️ Part has no ports: " + id)
 		else:
 			for k in data["ports"].keys():
-				var v := String(data["ports"][k])
+				var port_value = data["ports"][k]
+				var v: String = ""
+				
+				# Handle both simple string values and dictionary format
+				if port_value is Dictionary:
+					# New format: {type: "vector", direction: "input"}
+					v = String(port_value.get("direction", ""))
+					if v == "":
+						messages.append("⚠️ Port '"+k+"' on "+id+" has dictionary format but missing 'direction' field")
+						continue
+				else:
+					# Legacy format: "input" or "output"
+					v = String(port_value)
+				
 				if v != "input" and v != "output":
 					messages.append("⚠️ Port '"+k+"' on "+id+" is '"+v+"' (expected 'input'|'output')")
 				# Normalize: allow cardinal names and map to in/out in docs; just warn for now

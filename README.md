@@ -24,6 +24,38 @@ For a more in‑depth design, refer to the design documents provided earlier in 
 4. Review the sample YAML specification in `data/specs/example_puzzle.yaml` and the sample part definition in `data/parts/example_part.yaml`.  These illustrate the data format expected by the plugin.
 5. Use the `cursor_rules.md` and `CLAUDE.md` documents to guide your use of AI in this project.  They define conventions and constraints for AI‑driven editing with the Cursor IDE and Claude models respectively.
 
+## Web Deployment
+
+AItherworks can be deployed to the web using Godot's WebAssembly export and a Next.js wrapper. The game runs directly in the browser with near-native performance.
+
+### Quick Start
+
+1. **Export the game to WASM:**
+   ```bash
+   ./scripts/export_web.sh
+   ```
+
+2. **Build and run the web app:**
+   ```bash
+   cd web
+   npm install
+   npm run dev
+   ```
+
+3. **Deploy to Vercel:**
+   - Push to GitHub
+   - Import project in Vercel
+   - Set root directory to `web`
+   - Deploy!
+
+For detailed instructions, see [docs/web_deployment.md](docs/web_deployment.md).
+
+### Architecture
+
+- **Godot 4** game compiled to WebAssembly (WASM)
+- **Next.js 15** static site wrapper with loading UI
+- **Vercel** hosting with proper CORS headers for SharedArrayBuffer support
+
 ## License
 
 This scaffold is provided under the **MIT License**.  See the `LICENSE` file (to be added) for details.  You are free to use, modify and distribute this code as long as the license terms are respected.

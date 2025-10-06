@@ -1,0 +1,62 @@
+# AItherworks Part: Weight Wheel Set
+
+id: weight_wheel_set
+name: "Weight Wheel Set"
+category: processing
+description: |
+  A sophisticated array of brass wheels working in concert - the complete 'brain layer' 
+  of your machine. While a single Weight Wheel represents one neuron, the Weight Wheel 
+  Set represents an entire layer of neurons. Each wheel in the set learns independently,
+  allowing the machine to extract multiple features from the same input.
+
+# Visual representation
+visual:
+  scene: "res://assets/icons/weight_dial.svg"  # TODO: Create multi-wheel icon
+  scale: [1.5, 1.5, 1.5]  # Larger than single wheel
+
+# Simulation behavior
+simulation:
+  type: matrix_multiply
+  inputs: 1
+  outputs: 1
+  parameters:
+    input_size: 3
+    output_size: 3
+    weight_matrix: []  # Will be initialized to input_size × output_size
+  learnable: true
+
+# Port configuration
+ports:
+  in_north:
+    type: "vector"
+    direction: "input"     # Input vector to be transformed
+  out_south:
+    type: "vector"
+    direction: "output"    # Output vector (multiple neurons)
+
+# Steampunk flavor
+materials: ["brass", "iron", "copper", "bronze"]
+steam_pressure: "high"
+complexity: "moderate"
+
+# Teaching points
+concepts:
+  - "linear layer"
+  - "matrix multiplication"
+  - "multi-neuron learning"
+  - "feature extraction"
+  - "weight matrices"
+  - "hidden layers"
+
+# Progression notes
+progression:
+  from: "weight_wheel"
+  difference: |
+    Weight Wheel: Single neuron (vector → scalar)
+    Weight Wheel Set: Full layer (vector → vector)
+    
+    Think of it as: One wheel per output dimension
+    - 3 input lanes, 3 wheels = 3×3 = 9 weight parameters
+    - Each wheel computes one output value
+    - Enables hidden layers and deep networks
+

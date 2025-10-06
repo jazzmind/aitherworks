@@ -1,0 +1,38 @@
+{
+	"dirs": [
+		"res://tests/unit",
+		"res://tests/integration",
+		"res://tests/validation",
+		"res://tests/performance"
+	],
+	"should_maximize": true,
+	"compact_mode": false,
+	"should_exit": false,
+	"log_level": 1,
+	"inner_class": "",
+	"junit_xml_file": "",
+	"junit_xml_timestamp": false,
+	"pre_run_script": "",
+	"post_run_script": "",
+	"color_output": true,
+	"include_subdirs": true,
+	"double_strategy": "partial",
+	"select_script": "",
+	"tests_like": "",
+	"inner_class_name": "",
+	"opacity": 100,
+	"panel_options": {
+		"font_name": "",
+		"font_size": 16,
+		"output_font_name": "CourierPrime",
+		"output_font_size": 16,
+		"use_colors": true,
+		"bg_color": "ff262626",
+		"default_color": "ff66ffff",
+		"passing_color": "ff00ff00",
+		"failing_color": "ffff0000",
+		"warning_color": "ffffff00",
+		"error_color": "ffff00ff"
+	}
+}
+

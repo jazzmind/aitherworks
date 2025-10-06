@@ -22,7 +22,9 @@ simulation:
 
 # Port configuration
 ports:
-  in-1: "input"  # Data to inspect (optional)
+  in_north:
+    type: "signal"
+    direction: "input"  # Data to inspect (optional)
 
 # Steampunk flavor
 materials: ["brass", "glass", "copper"]

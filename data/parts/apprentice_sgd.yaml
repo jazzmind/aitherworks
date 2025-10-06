@@ -23,6 +23,6 @@ simulation:
   learnable: false
 
 ports:
-  in-1: gradients
-  out-1: parameter_updates
+  in_north: gradients
+  out_south: parameter_updates
 

@@ -68,6 +68,12 @@ func process_signals(inputs: Array[float]) -> float:
 
 # Learn from experience - adjust weights based on error
 func apply_gradients(error_gradient: float) -> void:
+	# Ensure gradients array is sized correctly
+	if gradients.size() != weights.size():
+		gradients.resize(weights.size())
+		for i in range(gradients.size()):
+			gradients[i] = 0.0
+	
 	# Calculate gradients for each weight
 	for i in range(min(input_signals.size(), weights.size())):
 		# Gradient = input * error_gradient (chain rule)

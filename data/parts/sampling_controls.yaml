@@ -18,6 +18,12 @@ simulation:
     top_p: 0.95
 
 ports:
-  in-1: logits_topk         # {ids:[], logits:[]}
-  out-1: params             # {temperature, top_k, top_p}
-  out-2: sampled_token_id   # int
+  in_north:
+    type: "vector"
+    direction: "input"  # logits_topk {ids:[], logits:[]}
+  out_south:
+    type: "vector"
+    direction: "output"  # params {temperature, top_k, top_p}
+  out_east:
+    type: "scalar"
+    direction: "output"  # sampled_token_id (int)

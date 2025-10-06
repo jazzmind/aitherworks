@@ -24,8 +24,8 @@ simulation:
   learnable: true
 
 ports:
-  in-1: input_q
-  in-2: input_k
-  in-3: input_v
-  out-1: output
+  in_north: input_q
+  in_east: input_k
+  in_west: input_v
+  out_south: output
 

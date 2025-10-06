@@ -48,8 +48,14 @@ func connect_input(port: int, value: float) -> void:
 		input_signals[port] = value
 		_recalculate_output()
 
-func process_signals() -> float:
+func process_signals(inputs: Array[float] = []) -> float:
 	"""Combine all input signals into a single output"""
+	# If inputs provided, use them; otherwise use internal state
+	if not inputs.is_empty():
+		input_signals = []
+		for val in inputs:
+			input_signals.append(val)
+	
 	var sum: float = 0.0
 	for signal_value in input_signals:
 		if signal_value != null:

@@ -41,6 +41,8 @@ All level design, puzzle specifications, and machine part definitions MUST be ex
 
 **Rationale**: Separating content from code enables AI-assisted level generation, simplifies iteration on puzzle design, and maintains a clean boundary between game mechanics (code) and game content (data). This architecture is foundational to the project's vision.
 
+**YAML Parsing**: The project uses a custom SpecLoader (`game/sim/spec_loader.gd`) rather than third-party libraries. This 217-line parser handles all required YAML features with zero external dependencies, ensuring Godot 4 native compliance and eliminating version compatibility risks. See `specs/001-go-through-the/research.md` Section 1 for decision rationale.
+
 ### II. Godot 4 Native
 All code MUST target the Godot 4.x API and follow idiomatic Godot patterns: signal-based event handling, node hierarchies, scene inheritance, `_ready()` and `_process()` lifecycle methods. GDScript is the primary language for game logic due to its dynamic typing, tight Godot integration, and ease of authoring.
 
@@ -191,4 +193,4 @@ This constitution uses semantic versioning to track governance changes:
 - **MINOR**: New principles or significant expansions of existing ones
 - **PATCH**: Editorial clarifications, formatting, minor wording improvements
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-03 | **Last Amended**: 2025-10-03
+**Version**: 1.1.1 | **Ratified**: 2025-10-03 | **Last Amended**: 2025-10-03

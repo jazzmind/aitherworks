@@ -2,6 +2,9 @@ extends Control
 
 ## Workbench UI (Act I scope)
 
+const SimulationGraph = preload("res://game/sim/graph.gd")
+const ForwardPass = preload("res://game/sim/forward_pass.gd")
+
 @onready var graph := $MarginContainer/MainLayout/CenterPanel/BlueprintArea/GraphEdit
 @onready var input_palette := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/InputDrawer/InputPalette
 @onready var processing_palette := $MarginContainer/MainLayout/RightPanel/ComponentDrawers/ProcessingDrawer/ProcessingPalette
@@ -527,82 +530,64 @@ func _validate_yaml_files() -> void:
 func _on_run_forward() -> void:
 	_log("🚀 Running forward pass through your contraption...")
 	
-	# Get all connections
-	var conns: Array = graph.get_connection_list()
-	if conns.is_empty():
-		_log("⚠️ No connections found! Connect your components first.")
+	# Build simulation graph from UI
+	var sim_graph := SimulationGraph.new()
+	var success := sim_graph.build_from_graph_edit(graph)
+	
+	if not success:
+		_log("⚠️ Failed to build simulation graph!")
 		return
 	
-	# Find all PartNodes in the graph
-	var part_nodes: Array[PartNode] = []
-	for child in graph.get_children():
-		if child is PartNode:
-			part_nodes.append(child)
-	
-	if part_nodes.is_empty():
+	if sim_graph.node_count == 0:
 		_log("⚠️ No parts found! Add some components first.")
 		return
 	
-	# Process signal flow through connected components
-	_log("💨 Processing steam pressure through %d components..." % part_nodes.size())
+	if sim_graph.has_cycles:
+		_log("⚠️ Cycle detected in your contraption! Remove circular connections.")
+		return
 	
-	# Process signal flow starting from steam sources
-	var steam_sources: Array = []
-	var processed_nodes: Array = []
+	_log("💨 Processing steam pressure through %d components..." % sim_graph.node_count)
 	
-	# Find all steam sources
-	for part_node in part_nodes:
-		if part_node.part_id == "steam_source":
-			steam_sources.append(part_node)
+	# Execute forward pass
+	var forward_pass := ForwardPass.new()
+	var ctx := forward_pass.execute(sim_graph)
 	
-	# If no steam sources, look for signal looms as backup
-	if steam_sources.is_empty():
-		for part_node in part_nodes:
-			if part_node.part_id == "signal_loom":
-				steam_sources.append(part_node)
-	
-	# Process each steam source and follow the signal flow
-	for source_node in steam_sources:
-		var current_output: float = 0.0
+	# Log execution results
+	for node_name in ctx.execution_order:
+		var node := sim_graph.get_node(node_name)
+		var output = ctx.activations.get(node_name, 0.0)
+		var output_str := _format_output(output)
 		
-		if source_node.part_id == "steam_source":
-			# Steam source generates data
-			current_output = source_node.process_inputs([])
-			_log("🔥 %s generated steam → %.3f PSI" % [source_node.title, current_output])
-		else:
-			# Signal loom needs input data
-			var test_inputs = [1.0, 0.5, -0.3]
-			current_output = source_node.process_inputs(test_inputs)
-			_log("📡 %s processed [%s] → %.3f" % [source_node.title, str(test_inputs), current_output])
+		# Visual feedback: pulse connections from this node
+		for edge in node.outputs:
+			_pulse_connection(edge.from_node, edge.from_port, edge.to_node, edge.to_port, Color(1.0, 0.8, 0.3, 1.0))
+			await get_tree().create_timer(0.05).timeout  # Small delay for visual effect
 		
-		processed_nodes.append(source_node)
-		
-		# Follow connections from this source
-		_process_connected_components(source_node, current_output, conns, part_nodes, processed_nodes)
+		_log("⚙️ %s → %s" % [node_name, output_str])
 	
-	# Handle any spyglasses for inspection
-	for part_node in part_nodes:
-		if part_node.part_id == "spyglass":
-			_log("🔍 %s status: %s" % [part_node.title, part_node.get_part_status()])
+	# Report final outputs (sink nodes)
+	var sinks := sim_graph.get_sink_nodes()
+	if not sinks.is_empty():
+		_log("📊 Final outputs:")
+		for sink in sinks:
+			var output = ctx.activations.get(sink.name, 0.0)
+			_log("  • %s: %s" % [sink.name, _format_output(output)])
 	
-	_log("✅ Forward pass complete!")
+	_log("✅ Forward pass complete in %.2f ms!" % ctx.total_time_ms)
 
-func _process_connected_components(source_node: PartNode, signal_value: float, conns: Array, all_nodes: Array, processed: Array) -> void:
-	"""Recursively process components connected to the source"""
-	for conn in conns:
-		if conn["from"] == source_node.name:
-			var target_node = graph.get_node(conn["to"])
-			if target_node is PartNode and target_node not in processed:
-				# forward pulse highlight
-				_pulse_connection(conn["from"], int(conn["from_port"]), conn["to"], int(conn["to_port"]), Color(1.0, 0.8, 0.3, 1.0))
-				var output = target_node.process_inputs([signal_value])
-				_log("⚙️ %s processed [%.3f] → %.3f" % [target_node.title, signal_value, output])
-				_log("   Status: %s" % target_node.get_part_status())
-				
-				processed.append(target_node)
-				
-				# Continue processing down the chain
-				_process_connected_components(target_node, output, conns, all_nodes, processed)
+func _format_output(output: Variant) -> String:
+	"""Format output value for display"""
+	if output is Array:
+		if output.is_empty():
+			return "[]"
+		var vals: Array[String] = []
+		for v in output:
+			vals.append("%.3f" % float(v))
+		return "[%s]" % ", ".join(vals)
+	elif output is float or output is int:
+		return "%.3f" % float(output)
+	else:
+		return str(output)
 
 func _on_run_backprop() -> void:
 	var conns: Array = graph.get_connection_list()
@@ -640,90 +625,70 @@ func _on_evaluate() -> void:
 		_log("❌ FAIL: " + ", ".join(verdict.get("reasons", [])))
 
 func _train_graph_once(conns: Array) -> float:
-	# Simple training over the current graph: forward from steam sources, accumulate outputs,
-	# compute loss against spec target if present, and apply gradients to WeightWheels.
-	var part_nodes: Array[PartNode] = []
-	for child in graph.get_children():
-		if child is PartNode:
-			part_nodes.append(child)
-	if part_nodes.is_empty():
+	# Training using the new SimulationGraph and ForwardPass system
+	# Build simulation graph
+	var sim_graph := SimulationGraph.new()
+	if not sim_graph.build_from_graph_edit(graph):
 		return 0.0
-	# Map names to nodes
-	var name_to_node: Dictionary = {}
-	for n in part_nodes:
-		name_to_node[n.name] = n
-	# Forward pass: breadth-first from steam_source(s)
-	var outputs: Dictionary = {}
-	# Find sources
-	var sources: Array = []
-	for pn in part_nodes:
-		if pn.part_id == "steam_source":
-			sources.append(pn)
-	if sources.is_empty():
-		# fallback: signal_loom as a starting node with dummy inputs
-		for pn in part_nodes:
-			if pn.part_id == "signal_loom":
-				sources.append(pn)
-	# Forward
-	for s in sources:
-		var out_val: float = 0.0
-		if s.part_id == "steam_source":
-			out_val = s.process_inputs([])
-		else:
-			out_val = s.process_inputs([1.0, 0.5, -0.3])
-		outputs[s.name] = out_val
-		# propagate
-		_forward_from_node(s, out_val, conns, name_to_node, outputs)
-	# Determine targets
+	
+	if sim_graph.has_cycles or sim_graph.node_count == 0:
+		return 0.0
+	
+	# Execute forward pass
+	var forward_pass := ForwardPass.new()
+	var ctx := forward_pass.execute(sim_graph)
+	
+	# Determine target value
 	var target: float = 0.0
 	if current_spec.has("targets") and current_spec["targets"].has("pattern"):
-		# use average of pattern as scalar goal for this simple graph trainer
 		var patt: Array = current_spec["targets"]["pattern"]
 		for v in patt:
 			target += float(v)
 		target /= max(1, patt.size())
-	# Identify terminals (nodes with no outgoing edges)
-	var to_names: Array = []
-	for c in conns:
-		to_names.append(str(c["to"]))
-	var terminals: Array[PartNode] = []
-	for pn2 in part_nodes:
-		if pn2.name not in to_names:
-			terminals.append(pn2)
+	
+	# Get sink nodes (terminal outputs)
+	var sinks := sim_graph.get_sink_nodes()
+	if sinks.is_empty():
+		return 0.0
+	
 	# Compute loss as MSE across terminal outputs vs target
 	var total_loss: float = 0.0
 	var grads_per_wheel: Dictionary = {}
-	for t in terminals:
-		var y_hat := float(outputs.get(t.name, 0.0))
+	
+	for sink in sinks:
+		var y_hat_raw = ctx.activations.get(sink.name, 0.0)
+		# Handle array outputs by taking first element or summing
+		var y_hat: float = 0.0
+		if y_hat_raw is Array:
+			for v in y_hat_raw:
+				y_hat += float(v)
+		else:
+			y_hat = float(y_hat_raw)
+		
 		var err := (y_hat - target)
 		total_loss += err * err
-		# Backprop only into direct upstream WeightWheels for now
-		for c2 in conns:
-			if str(c2["to"]) == t.name:
-				var up_name := str(c2["from"])
-				if name_to_node.has(up_name):
-					var up_node: PartNode = name_to_node[up_name]
-					if up_node.part_id == "weight_wheel" and up_node.part_instance is WeightWheel:
-						grads_per_wheel[up_node.name] = float(err)
+		
+		# Backprop into upstream WeightWheels
+		for edge in sink.inputs:
+			var upstream_node := sim_graph.get_node(edge.from_node)
+			if upstream_node and upstream_node.part_id == "weight_wheel":
+				if upstream_node.part_instance is WeightWheel:
+					# Accumulate gradients (in case multiple sinks)
+					if not grads_per_wheel.has(upstream_node.name):
+						grads_per_wheel[upstream_node.name] = 0.0
+					grads_per_wheel[upstream_node.name] += err
+	
 	# Apply gradients to wheels
-	for k in grads_per_wheel.keys():
-		var wheel_node: PartNode = name_to_node[k]
-		var wheel := wheel_node.part_instance as WeightWheel
-		wheel.apply_gradients(grads_per_wheel[k])
-	return total_loss / max(1, terminals.size())
+	for wheel_name in grads_per_wheel.keys():
+		var wheel_node := sim_graph.get_node(wheel_name)
+		if wheel_node and wheel_node.part_instance is WeightWheel:
+			var wheel := wheel_node.part_instance as WeightWheel
+			wheel.apply_gradients(grads_per_wheel[wheel_name])
+	
+	return total_loss / max(1, sinks.size())
 
-func _forward_from_node(node: PartNode, input_value: float, conns: Array, name_to_node: Dictionary, outputs: Dictionary) -> void:
-	for c in conns:
-		if str(c["from"]) == node.name:
-			var target_name := str(c["to"])
-			if name_to_node.has(target_name):
-				var tgt: PartNode = name_to_node[target_name]
-				var out := tgt.process_inputs([input_value])
-				outputs[target_name] = out
-				_forward_from_node(tgt, out, conns, name_to_node, outputs)
-
-func _on_graph_node_selected(node_name: StringName) -> void:
-	var node := graph.get_node_or_null(String(node_name))
+func _on_graph_node_selected(node: Node) -> void:
+	# In Godot 4, node_selected passes the actual Node, not the name
 	if node == null:
 		return
 	if node is PartNode:

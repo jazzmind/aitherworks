@@ -41,13 +41,22 @@ func _build_ports(ports: Dictionary) -> void:
 	
 	print("DEBUG: Building ports for ", part_id, " with ports: ", ports)
 	
-	# Treat any entry with value 'input' as left ports and 'output' as right ports
+	# Handle both simple string values and dictionary format
 	for k in ports.keys():
-		var v := String(ports[k])
-		print("DEBUG: Port ", k, " = ", v)
-		if v == "input":
+		var port_value = ports[k]
+		var direction: String = ""
+		
+		if port_value is Dictionary:
+			# New format: {type: "vector", direction: "input"}
+			direction = str(port_value.get("direction", ""))
+		else:
+			# Legacy format: "input" or "output"
+			direction = str(port_value)
+		
+		print("DEBUG: Port ", k, " = ", direction)
+		if direction == "input":
 			input_names.append(k)
-		elif v == "output":
+		elif direction == "output":
 			output_names.append(k)
 	
 	print("DEBUG: Input ports: ", input_names)
@@ -219,6 +228,26 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.double_click and mb.button_index == MOUSE_BUTTON_LEFT:
+			emit_signal("inspect_requested", self)
+		elif mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:
+			# Right-click to delete
+			_show_context_menu(mb.global_position)
+
+func _show_context_menu(pos: Vector2) -> void:
+	var popup := PopupMenu.new()
+	popup.add_item("Delete Component", 0)
+	popup.add_separator()
+	popup.add_item("Inspect", 1)
+	popup.id_pressed.connect(_on_context_menu_item)
+	get_tree().root.add_child(popup)
+	popup.popup(Rect2i(pos, Vector2i(150, 0)))
+	popup.close_requested.connect(func(): popup.queue_free())
+
+func _on_context_menu_item(id: int) -> void:
+	match id:
+		0:  # Delete
+			queue_free()
+		1:  # Inspect
 			emit_signal("inspect_requested", self)
 
 func get_part_status() -> String:
